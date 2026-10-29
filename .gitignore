@@ -1,0 +1,34 @@
+node_modules/
+.env
+.env.*
+!.env.example
+*.log
+work/
+
+# Credenciales y configuración exclusiva de cada equipo.
+credenciales.md
+**/credenciales*.md
+database/entorno-local.json
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Datos del motor, copias locales y archivos temporales.
+database/runtime/
+mysql-data/
+backups/
+respaldos/
+respaldo*/
+*.zip
+*.sql.gz
+*.tmp
+*.bak
+coverage/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Archivo personal previo, conservado en el respaldo local.
+/JAIDER.docx

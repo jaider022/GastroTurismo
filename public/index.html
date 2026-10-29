@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GastroTurismo - Sistema de Gestión Gastronómica</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- ==========================================
+       PANTALLA DE LOGIN / REGISTRO
+       ========================================== -->
+  <div id="login-container" class="login-wrapper">
+    <div class="login-card glass">
+      <div class="login-header">
+        <div class="logo-area">
+          <i data-lucide="chef-hat" class="logo-icon animate-pulse"></i>
+          <h1>GastroTurismo</h1>
+        </div>
+        <p class="subtitle">Eje Cafetero Gastronómico & Turístico</p>
+      </div>
+
+      <!-- Formularios -->
+      <div class="form-container">
+        <!-- Form Login -->
+        <form id="form-login" class="auth-form active">
+          <h2>Iniciar Sesión</h2>
+          <div class="form-group">
+            <label for="login-email">Correo Electrónico</label>
+            <div class="input-wrapper">
+              <i data-lucide="mail"></i>
+              <input type="email" id="login-email" required placeholder="correo@ejemplo.com">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="login-password">Contraseña</label>
+            <div class="input-wrapper">
+              <i data-lucide="lock"></i>
+              <input type="password" id="login-password" required placeholder="••••••••">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Ingresar al Sistema</button>
+          <p class="demo-access">Demostración académica: <strong>admin@gastroturismo.example</strong><br>Contraseña: <strong>Gastro2026!</strong><br>Datos ficticios coherentes; esta versión conserva aparte los datos de demostraciones anteriores.</p>
+          <p class="auth-toggle">¿No tienes cuenta? <a href="#" id="go-to-register">Regístrate como Cliente</a></p>
+        </form>
+
+        <!-- Form Registro -->
+        <form id="form-register" class="auth-form">
+          <h2>Crear Cuenta</h2>
+          <div class="form-group">
+            <label for="register-name">Nombre Completo</label>
+            <div class="input-wrapper">
+              <i data-lucide="user"></i>
+              <input type="text" id="register-name" required placeholder="Juan Pérez">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="register-email">Correo Electrónico</label>
+            <div class="input-wrapper">
+              <i data-lucide="mail"></i>
+              <input type="email" id="register-email" required placeholder="correo@ejemplo.com">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="register-phone">Celular</label>
+            <div class="input-wrapper">
+              <i data-lucide="phone"></i>
+              <input type="text" id="register-phone" placeholder="3001234567">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="register-password">Contraseña</label>
+            <div class="input-wrapper">
+              <i data-lucide="lock"></i>
+              <input type="password" id="register-password" required placeholder="Crea tu contraseña">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="register-type">Tipo de Usuario</label>
+            <div class="input-wrapper">
+              <i data-lucide="shield"></i>
+              <select id="register-type">
+                <option value="cliente">Turista / Cliente</option>
+                <option disabled value="restaurante">Propietario de Restaurante</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Registrarse</button>
+          <p class="auth-toggle">¿Ya tienes cuenta? <a href="#" id="go-to-login">Inicia Sesión</a></p>
+        </form>
+      </div>
+      
+      <!-- Indicador de conexión rápida para demo -->
+      <div class="demo-badge-container">
+        <span class="db-status-badge offline" id="login-db-status">
+          <span class="status-dot"></span>
+          <span id="login-db-text">Cargando conexión a base de datos...</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       CONTENEDOR PRINCIPAL DE LA APLICACIÓN (DASHBOARD)
+       ========================================== -->
+  <div id="app-container" class="app-layout" style="display: none;">
+    <!-- Sidebar de Navegación -->
+    <aside class="sidebar glass">
+      <div class="sidebar-brand">
+        <i data-lucide="chef-hat" class="logo-icon"></i>
+        <span>GastroTurismo</span>
+      </div>
+      
+      <div class="user-profile-summary">
+        <div class="avatar" id="user-avatar">U</div>
+        <div class="info">
+          <h4 id="user-display-name">Usuario</h4>
+          <span id="user-display-role" class="role-badge">Cliente</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-menu">
+        <a href="#" class="menu-item active" data-target="section-dashboard">
+          <i data-lucide="layout-dashboard"></i> Dashboard
+        </a>
+        <a href="#" class="menu-item" data-target="section-restaurantes">
+          <i data-lucide="store"></i> Restaurantes
+        </a>
+        <a href="#" class="menu-item" data-target="section-mesas">
+          <i data-lucide="grid"></i> Mesas
+        </a>
+        <a href="#" class="menu-item" data-target="section-reservas">
+          <i data-lucide="calendar-check"></i> Reservas
+        </a>
+        <a href="#" class="menu-item" data-target="section-pedidos">
+          <i data-lucide="shopping-bag"></i> Pedidos / Delivery
+        </a>
+        <a href="#" class="menu-item" data-target="section-resenas">
+          <i data-lucide="star"></i> Reseñas y Calificación
+        </a>
+        <a href="#" class="menu-item" data-target="section-asistencia">
+          <i data-lucide="users"></i> Asistencia real
+        </a>
+        <a href="#" class="menu-item" data-target="section-reportes">
+          <i data-lucide="bar-chart-3"></i> Reportes del Sistema
+        </a>
+        <a href="#" class="menu-item" data-target="section-documentos">
+          <i data-lucide="file-text"></i> Plantillas PDF
+        </a>
+        <a href="#" class="menu-item" data-target="section-config">
+          <i data-lucide="settings"></i> Configuración DB
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="btn-logout" class="btn btn-danger btn-block btn-sm">
+          <i data-lucide="log-out"></i> Cerrar Sesión
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Navbar -->
+      <header class="topbar glass">
+        <div class="topbar-left">
+          <h2 id="current-section-title">Dashboard</h2>
+        </div>
+        <div class="topbar-right">
+          <!-- Notificaciones -->
+          <div class="notifications-dropdown">
+            <button class="icon-btn" id="bell-btn">
+              <i data-lucide="bell"></i>
+              <span class="badge" id="notification-count" style="display: none;">0</span>
+            </button>
+            <div class="notification-panel glass" id="notification-panel">
+              <h3>Notificaciones</h3>
+              <div class="notifications-list" id="notifications-list">
+                <p class="empty-list">No tienes notificaciones pendientes.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Estado Base de Datos -->
+          <span class="db-status-badge offline" id="main-db-status">
+            <span class="status-dot"></span>
+            <span id="main-db-text">Cargando estado...</span>
+          </span>
+        </div>
+      </header>
+
+      <!-- SECCIÓN: DASHBOARD (RESUMEN) -->
+      <section id="section-dashboard" class="content-section active">
+        <div class="welcome-banner glass">
+          <h1>¡Bienvenido, <span id="welcome-user-name">Usuario</span>!</h1>
+          <p>Explora la increíble gastronomía turística del departamento del Quindío. Reserva mesas, califica platos o realiza pedidos para delivery directo a tu zona turística.</p>
+        </div>
+
+        <!-- Tarjetas Estadísticas Rápidas -->
+        <div class="dashboard-stats-grid">
+          <div class="stat-card glass">
+            <div class="stat-icon color-1"><i data-lucide="store"></i></div>
+            <div class="stat-details">
+              <h3 id="stat-restaurantes">4</h3>
+              <p>Restaurantes</p>
+            </div>
+          </div>
+          <div class="stat-card glass">
+            <div class="stat-icon color-2"><i data-lucide="calendar"></i></div>
+            <div class="stat-details">
+              <h3 id="stat-reservas">3</h3>
+              <p>Reservas Activas</p>
+            </div>
+          </div>
+          <div class="stat-card glass">
+            <div class="stat-icon color-3"><i data-lucide="shopping-cart"></i></div>
+            <div class="stat-details">
+              <h3 id="stat-pedidos">3</h3>
+              <p>Pedidos Entregados</p>
+            </div>
+          </div>
+          <div class="stat-card glass">
+            <div class="stat-icon color-4"><i data-lucide="users"></i></div>
+            <div class="stat-details">
+              <h3 id="stat-clientes">8</h3>
+              <p>Clientes Registrados</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fila de Gráficos e Información en Tiempo Real -->
+        <div class="dashboard-charts-grid">
+          <div class="chart-container glass">
+            <h3>Ingresos Totales por Restaurante (COP)</h3>
+            <canvas id="chart-dashboard-ingresos"></canvas>
+          </div>
+          <div class="chart-container glass">
+            <h3>Reservas por Zona Turística</h3>
+            <canvas id="chart-dashboard-reservas"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN: RESTAURANTES -->
+      <section id="section-restaurantes" class="content-section">
+        <div class="action-header">
+          <div class="search-box">
+            <i data-lucide="search"></i>
+            <input type="text" id="search-restaurantes" placeholder="Buscar restaurante o especialidad...">
+          </div>
+          <button class="btn btn-success" id="btn-add-restaurante" style="display: none;">
+            <i data-lucide="plus"></i> Nuevo Restaurante
+          </button>
+        </div>
+        
+        <div class="restaurantes-list-grid" id="restaurantes-container">
+          <!-- Inyectado dinámicamente -->
+        </div>
+      </section>
+
+      <!-- SECCIÓN: MESAS -->
+      <section id="section-mesas" class="content-section">
+        <div class="action-header">
+          <div class="filter-box">
+            <label for="filter-mesas-restaurante">Seleccionar Restaurante:</label>
+            <select id="filter-mesas-restaurante">
+              <!-- Cargado dinámicamente -->
+            </select>
+          </div>
+          <button class="btn btn-success" id="btn-add-mesa" style="display: none;">
+            <i data-lucide="plus"></i> Agregar Mesa
+          </button>
+        </div>
+        
+        <div class="mesas-visual-grid" id="mesas-container">
+          <!-- Inyectado dinámicamente -->
+        </div>
+      </section>
+
+      <!-- SECCIÓN: RESERVAS -->
+      <section id="section-reservas" class="content-section">
+        <div class="action-header">
+          <h3>Mis Reservas y Agendamientos</h3>
+          <button class="btn btn-primary" id="btn-new-reserva">
+            <i data-lucide="calendar"></i> Crear Nueva Reserva
+          </button>
+        </div>
+        
+        <div class="table-responsive glass">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Restaurante</th>
+                <th>Mesa</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Personas</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="reservas-table-body">
+              <!-- Inyectado dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECCIÓN: PEDIDOS -->
+      <section id="section-pedidos" class="content-section">
+        <div class="pedidos-split-layout">
+          <!-- Panel de Compra (Izquierda) -->
+          <div class="pedidos-shop glass">
+            <h3>Hacer Pedido Gastronómico (Delivery / Comedor)</h3>
+            
+            <div class="form-group">
+              <label for="pedido-restaurante">1. Selecciona el Restaurante:</label>
+              <select id="pedido-restaurante" class="form-control">
+                <option value="">Selecciona un restaurante...</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="pedido-servicio">2. Tipo de Servicio:</label>
+              <select id="pedido-servicio" class="form-control">
+                <option value="comedor">Consumir en Comedor</option>
+                <option value="delivery">Delivery a Zona Turística</option>
+              </select>
+            </div>
+
+            <div class="form-group" id="pedido-direccion-group" style="display: none;">
+              <label for="pedido-direccion">3. Dirección de Entrega (Ej: Hotel Campestre, Salento):</label>
+              <input type="text" id="pedido-direccion" class="form-control" placeholder="Escribe tu hotel o sitio turístico...">
+            </div>
+
+            <div class="menu-selection-area">
+              <h4>4. Selecciona del Menú:</h4>
+              <div id="pedido-menu-list" class="menu-items-scroll">
+                <p class="info-text">Selecciona un restaurante para cargar el menú.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Carrito de Compras (Derecha) -->
+          <div class="pedidos-cart glass">
+            <h3>Resumen del Pedido</h3>
+            <div class="cart-items-list" id="cart-items">
+              <p class="empty-list">No has agregado platos a tu pedido.</p>
+            </div>
+            
+            <div class="cart-totals">
+              <div class="total-row">
+                <span>Subtotal:</span>
+                <span id="cart-subtotal">$0 COP</span>
+              </div>
+              <div class="total-row total-highlight">
+                <span>Total a Pagar:</span>
+                <span id="cart-total">$0 COP</span>
+              </div>
+            </div>
+
+            <div class="cart-payment-method form-group">
+              <label for="cart-payment-select">Medio de Pago Online:</label>
+              <select id="cart-payment-select" class="form-control">
+                <!-- Cargado dinámicamente -->
+              </select>
+            </div>
+
+            <button class="btn btn-success btn-block" id="btn-checkout">
+              <i data-lucide="credit-card"></i> Confirmar Pedido y Pagar Online
+            </button>
+          </div>
+        </div>
+
+        <div class="historial-pedidos-container glass">
+          <h3>Historial de Pedidos Recientes</h3>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Restaurante</th>
+                  <th>Fecha</th>
+                  <th>Tipo</th>
+                  <th>Total</th>
+                  <th>Estado</th>
+                  <th>Platos Solicitados</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="pedidos-table-body">
+                <!-- Inyectado dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN: RESEÑAS -->
+      <section id="section-resenas" class="content-section">
+        <div class="resenas-split-layout">
+          <!-- Crear Reseña -->
+          <div class="resena-form-card glass">
+            <h3>Califica tu Experiencia Gastronómica</h3>
+            <form id="form-resena">
+              <div class="form-group">
+                <label for="resena-restaurante">Selecciona el Restaurante:</label>
+                <select id="resena-restaurante" required class="form-control">
+                  <option value="">Selecciona...</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Calificación (Estrellas):</label>
+                <div class="star-rating">
+                  <input type="radio" name="stars" id="star-5" value="5"><label for="star-5">★</label>
+                  <input type="radio" name="stars" id="star-4" value="4"><label for="star-4">★</label>
+                  <input type="radio" name="stars" id="star-3" value="3"><label for="star-3">★</label>
+                  <input type="radio" name="stars" id="star-2" value="2"><label for="star-2">★</label>
+                  <input type="radio" name="stars" id="star-1" value="1"><label for="star-1">★</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="resena-comentario">Cuéntanos qué te pareció el servicio, los platos y el ambiente turístico:</label>
+                <textarea id="resena-comentario" required placeholder="El chicharrón de El Roble estaba espectacular, muy recomendado..." class="form-control" rows="4"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Enviar Calificación</button>
+            </form>
+          </div>
+
+          <!-- Muro de Reseñas -->
+          <div class="resenas-wall">
+            <h3>Opiniones de Turistas</h3>
+            <div class="resenas-scroll" id="resenas-wall-container">
+              <!-- Inyectado dinámicamente -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="section-asistencia" class="content-section">
+        <div class="section-header"><div><h3>Personas atendidas</h3><p>Registra a quienes realmente llegaron. Una reserva no cuenta automáticamente como asistencia.</p></div></div>
+        <form id="form-asistencia" class="glass asistencia-form">
+          <div class="form-group"><label for="asistencia-restaurante">Restaurante</label><select id="asistencia-restaurante" class="form-control" required></select></div>
+          <div class="form-group"><label for="asistencia-reserva">Reserva asociada</label><select id="asistencia-reserva" class="form-control"><option value="">Llegada sin reserva</option></select></div>
+          <div class="form-group"><label for="asistencia-fecha">Fecha y hora de llegada (Colombia)</label><input id="asistencia-fecha" type="datetime-local" class="form-control" required></div>
+          <div class="form-group"><label for="asistencia-personas">Personas que llegaron</label><input id="asistencia-personas" type="number" min="1" max="500" step="1" class="form-control" value="2" required></div>
+          <button type="submit" class="btn btn-primary">Registrar asistencia</button>
+        </form>
+        <p id="asistencia-source" class="info-text"></p>
+        <div class="table-responsive glass"><table class="data-table"><thead><tr><th>Ingreso</th><th>Restaurante</th><th>Reserva</th><th>Personas</th></tr></thead><tbody id="asistencia-tbody"></tbody></table></div>
+      </section>
+
+      <!-- SECCIÓN: REPORTES (MÍNIMO 10) -->
+      <section id="section-reportes" class="content-section">
+        <div class="reportes-container">
+          <!-- Selector de Reporte -->
+          <div class="reportes-selector glass">
+            <h3>Seleccionar Reporte</h3>
+            
+            <div class="reportes-category">
+              <h4>Reportes Simples (Monotabla)</h4>
+              <button class="report-btn active" data-report-id="1">1. Directorio Completo de Restaurantes</button>
+              <button class="report-btn" data-report-id="2">2. Clientes Registrados</button>
+              <button class="report-btn" data-report-id="3">3. Menú de Platos Disponibles</button>
+            </div>
+
+            <div class="reportes-category">
+              <h4>Reportes Intermedios (Operaciones y Joins)</h4>
+              <button class="report-btn" data-report-id="4">4. Calificación Promedio por Restaurante</button>
+              <button class="report-btn" data-report-id="5">5. Reservas por Zona Turística</button>
+              <button class="report-btn" data-report-id="6">6. Ingresos por Restaurante (Con Gráfico)</button>
+              <button class="report-btn" data-report-id="7">7. Detalle y Ocupación de Mesas</button>
+            </div>
+
+            <div class="reportes-category">
+              <h4>Reportes Avanzados (Subconsultas)</h4>
+              <button class="report-btn" data-report-id="8">8. Restaurantes que superan Calificación Promedio</button>
+              <button class="report-btn" data-report-id="9">9. Clientes VIP (Con Gráfico)</button>
+              <button class="report-btn" data-report-id="10">10. Platos más Vendidos por Categoría (Con Gráfico)</button>
+            </div>
+            <div class="reportes-category">
+              <h4>Comparación mensual</h4>
+              <button class="report-btn" data-report-id="11">11. Comensales atendidos por mes</button>
+              <button class="report-btn" data-report-id="12">12. Ingresos de usuarios a la aplicación</button>
+            </div>
+          </div>
+
+          <!-- Visualizador de Reporte -->
+          <div class="reportes-visualizer glass">
+            <div class="report-header-actions">
+              <h3 id="report-title">Directorio Completo de Restaurantes</h3>
+              <div class="actions">
+                <button class="btn btn-sm btn-info" id="btn-toggle-sql"><i data-lucide="code"></i> Ver Código SQL</button>
+                <button class="btn btn-sm btn-success" id="btn-export-pdf"><i data-lucide="download"></i> Exportar PDF</button>
+              </div>
+            </div>
+
+            <form id="form-report-filters" class="report-filters" hidden>
+              <div class="form-group"><label for="report-fecha-corte">Fecha de corte</label><input id="report-fecha-corte" type="date" class="form-control" required></div>
+              <div class="form-group"><label for="report-comparacion">Comparar con</label><select id="report-comparacion" class="form-control"><option value="mismo_corte">Los mismos días del mes anterior</option><option value="mes_completo">El mes anterior completo</option></select></div>
+              <div class="form-group" id="report-restaurante-group"><label for="report-restaurante">Restaurante</label><select id="report-restaurante" class="form-control"><option value="">Todos los restaurantes</option></select></div>
+              <button type="submit" class="btn btn-primary">Consultar</button>
+            </form>
+            <p id="report-criteria" class="report-criteria"></p>
+            <!-- Panel de Código SQL -->
+            <div class="sql-box" id="sql-box" style="display: none;">
+              <pre><code id="sql-query-display">SELECT * FROM restaurantes;</code></pre>
+            </div>
+
+            <!-- Canvas de gráfico si aplica -->
+            <div class="report-chart-container" id="report-chart-card" style="display: none;">
+              <canvas id="chart-reporte-canvas"></canvas>
+            </div>
+
+            <!-- Tabla de datos -->
+            <div class="table-responsive">
+              <table class="data-table" id="report-data-table">
+                <thead id="report-thead">
+                  <!-- Dinámico -->
+                </thead>
+                <tbody id="report-tbody">
+                  <!-- Dinámico -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN: DOCUMENTOS / PLANTILLAS (PDF) -->
+      <section id="section-documentos" class="content-section">
+        <div class="documentos-grid">
+          <!-- Comprobante de Reserva -->
+          <div class="doc-card glass">
+            <div class="doc-icon"><i data-lucide="ticket"></i></div>
+            <h3>Comprobante de Reserva</h3>
+            <p>Genera la ficha imprimible de la mesa asignada a un cliente, mostrando su código único, restaurante, ubicación y datos del comensal.</p>
+            <div class="form-group">
+              <label for="doc-reserva-select">Selecciona la Reserva:</label>
+              <select id="doc-reserva-select" class="form-control">
+                <!-- Dinámico -->
+              </select>
+            </div>
+            <button class="btn btn-primary btn-block" id="btn-gen-comprobante">
+              <i data-lucide="eye"></i> Generar Comprobante PDF
+            </button>
+          </div>
+
+          <!-- Factura de Pago / Pedido -->
+          <div class="doc-card glass">
+            <div class="doc-icon"><i data-lucide="receipt"></i></div>
+            <h3>Factura de Pedido</h3>
+            <p>Genera el recibo detallado del consumo de alimentos para restaurante o delivery, detallando impuestos (IVA), precios unitarios y montos finales.</p>
+            <div class="form-group">
+              <label for="doc-pedido-select">Selecciona el Pedido:</label>
+              <select id="doc-pedido-select" class="form-control">
+                <!-- Dinámico -->
+              </select>
+            </div>
+            <button class="btn btn-primary btn-block" id="btn-gen-factura">
+              <i data-lucide="eye"></i> Generar Factura PDF
+            </button>
+          </div>
+        </div>
+        
+        <!-- Vista Previa de Plantilla en la App -->
+        <div class="preview-doc-container glass" id="preview-doc-container" style="display: none;">
+          <div class="preview-header">
+            <h3>Vista Previa del Documento</h3>
+            <button class="btn btn-success btn-sm" id="btn-download-preview-pdf">Descargar PDF</button>
+          </div>
+          <div class="preview-canvas" id="preview-canvas-content">
+            <!-- Representación HTML estética de la factura/comprobante -->
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN: CONFIGURACIÓN DB -->
+      <section id="section-config" class="content-section">
+        <div class="config-grid">
+          <!-- Conexión a Base de Datos -->
+          <div class="config-card glass">
+            <h3>Conexión con Base de Datos MySQL</h3>
+            <p>Este sistema cuenta con una arquitectura híbrida. Si tu base de datos local MySQL no está configurada, el software funciona automáticamente en <strong>Modo LocalStorage</strong> para que puedas probar la experiencia completa de forma instantánea.</p>
+            
+            <form id="form-db-config" class="config-form">
+              <div class="form-group">
+                <label for="cfg-db-host">Host de la BD</label>
+                <input type="text" id="cfg-db-host" value="localhost" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="cfg-db-user">Usuario de MySQL</label>
+                <input type="text" id="cfg-db-user" value="root" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="cfg-db-password">Contraseña</label>
+                <input type="password" id="cfg-db-password" placeholder="En blanco si no tiene" class="form-control">
+              </div>
+              <div class="form-group">
+                <label for="cfg-db-name">Nombre de la Base de Datos</label>
+                <input type="text" id="cfg-db-name" value="gastronomia_turistica_academica" class="form-control">
+              </div>
+              <button type="submit" class="btn btn-primary">Guardar y Re-conectar</button>
+            </form>
+          </div>
+
+          <!-- Gestión de Datos / Semilla -->
+          <div class="config-card glass">
+            <h3>Administración del Sistema</h3>
+            <p>Descarga la estructura de la base de datos y la semilla de datos (SQL) para ejecutarla directamente en tu gestor de base de datos MySQL (como phpMyAdmin o Workbench).</p>
+            
+            <div class="download-actions">
+              <a href="schema.sql" download class="btn btn-info btn-block">
+                <i data-lucide="file-down"></i> Descargar archivo "schema.sql"
+              </a>
+              <button class="btn btn-danger btn-block" id="btn-reset-demo">
+                <i data-lucide="rotate-ccw"></i> Restaurar Datos de Fábrica (LocalStorage)
+              </button>
+            </div>
+            
+            <div class="status-summary-box">
+              <h4>Resumen Técnico:</h4>
+              <ul>
+                <li>Estudiantes Máximos: 3</li>
+                <li>Tablas: 14 de negocio + asistencia y accesos</li>
+                <li>Reportes: 10 académicos + 2 comparativos mensuales</li>
+                <li>Bonificación: Gráficos Estadísticos implementados con Chart.js</li>
+                <li>Exportación: Descarga PDF automatizada</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ==========================================
+       MODALES DIÁLOGO (CRUD - REGISTRO / EDICIÓN)
+       ========================================== -->
+  
+  <!-- Modal Reserva -->
+  <div class="modal-backdrop" id="modal-reserva">
+    <div class="modal-card glass">
+      <div class="modal-header">
+        <h3 id="modal-reserva-title">Nueva Reserva de Mesa</h3>
+        <button class="close-btn" onclick="closeModal('modal-reserva')">&times;</button>
+      </div>
+      <form id="form-modal-reserva">
+        <input type="hidden" id="mres-id">
+        <input type="hidden" id="mres-mesa-anterior">
+        <div class="form-group">
+          <label for="mres-restaurante">Selecciona el Restaurante:</label>
+          <select id="mres-restaurante" required class="form-control">
+            <option value="">Selecciona...</option>
+          </select>
+          <p id="mres-restaurante-summary" style="font-size: 0.8rem; color: var(--primary); margin-top: 6px; display: none;"></p>
+        </div>
+        <div class="form-group">
+          <label for="mres-mesa">Selecciona la Mesa Disponible:</label>
+          <select id="mres-mesa" required class="form-control">
+            <option value="">Primero selecciona el restaurante...</option>
+          </select>
+          <p id="mres-mesa-summary" style="font-size: 0.8rem; color: var(--secondary); margin-top: 6px; display: none;"></p>
+        </div>
+        <div class="form-group">
+          <label for="mres-fecha">Fecha:</label>
+          <input type="date" id="mres-fecha" required class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="mres-hora">Hora:</label>
+          <input type="time" id="mres-hora" required class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="mres-personas">Cantidad de Personas:</label>
+          <input type="number" id="mres-personas" min="1" max="10" value="2" required class="form-control">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-reserva')">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Confirmar Reserva</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Restaurante -->
+  <div class="modal-backdrop" id="modal-restaurante">
+    <div class="modal-card glass">
+      <div class="modal-header">
+        <h3 id="modal-restaurante-title">Agregar Nuevo Restaurante</h3>
+        <button class="close-btn" onclick="closeModal('modal-restaurante')">&times;</button>
+      </div>
+      <form id="form-modal-restaurante">
+        <input type="hidden" id="mrest-id">
+        <div class="form-group">
+          <label for="mrest-nombre">Nombre del Restaurante</label>
+          <input type="text" id="mrest-nombre" required class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="mrest-direccion">Dirección</label>
+          <input type="text" id="mrest-direccion" required class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="mrest-telefono">Teléfono</label>
+          <input type="text" id="mrest-telefono" required class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="mrest-email">Email</label>
+          <input type="email" id="mrest-email" required class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="mrest-capacidad">Capacidad Total</label>
+          <input type="number" id="mrest-capacidad" required min="10" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="mrest-especialidad">Especialidad Gastronómica</label>
+          <input type="text" id="mrest-especialidad" required class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="mrest-zona">Zona Turística (Quindío)</label>
+          <select id="mrest-zona" required class="form-control"></select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-restaurante')">Cancelar</button>
+          <button type="submit" class="btn btn-success">Guardar Restaurante</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Mesa -->
+  <div class="modal-backdrop" id="modal-mesa">
+    <div class="modal-card glass">
+      <div class="modal-header">
+        <h3>Agregar Mesa</h3>
+        <button class="close-btn" onclick="closeModal('modal-mesa')">&times;</button>
+      </div>
+      <form id="form-modal-mesa">
+        <div class="form-group">
+          <label for="mmesa-restaurante">Restaurante</label>
+          <select id="mmesa-restaurante" required class="form-control"></select>
+        </div>
+        <div class="form-group">
+          <label for="mmesa-numero">Número de Mesa</label>
+          <input type="text" id="mmesa-numero" required placeholder="Ej: Mesa 104" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="mmesa-capacidad">Capacidad de Comensales</label>
+          <input type="number" id="mmesa-capacidad" required min="1" max="20" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="mmesa-ubicacion">Ubicación física en el local</label>
+          <input type="text" id="mmesa-ubicacion" required placeholder="Ej: Terraza Mirador" class="form-control">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-mesa')">Cancelar</button>
+          <button type="submit" class="btn btn-success">Agregar Mesa</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notificaciones Toast -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Scripts Externos -->
+  <!-- Chart.js para gráficos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- jsPDF para exportar archivos PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+  <!-- Aplicación Principal JS -->
+  <script src="app.js"></script>
+</body>
+</html>
