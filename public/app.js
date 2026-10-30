@@ -782,6 +782,24 @@ function setupEventHandlers() {
 
   // Botón nueva reserva
   document.getElementById('btn-new-reserva').addEventListener('click', () => openReservaModal());
+  document.getElementById('reservas-busqueda').addEventListener('input', filterReservas);
+  document.getElementById('reservas-estado').addEventListener('change', filterReservas);
+  document.getElementById('reservas-fecha').addEventListener('change', filterReservas);
+  document.getElementById('reservas-por-pagina').addEventListener('change', filterReservas);
+  document.getElementById('reservas-limpiar').addEventListener('click', () => {
+    for (const id of ['reservas-busqueda', 'reservas-estado', 'reservas-fecha']) {
+      document.getElementById(id).value = '';
+    }
+    filterReservas();
+  });
+  document.getElementById('reservas-anterior').addEventListener('click', () => {
+    reservasPage -= 1;
+    renderReservasPage();
+  });
+  document.getElementById('reservas-siguiente').addEventListener('click', () => {
+    reservasPage += 1;
+    renderReservasPage();
+  });
   document.getElementById('form-modal-reserva').addEventListener('submit', saveReserva);
 
   // Restaurante selector en pedidos
@@ -793,6 +811,23 @@ function setupEventHandlers() {
 
   // Realizar pedido
   document.getElementById('btn-checkout').addEventListener('click', executeCheckout);
+  for (const id of ['pedidos-filtro-restaurante', 'pedidos-desde', 'pedidos-hasta', 'pedidos-por-pagina']) {
+    document.getElementById(id).addEventListener('change', filterPedidos);
+  }
+  document.getElementById('pedidos-limpiar').addEventListener('click', () => {
+    for (const id of ['pedidos-filtro-restaurante', 'pedidos-desde', 'pedidos-hasta']) {
+      document.getElementById(id).value = '';
+    }
+    filterPedidos();
+  });
+  document.getElementById('pedidos-anterior').addEventListener('click', () => {
+    pedidosPage -= 1;
+    renderPedidosPage();
+  });
+  document.getElementById('pedidos-siguiente').addEventListener('click', () => {
+    pedidosPage += 1;
+    renderPedidosPage();
+  });
 
   // Crear reseña
   document.getElementById('form-resena').addEventListener('submit', saveResena);
@@ -809,6 +844,23 @@ function setupEventHandlers() {
   document.getElementById('form-report-filters').addEventListener('submit', event => { event.preventDefault(); renderReport(currentReportId); });
   document.getElementById('form-asistencia').addEventListener('submit', saveAsistencia);
   document.getElementById('asistencia-restaurante').addEventListener('change', updateAsistenciaReservas);
+  for (const id of ['asistencia-filtro-restaurante', 'asistencia-desde', 'asistencia-hasta', 'asistencia-por-pagina']) {
+    document.getElementById(id).addEventListener('change', filterAsistencia);
+  }
+  document.getElementById('asistencia-limpiar').addEventListener('click', () => {
+    for (const id of ['asistencia-filtro-restaurante', 'asistencia-desde', 'asistencia-hasta']) {
+      document.getElementById(id).value = '';
+    }
+    filterAsistencia();
+  });
+  document.getElementById('asistencia-anterior').addEventListener('click', () => {
+    asistenciaPage -= 1;
+    renderAsistenciaPage();
+  });
+  document.getElementById('asistencia-siguiente').addEventListener('click', () => {
+    asistenciaPage += 1;
+    renderAsistenciaPage();
+  });
 
   // Mostrar SQL
   document.getElementById('btn-toggle-sql').addEventListener('click', () => {
@@ -835,6 +887,7 @@ function setupEventHandlers() {
 function showLogin() {
   document.getElementById('login-container').style.display = 'flex';
   document.getElementById('app-container').style.display = 'none';
+  window.scrollTo({top: 0, left: 0});
 }
 
 function showDashboard() {
@@ -891,8 +944,18 @@ async function renderDashboardStats() {
   }
 }
 
+function getChartPalette() {
+  const theme = getComputedStyle(document.documentElement);
+  return {
+    text: theme.getPropertyValue('--text-muted').trim(),
+    grid: theme.getPropertyValue('--glass-border').trim(),
+    surface: theme.getPropertyValue('--glass-bg').trim()
+  };
+}
+
 function renderDashboardCharts(rests, resvs, peds) {
   if (!window.Chart) return;
+  const palette = getChartPalette();
   // Gráfico 1: Ingresos Totales por Restaurante (COP)
   const incomeData = rests.map(r => {
     const rPeds = peds.filter(p => p.id_restaurante == r.id_restaurante && p.estado_pedido === 'entregado');
@@ -909,8 +972,8 @@ function renderDashboardCharts(rests, resvs, peds) {
       datasets: [{
         label: 'Ingresos (COP)',
         data: incomeData.map(d => d.total),
-        backgroundColor: 'rgba(245, 158, 11, 0.45)',
-        borderColor: 'rgba(245, 158, 11, 1)',
+        backgroundColor: 'rgba(230, 170, 82, 0.65)',
+        borderColor: '#bf812a',
         borderWidth: 2,
         borderRadius: 8
       }]
@@ -919,8 +982,8 @@ function renderDashboardCharts(rests, resvs, peds) {
       responsive: true,
       maintainAspectRatio: false,
       scales: {
-        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af' } },
-        x: { grid: { display: false }, ticks: { color: '#9ca3af' } }
+        y: { grid: { color: palette.grid }, ticks: { color: palette.text } },
+        x: { grid: { display: false }, ticks: { color: palette.text } }
       },
       plugins: { legend: { display: false } }
     }
@@ -954,21 +1017,17 @@ function renderDashboardCharts(rests, resvs, peds) {
       datasets: [{
         data: Object.values(zonesMap).map(z => z.count),
         backgroundColor: [
-          'rgba(16, 185, 129, 0.5)',
-          'rgba(245, 158, 11, 0.5)',
-          'rgba(59, 130, 246, 0.5)',
-          'rgba(239, 68, 68, 0.5)',
-          'rgba(139, 92, 246, 0.5)'
+          '#7aab7c', '#e6b364', '#80afbb', '#d68f75', '#b6a3bf'
         ],
-        borderColor: 'rgba(255,255,255,0.08)',
-        borderWidth: 1
+        borderColor: palette.surface,
+        borderWidth: 3
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'bottom', labels: { color: '#9ca3af', font: { size: 10 } } }
+        legend: { position: 'bottom', labels: { color: palette.text, font: { size: 10 } } }
       }
     }
   });
@@ -1173,7 +1232,7 @@ async function renderMesas() {
   }
 
   try {
-    const list = await requestAPI('mesas');
+    const [list, restaurants] = await Promise.all([requestAPI('mesas'), requestAPI('restaurantes')]);
     container.innerHTML = '';
 
     const filtered = list.filter(m => m.id_restaurante == restId);
@@ -1188,22 +1247,24 @@ async function renderMesas() {
       card.className = `mesa-card glass ${m.estado}`;
       
       const isAdmin = currentUser.tipo_usuario === 'administrador';
-      const rests = getLS('gt_restaurantes');
-      const r = rests.find(x => x.id_restaurante == restId) || {};
+      const r = restaurants.find(x => x.id_restaurante == restId) || {};
       const isOwner = currentUser.tipo_usuario === 'restaurante' && r.id_propietario == currentUser.id_usuario;
 
-      let deleteButton = '';
+      let actionButtons = '';
       if (isAdmin || isOwner) {
-        deleteButton = `<button class="btn btn-sm btn-danger" style="margin-top: 10px; width: 100%" onclick="deleteMesa(${m.id_mesa})">Eliminar</button>`;
+        actionButtons = `<div class="mesa-actions">
+          <button type="button" class="btn btn-sm btn-secondary" onclick="openMesaModal(${m.id_mesa})" aria-label="Editar ${escapeHTML(m.numero_mesa)}">Editar</button>
+          <button type="button" class="btn btn-sm btn-danger" onclick="deleteMesa(${m.id_mesa})">Eliminar</button>
+        </div>`;
       }
 
       card.innerHTML = `
-        <div class="mesa-table-icon">${m.numero_mesa.split(' ')[1] || m.numero_mesa}</div>
-        <h4>${m.numero_mesa}</h4>
+        <div class="mesa-table-icon">${escapeHTML(m.numero_mesa.split(' ')[1] || m.numero_mesa)}</div>
+        <h4>${escapeHTML(m.numero_mesa)}</h4>
         <p>Capacidad: ${m.capacidad} pers.</p>
-        <p class="role-badge" style="background: rgba(255,255,255,0.05); color: #fff;">${m.ubicacion}</p>
+        <p class="role-badge neutral-badge">${escapeHTML(m.ubicacion)}</p>
         <span class="badge-status ${m.estado}">${m.estado}</span>
-        ${deleteButton}
+        ${actionButtons}
       `;
       container.appendChild(card);
     });
@@ -1213,10 +1274,18 @@ async function renderMesas() {
   }
 }
 
-async function openMesaModal() {
+async function openMesaModal(id = null) {
   const modal = document.getElementById('modal-mesa');
   const select = document.getElementById('mmesa-restaurante');
-  
+  if (!currentUser || !['administrador', 'restaurante'].includes(currentUser.tipo_usuario)) return;
+
+  document.getElementById('form-modal-mesa').reset();
+  document.getElementById('mmesa-id').value = '';
+  document.getElementById('modal-mesa-title').textContent = id ? 'Editar mesa' : 'Agregar Mesa';
+  document.getElementById('btn-save-mesa').textContent = id ? 'Guardar cambios' : 'Agregar Mesa';
+  select.disabled = false;
+
+  try {
   const rests = await requestAPI('restaurantes');
   select.innerHTML = '';
   rests.forEach(r => {
@@ -1233,28 +1302,73 @@ async function openMesaModal() {
     return;
   }
 
-  document.getElementById('form-modal-mesa').reset();
+  const selectedRestaurant = document.getElementById('filter-mesas-restaurante').value;
+  if ([...select.options].some(option => option.value === selectedRestaurant)) select.value = selectedRestaurant;
+  if (id) {
+    const mesas = await requestAPI('mesas');
+    const mesa = mesas.find(item => Number(item.id_mesa) === Number(id));
+    if (!mesa || ![...select.options].some(option => Number(option.value) === Number(mesa.id_restaurante))) {
+      showToast('La mesa no existe o no pertenece a tus restaurantes.', 'warning');
+      return;
+    }
+    document.getElementById('mmesa-id').value = mesa.id_mesa;
+    select.value = mesa.id_restaurante;
+    select.disabled = true;
+    document.getElementById('mmesa-numero').value = mesa.numero_mesa;
+    document.getElementById('mmesa-capacidad').value = mesa.capacidad;
+    document.getElementById('mmesa-ubicacion').value = mesa.ubicacion;
+  }
   modal.classList.add('active');
+  } catch (error) {
+    showToast(error.message, 'danger');
+  }
 }
 
 async function saveMesa(e) {
   e.preventDefault();
-  const id_restaurante = parseInt(document.getElementById('mmesa-restaurante').value);
-  const numero_mesa = document.getElementById('mmesa-numero').value;
-  const capacidad = parseInt(document.getElementById('mmesa-capacidad').value);
-  const ubicacion = document.getElementById('mmesa-ubicacion').value;
+  const id = document.getElementById('mmesa-id').value;
+  const numero_mesa = document.getElementById('mmesa-numero').value.trim();
+  const capacidad = Number(document.getElementById('mmesa-capacidad').value);
+  const ubicacion = document.getElementById('mmesa-ubicacion').value.trim();
+  const button = document.getElementById('btn-save-mesa');
+  if (button.disabled) return;
+  if (!numero_mesa || numero_mesa.length > 20 || !ubicacion || ubicacion.length > 100 || !Number.isInteger(capacidad) || capacidad < 1 || capacidad > 20) {
+    showToast('Revisa el número, la ubicación y la capacidad (entre 1 y 20 personas).', 'warning');
+    return;
+  }
+  button.disabled = true;
 
   try {
-    await requestAPI('mesas', {
-      method: 'POST',
+    const [mesas, restaurants] = await Promise.all([requestAPI('mesas'), requestAPI('restaurantes')]);
+    const original = id ? mesas.find(mesa => Number(mesa.id_mesa) === Number(id)) : null;
+    if (id && !original) throw new Error('La mesa ya no existe. Actualiza el listado.');
+    const id_restaurante = Number(original ? original.id_restaurante : document.getElementById('mmesa-restaurante').value);
+    const restaurant = restaurants.find(item => Number(item.id_restaurante) === id_restaurante);
+    if (!restaurant || !currentUser || !(currentUser.tipo_usuario === 'administrador' || (currentUser.tipo_usuario === 'restaurante' && Number(restaurant.id_propietario) === Number(currentUser.id_usuario)))) {
+      throw new Error('No tienes permiso para administrar mesas de este restaurante.');
+    }
+    if (mesas.some(mesa => Number(mesa.id_restaurante) === id_restaurante && Number(mesa.id_mesa) !== Number(id) && mesa.numero_mesa.trim().toLocaleLowerCase('es') === numero_mesa.toLocaleLowerCase('es'))) {
+      throw new Error('Ya existe una mesa con ese número en el restaurante.');
+    }
+    if (original && capacidad < Number(original.capacidad)) {
+      const reservas = await requestAPI('reservas');
+      if (reservas.some(reserva => Number(reserva.id_mesa) === Number(id) && ['pendiente', 'confirmada'].includes(reserva.estado_reserva) && Number(reserva.cantidad_personas) > capacidad)) {
+        throw new Error('La capacidad no puede ser menor al grupo de una reserva activa de esta mesa.');
+      }
+    }
+    await requestAPI(id ? `mesas/${id}` : 'mesas', {
+      method: id ? 'PUT' : 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ numero_mesa, capacidad, ubicacion, estado: 'disponible', id_restaurante })
+      body: JSON.stringify({ numero_mesa, capacidad, ubicacion, estado: original ? original.estado : 'disponible', id_restaurante })
     });
-    showToast('Mesa creada con éxito.', 'success');
+    showToast(id ? 'Mesa actualizada con éxito.' : 'Mesa creada con éxito.', 'success');
     closeModal('modal-mesa');
-    renderMesas();
+    document.getElementById('filter-mesas-restaurante').value = id_restaurante;
+    await renderMesas();
   } catch (error) {
     showToast(error.message, 'danger');
+  } finally {
+    button.disabled = false;
   }
 }
 
@@ -1273,13 +1387,26 @@ async function deleteMesa(id) {
 // --------------------------------------------------------------------
 // 11. MÓDULO CRUD: RESERVAS
 // --------------------------------------------------------------------
+let reservasList = [];
+let reservasPage = 1;
+let reservasRequest = 0;
+
+function filterReservas() {
+  reservasPage = 1;
+  renderReservasPage();
+}
+
 async function renderReservas() {
   const tbody = document.getElementById('reservas-table-body');
+  const requestId = ++reservasRequest;
+  reservasList = [];
+  renderReservasPage();
   tbody.innerHTML = '<tr><td colspan="7" class="info-text">Cargando reservas...</td></tr>';
+  document.getElementById('reservas-resumen').textContent = 'Cargando reservas…';
 
   try {
     const list = await requestAPI('reservas');
-    tbody.innerHTML = '';
+    if (requestId !== reservasRequest) return;
     
     // Filtrar si no es admin (Clientes ven solo las suyas, propietarios las de sus restaurantes)
     let filtered = list;
@@ -1290,12 +1417,59 @@ async function renderReservas() {
       filtered = list.filter(r => myRests.includes(r.id_restaurante));
     }
 
-    if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" class="info-text">No se encontraron reservas registradas.</td></tr>';
-      return;
-    }
+    reservasList = filtered;
+    renderReservasPage();
+  } catch (error) {
+    if (requestId !== reservasRequest) return;
+    reservasList = [];
+    renderReservasPage();
+    document.getElementById('reservas-resumen').textContent = 'No se pudieron cargar las reservas.';
+    tbody.innerHTML = `<tr><td colspan="7" class="info-text color-danger">Error: ${escapeHTML(error.message)}</td></tr>`;
+  }
+}
 
-    filtered.forEach(r => {
+function renderReservasPage() {
+  const tbody = document.getElementById('reservas-table-body');
+  const normalize = value => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const search = normalize(document.getElementById('reservas-busqueda').value.trim());
+  const status = document.getElementById('reservas-estado').value;
+  const date = document.getElementById('reservas-fecha').value;
+  const pageSize = Number(document.getElementById('reservas-por-pagina').value) || 10;
+  const filtered = reservasList.filter(r => {
+    const matchesStatus = !status || (status === 'activas'
+      ? ['pendiente', 'confirmada'].includes(r.estado_reserva)
+      : r.estado_reserva === status);
+    const matchesDate = !date || String(r.fecha_reserva).slice(0, 10) === date;
+    const text = `${r.nombre_restaurante} ${r.numero_mesa} ${r.ubicacion_mesa} #${r.id_reserva}`;
+    return matchesStatus && matchesDate && (!search || normalize(text).includes(search));
+  }).sort((a, b) => {
+    const dateA = `${String(a.fecha_reserva).slice(0, 10)} ${a.hora_reserva}`;
+    const dateB = `${String(b.fecha_reserva).slice(0, 10)} ${b.hora_reserva}`;
+    return dateB.localeCompare(dateA) || Number(b.id_reserva) - Number(a.id_reserva);
+  });
+
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  reservasPage = Math.min(Math.max(1, reservasPage), pageCount);
+  const start = (reservasPage - 1) * pageSize;
+  const end = Math.min(start + pageSize, filtered.length);
+  const count = filtered.length === reservasList.length ? '' : ` (${reservasList.length} en total)`;
+  document.getElementById('reservas-resumen').textContent = filtered.length
+    ? `Mostrando ${start + 1}–${end} de ${filtered.length} reservas${count}`
+    : `Sin resultados${count}`;
+  document.getElementById('reservas-pagina').textContent = `Página ${reservasPage} de ${pageCount}`;
+  document.getElementById('reservas-anterior').disabled = reservasPage === 1;
+  document.getElementById('reservas-siguiente').disabled = reservasPage === pageCount;
+  tbody.innerHTML = '';
+
+  if (!filtered.length) {
+    const message = reservasList.length
+      ? 'No hay reservas que coincidan. Prueba con otros filtros.'
+      : 'No se encontraron reservas registradas.';
+    tbody.innerHTML = `<tr><td colspan="7" class="info-text">${message}</td></tr>`;
+    return;
+  }
+
+    filtered.slice(start, end).forEach(r => {
       const tr = document.createElement('tr');
       
       let actionButtons = '<div class="table-actions">';
@@ -1321,10 +1495,10 @@ async function renderReservas() {
       actionButtons += '</div>';
 
       tr.innerHTML = `
-        <td><strong>${r.nombre_restaurante}</strong></td>
-        <td>${r.numero_mesa} (${r.ubicacion_mesa})</td>
-        <td>${r.fecha_reserva}</td>
-        <td>${r.hora_reserva}</td>
+        <td><strong>${escapeHTML(r.nombre_restaurante)}</strong></td>
+        <td>${escapeHTML(r.numero_mesa)} (${escapeHTML(r.ubicacion_mesa)})</td>
+        <td>${escapeHTML(String(r.fecha_reserva).slice(0, 10))}</td>
+        <td>${escapeHTML(String(r.hora_reserva).slice(0, 5))}</td>
         <td>${r.cantidad_personas}</td>
         <td><span class="badge-status ${r.estado_reserva}">${r.estado_reserva}</span></td>
         <td>${actionButtons}</td>
@@ -1332,10 +1506,6 @@ async function renderReservas() {
       tbody.appendChild(tr);
     });
     if (window.lucide) lucide.createIcons();
-
-  } catch (error) {
-    tbody.innerHTML = `<tr><td colspan="7" class="info-text color-danger">Error: ${escapeHTML(error.message)}</td></tr>`;
-  }
 }
 
 async function openReservaModal(preSelectedRestId = null, idReserva = null) {
@@ -1792,13 +1962,47 @@ async function executeCheckout() {
   }
 }
 
+let pedidosList = [];
+let pedidosPage = 1;
+let pedidosRequest = 0;
+
+// MySQL devuelve fecha civil; el modo demo también puede devolver un ISO con zona.
+function pedidoFechaLocal(value) {
+  const text = String(value ?? '');
+  if (/(?:Z|[+-]\d{2}:?\d{2})$/i.test(text)) {
+    const date = new Date(text);
+    if (Number.isNaN(date.getTime())) return '';
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/Bogota', year: 'numeric', month: '2-digit', day: '2-digit'
+    }).format(date);
+  }
+  return /^\d{4}-\d{2}-\d{2}/.test(text) ? text.slice(0, 10) : '';
+}
+
+function pedidoOrdenFecha(value) {
+  const text = String(value ?? '');
+  const date = new Date(/(?:Z|[+-]\d{2}:?\d{2})$/i.test(text)
+    ? text : `${text.replace(' ', 'T')}-05:00`);
+  return Number.isNaN(date.getTime()) ? 0 : date.getTime();
+}
+
+function filterPedidos() {
+  pedidosPage = 1;
+  renderPedidosPage();
+}
+
 async function renderPedidosHistorial() {
   const tbody = document.getElementById('pedidos-table-body');
+  const requestId = ++pedidosRequest;
+  const previousPage = pedidosPage;
+  pedidosList = [];
+  renderPedidosPage();
   tbody.innerHTML = '<tr><td colspan="8" class="info-text">Cargando historial...</td></tr>';
+  document.getElementById('pedidos-contador').textContent = 'Cargando pedidos…';
 
   try {
     const list = await requestAPI('pedidos');
-    tbody.innerHTML = '';
+    if (requestId !== pedidosRequest) return;
 
     // Filtrar según rol
     let filtered = list;
@@ -1809,15 +2013,68 @@ async function renderPedidosHistorial() {
       filtered = list.filter(p => myRests.includes(p.id_restaurante));
     }
 
-    if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="8" class="info-text">No has realizado pedidos aún.</td></tr>';
-      return;
-    }
+    pedidosList = filtered;
+    const restaurantSelect = document.getElementById('pedidos-filtro-restaurante');
+    const selectedRestaurant = restaurantSelect.value;
+    const restaurants = new Map(filtered.map(p => [String(p.id_restaurante), p.nombre_restaurante]));
+    restaurantSelect.replaceChildren(new Option('Todos los restaurantes', ''));
+    [...restaurants].sort((a, b) => String(a[1]).localeCompare(String(b[1]), 'es')).forEach(([id, name]) => {
+      restaurantSelect.add(new Option(name, id));
+    });
+    restaurantSelect.value = restaurants.has(selectedRestaurant) ? selectedRestaurant : '';
+    pedidosPage = previousPage;
+    renderPedidosPage();
+  } catch (error) {
+    if (requestId !== pedidosRequest) return;
+    pedidosList = [];
+    renderPedidosPage();
+    document.getElementById('pedidos-contador').textContent = 'No se pudieron cargar los pedidos.';
+    tbody.innerHTML = `<tr><td colspan="8" class="info-text color-danger">Error: ${escapeHTML(error.message)}</td></tr>`;
+  }
+}
 
-    filtered.forEach(p => {
+function renderPedidosPage() {
+  const tbody = document.getElementById('pedidos-table-body');
+  const restaurant = document.getElementById('pedidos-filtro-restaurante').value;
+  const from = document.getElementById('pedidos-desde').value;
+  const to = document.getElementById('pedidos-hasta').value;
+  const pageSize = Number(document.getElementById('pedidos-por-pagina').value) || 10;
+  const invalidRange = from && to && from > to;
+  const filtered = pedidosList.filter(p => {
+    const date = pedidoFechaLocal(p.fecha_pedido);
+    return !invalidRange && (!restaurant || String(p.id_restaurante) === restaurant)
+      && (!from || date >= from) && (!to || date <= to);
+  }).sort((a, b) => pedidoOrdenFecha(b.fecha_pedido) - pedidoOrdenFecha(a.fecha_pedido)
+    || Number(b.id_pedido) - Number(a.id_pedido));
+
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  pedidosPage = Math.min(Math.max(1, pedidosPage), pageCount);
+  const start = (pedidosPage - 1) * pageSize;
+  const end = Math.min(start + pageSize, filtered.length);
+  const restaurantCount = new Set(filtered.map(p => String(p.id_restaurante))).size;
+  document.getElementById('pedidos-contador').textContent = invalidRange
+    ? 'Revisa el rango de fechas'
+    : `${filtered.length} ${filtered.length === 1 ? 'pedido' : 'pedidos'} · ${restaurantCount} ${restaurantCount === 1 ? 'restaurante' : 'restaurantes'}`;
+  const total = filtered.length === pedidosList.length ? '' : ` (${pedidosList.length} en total)`;
+  document.getElementById('pedidos-resumen').textContent = invalidRange ? '' : filtered.length
+    ? `Mostrando ${start + 1}–${end} de ${filtered.length} pedidos${total}`
+    : `Sin resultados${total}`;
+  document.getElementById('pedidos-pagina').textContent = `Página ${pedidosPage} de ${pageCount}`;
+  document.getElementById('pedidos-anterior').disabled = pedidosPage === 1;
+  document.getElementById('pedidos-siguiente').disabled = pedidosPage === pageCount;
+  tbody.innerHTML = '';
+  if (!filtered.length) {
+    const message = invalidRange ? 'La fecha Desde no puede ser posterior a la fecha Hasta.'
+      : pedidosList.length ? 'No hay pedidos para los filtros seleccionados.' : 'No hay pedidos registrados.';
+    tbody.innerHTML = `<tr><td colspan="8" class="info-text">${message}</td></tr>`;
+    return;
+  }
+
+    filtered.slice(start, end).forEach(p => {
       const tr = document.createElement('tr');
       
-      const platosList = p.detalles.map(d => `${d.nombre_plato} (x${d.cantidad})`).join(', ');
+      const platosList = (p.detalles || []).map(d => `${d.nombre_plato} (x${d.cantidad})`).join(', ');
+      const dateLabel = pedidoFechaLocal(p.fecha_pedido).split('-').reverse().join('/');
 
       let actionButtons = '';
       if (currentUser.tipo_usuario !== 'cliente' && p.estado_pedido === 'en preparacion') {
@@ -1829,21 +2086,18 @@ async function renderPedidosHistorial() {
       }
 
       tr.innerHTML = `
-        <td><strong>#${p.id_pedido.toString().slice(-4)}</strong></td>
-        <td>${p.nombre_restaurante}</td>
-        <td>${new Date(p.fecha_pedido).toLocaleDateString()}</td>
-        <td><span class="role-badge" style="background: rgba(255,255,255,0.05); color: #fff;">${p.tipo_servicio}</span></td>
-        <td><strong>$${p.total_pago.toLocaleString()} COP</strong></td>
-        <td><span class="badge-status ${p.estado_pedido.replace(' ', '-')}">${p.estado_pedido}</span></td>
-        <td><span style="font-size: 0.8rem; color: var(--text-muted);">${platosList}</span></td>
+        <td><strong>#${escapeHTML(p.id_pedido)}</strong></td>
+        <td>${escapeHTML(p.nombre_restaurante)}</td>
+        <td>${escapeHTML(dateLabel)}</td>
+        <td><span class="role-badge neutral-badge">${escapeHTML(p.tipo_servicio)}</span></td>
+        <td><strong>$${Number(p.total_pago).toLocaleString('es-CO')} COP</strong></td>
+        <td><span class="badge-status ${escapeHTML(p.estado_pedido.replace(' ', '-'))}">${escapeHTML(p.estado_pedido)}</span></td>
+        <td><span class="pedidos-platos">${escapeHTML(platosList)}</span></td>
         <td>${actionButtons}</td>
       `;
       tbody.appendChild(tr);
     });
 
-  } catch (error) {
-    tbody.innerHTML = `<tr><td colspan="8" class="info-text color-danger">Error: ${escapeHTML(error.message)}</td></tr>`;
-  }
 }
 
 async function updatePedidoStatus(id, newStatus) {
@@ -2066,6 +2320,7 @@ async function renderReport(id) {
 
 function renderReportChart(id, data) {
   if (!window.Chart) return;
+  const palette = getChartPalette();
   const chartCard = document.getElementById('report-chart-card');
   chartCard.style.display = 'block';
 
@@ -2099,8 +2354,8 @@ function renderReportChart(id, data) {
       datasets: [{
         label: labelText,
         data: values,
-        backgroundColor: 'rgba(16, 185, 129, 0.45)',
-        borderColor: 'rgba(16, 185, 129, 1)',
+        backgroundColor: 'rgba(71, 139, 86, 0.55)',
+        borderColor: '#26734e',
         borderWidth: 2,
         borderRadius: 8
       }]
@@ -2109,8 +2364,8 @@ function renderReportChart(id, data) {
       responsive: true,
       maintainAspectRatio: false,
       scales: {
-        y: { ticks: { color: '#9ca3af' } },
-        x: { ticks: { color: '#9ca3af' } }
+        y: { grid: { color: palette.grid }, ticks: { color: palette.text } },
+        x: { grid: { display: false }, ticks: { color: palette.text } }
       },
       plugins: {
         legend: { display: false }
@@ -2238,7 +2493,7 @@ async function generateDocumentPDF(type) {
 
     previewCanvas.innerHTML = `
       <div class="invoice-box" style="text-align: center; border: 2px dashed #f59e0b; padding: 20px;">
-        <h2 style="color: #f59e0b; font-size: 1.5rem; margin-bottom: 10px;">COMPROBANTE DE RESERVA</h2>
+        <h2 style="color: var(--primary); font-size: 1.5rem; margin-bottom: 10px;">COMPROBANTE DE RESERVA</h2>
         <p style="font-size: 0.85rem; color: #6b7280; margin-bottom: 20px;">Código Único: <strong>RES-${res.id_reserva}</strong></p>
         
         <table style="width: 100%; border-collapse: collapse; text-align: left; margin-bottom: 20px;">
@@ -2268,11 +2523,11 @@ async function generateDocumentPDF(type) {
           </tr>
           <tr>
             <td style="padding: 8px; border-bottom: 1px solid #f3f4f6; font-weight: bold;">Estado actual:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #f3f4f6; color: #10b981; font-weight: bold;">${res.estado_reserva.toUpperCase()}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #f3f4f6; color: var(--secondary); font-weight: bold;">${res.estado_reserva.toUpperCase()}</td>
           </tr>
         </table>
         
-        <p style="font-size: 0.8rem; color: #9ca3af; margin-top: 20px;">Por favor, preséntate 10 minutos antes en el establecimiento.</p>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 20px;">Por favor, preséntate 10 minutos antes en el establecimiento.</p>
       </div>
     `;
 
@@ -2309,7 +2564,7 @@ async function generateDocumentPDF(type) {
             <td colspan="2">
               <table style="width: 100%;">
                 <tr>
-                  <td class="title" style="color: #f59e0b;">GASTROTURISMO</td>
+                  <td class="title" style="color: var(--primary);">GASTROTURISMO</td>
                   <td style="text-align: right;">
                     Factura #: FACT-${ped.id_pedido.toString().slice(-6)}<br>
                     Fecha: ${new Date(ped.fecha_pedido).toLocaleDateString()}<br>
@@ -2345,7 +2600,7 @@ async function generateDocumentPDF(type) {
             <td style="text-align: right; padding-top: 20px;">
                Subtotal: $${subtotal.toLocaleString()} COP<br>
                Impoconsumo (8%): $${iva.toLocaleString()} COP<br>
-               <span style="font-size: 1.2rem; font-weight: bold; color: #10b981;">Total: $${ped.total_pago.toLocaleString()} COP</span>
+               <span style="font-size: 1.2rem; font-weight: bold; color: var(--secondary);">Total: $${ped.total_pago.toLocaleString()} COP</span>
             </td>
           </tr>
         </table>
@@ -2653,19 +2908,99 @@ async function loadAsistenciaSection() {
     dateInput.value = bogotaNow().slice(0,16).replace(' ', 'T');
     dateInput.max = bogotaNow().slice(0,16).replace(' ', 'T');
     await updateAsistenciaReservas();
-    const visits = await requestAPI('visitas');
-    const tbody = document.getElementById('asistencia-tbody');
-    tbody.replaceChildren();
-    for (const visit of visits) {
-      const tr = document.createElement('tr');
-      for (const value of [String(visit.fecha_ingreso).replace('T',' ').slice(0,19), visit.nombre_restaurante, visit.id_reserva ? `#${visit.id_reserva}` : 'Sin reserva', visit.cantidad_personas]) {
-        const td = document.createElement('td'); td.textContent = value; tr.appendChild(td);
-      }
-      tbody.appendChild(tr);
-    }
-    if (!visits.length) tbody.innerHTML = '<tr><td colspan="4">Todavía no hay asistencias registradas.</td></tr>';
+    await loadAsistenciaHistorial();
     document.getElementById('asistencia-source').textContent = isConnectedToDB ? 'Asistencia registrada en MySQL.' : 'Demostración académica: las modificaciones se conservan en este navegador.';
   } catch (error) { showToast(error.message, 'danger'); }
+}
+
+let asistenciaList = [];
+let asistenciaPage = 1;
+let asistenciaRequest = 0;
+
+function filterAsistencia() {
+  asistenciaPage = 1;
+  renderAsistenciaPage();
+}
+
+async function loadAsistenciaHistorial() {
+  const tbody = document.getElementById('asistencia-tbody');
+  const requestId = ++asistenciaRequest;
+  const previousPage = asistenciaPage;
+  asistenciaList = [];
+  renderAsistenciaPage();
+  tbody.innerHTML = '<tr><td colspan="4" class="info-text">Cargando asistencia...</td></tr>';
+  document.getElementById('asistencia-contador').textContent = 'Cargando visitas…';
+  try {
+    const visits = await requestAPI('visitas');
+    if (requestId !== asistenciaRequest) return;
+    asistenciaList = visits;
+    const select = document.getElementById('asistencia-filtro-restaurante');
+    const selectedRestaurant = select.value;
+    const restaurants = new Map(visits.map(v => [String(v.id_restaurante), v.nombre_restaurante]));
+    select.replaceChildren(new Option('Todos los restaurantes', ''));
+    [...restaurants].sort((a, b) => String(a[1]).localeCompare(String(b[1]), 'es')).forEach(([id, name]) => {
+      select.add(new Option(name, id));
+    });
+    select.value = restaurants.has(selectedRestaurant) ? selectedRestaurant : '';
+    asistenciaPage = previousPage;
+    renderAsistenciaPage();
+  } catch (error) {
+    if (requestId !== asistenciaRequest) return;
+    asistenciaList = [];
+    renderAsistenciaPage();
+    document.getElementById('asistencia-contador').textContent = 'No se pudo cargar la asistencia.';
+    tbody.innerHTML = `<tr><td colspan="4" class="info-text color-danger">Error: ${escapeHTML(error.message)}</td></tr>`;
+  }
+}
+
+function renderAsistenciaPage() {
+  const tbody = document.getElementById('asistencia-tbody');
+  const restaurant = document.getElementById('asistencia-filtro-restaurante').value;
+  const from = document.getElementById('asistencia-desde').value;
+  const to = document.getElementById('asistencia-hasta').value;
+  const pageSize = Number(document.getElementById('asistencia-por-pagina').value) || 10;
+  const invalidRange = from && to && from > to;
+  const filtered = asistenciaList.filter(visit => {
+    const date = pedidoFechaLocal(visit.fecha_ingreso);
+    return !invalidRange && (!restaurant || String(visit.id_restaurante) === restaurant)
+      && (!from || date >= from) && (!to || date <= to);
+  }).sort((a, b) => pedidoOrdenFecha(b.fecha_ingreso) - pedidoOrdenFecha(a.fecha_ingreso)
+    || Number(b.id_visita) - Number(a.id_visita));
+
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  asistenciaPage = Math.min(Math.max(1, asistenciaPage), pageCount);
+  const start = (asistenciaPage - 1) * pageSize;
+  const end = Math.min(start + pageSize, filtered.length);
+  const people = filtered.reduce((sum, visit) => sum + Number(visit.cantidad_personas), 0);
+  document.getElementById('asistencia-contador').textContent = invalidRange ? 'Revisa el rango de fechas'
+    : `${filtered.length.toLocaleString('es-CO')} ${filtered.length === 1 ? 'visita' : 'visitas'} · ${people.toLocaleString('es-CO')} ${people === 1 ? 'persona' : 'personas'}`;
+  const total = filtered.length === asistenciaList.length ? '' : ` (${asistenciaList.length} en total)`;
+  document.getElementById('asistencia-resumen').textContent = invalidRange ? '' : filtered.length
+    ? `Mostrando ${start + 1}–${end} de ${filtered.length} visitas${total}` : `Sin resultados${total}`;
+  document.getElementById('asistencia-pagina').textContent = `Página ${asistenciaPage} de ${pageCount}`;
+  document.getElementById('asistencia-anterior').disabled = asistenciaPage === 1;
+  document.getElementById('asistencia-siguiente').disabled = asistenciaPage === pageCount;
+  tbody.replaceChildren();
+  if (!filtered.length) {
+    const message = invalidRange ? 'La fecha Desde no puede ser posterior a la fecha Hasta.'
+      : asistenciaList.length ? 'No hay visitas para los filtros seleccionados.' : 'Todavía no hay asistencias registradas.';
+    tbody.innerHTML = `<tr><td colspan="4" class="info-text">${message}</td></tr>`;
+    return;
+  }
+  for (const visit of filtered.slice(start, end)) {
+    const date = pedidoFechaLocal(visit.fecha_ingreso).split('-').reverse().join('/');
+    const timestamp = String(visit.fecha_ingreso);
+    const time = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(timestamp)
+      ? new Intl.DateTimeFormat('es-CO', {timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit', hourCycle: 'h23'}).format(new Date(timestamp))
+      : timestamp.slice(11, 16);
+    const tr = document.createElement('tr');
+    for (const value of [`${date} · ${time}`, visit.nombre_restaurante, visit.id_reserva ? `#${visit.id_reserva}` : 'Sin reserva', visit.cantidad_personas]) {
+      const td = document.createElement('td');
+      td.textContent = value;
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
 }
 
 async function updateAsistenciaReservas() {

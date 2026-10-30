@@ -2,6 +2,8 @@
 
 Proyecto final de Bases de Datos I, únicamente caso de restaurantes.
 
+El listado vigente de tareas terminadas, parciales y pendientes está en [Seguimiento del proyecto](docs/Seguimiento_proyecto.md). Se actualiza al cerrar cada mejora.
+
 ## Ensayar en este equipo
 
 1. Abre esta carpeta en Antigravity.

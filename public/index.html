@@ -22,7 +22,7 @@
     <div class="login-card glass">
       <div class="login-header">
         <div class="logo-area">
-          <i data-lucide="chef-hat" class="logo-icon animate-pulse"></i>
+          <i data-lucide="chef-hat" class="logo-icon"></i>
           <h1>GastroTurismo</h1>
         </div>
         <p class="subtitle">Eje Cafetero Gastronómico & Turístico</p>
@@ -48,7 +48,14 @@
             </div>
           </div>
           <button type="submit" class="btn btn-primary btn-block">Ingresar al Sistema</button>
-          <p class="demo-access">Demostración académica: <strong>admin@gastroturismo.example</strong><br>Contraseña: <strong>Gastro2026!</strong><br>Datos ficticios coherentes; esta versión conserva aparte los datos de demostraciones anteriores.</p>
+          <div class="demo-access">
+            <span class="demo-access-title">Demostración académica</span>
+            <div class="demo-credentials">
+              <span>Correo</span><strong>admin@gastroturismo.example</strong>
+              <span>Contraseña</span><strong>Gastro2026!</strong>
+            </div>
+            <p>Datos ficticios coherentes; esta versión conserva aparte los datos de demostraciones anteriores.</p>
+          </div>
           <p class="auth-toggle">¿No tienes cuenta? <a href="#" id="go-to-register">Regístrate como Cliente</a></p>
         </form>
 
@@ -106,6 +113,7 @@
         </span>
       </div>
     </div>
+    <a class="login-photo-credit" href="https://www.valledelcocora.com.co/w/producto/restaurante-bosques-de-cocora-donde-juanb/" target="_blank" rel="noopener noreferrer">Fotografía: Bosques de Cocora · Quindío</a>
   </div>
 
   <!-- ==========================================
@@ -288,12 +296,38 @@
       <!-- SECCIÓN: RESERVAS -->
       <section id="section-reservas" class="content-section">
         <div class="action-header">
-          <h3>Mis Reservas y Agendamientos</h3>
+          <div>
+            <h3>Mis Reservas y Agendamientos</h3>
+            <p class="reservas-subtitle">Consulta tu agenda y encuentra cada reserva sin recorrer todo el historial.</p>
+          </div>
           <button class="btn btn-primary" id="btn-new-reserva">
             <i data-lucide="calendar"></i> Crear Nueva Reserva
           </button>
         </div>
         
+        <div class="reservas-filters glass" role="group" aria-label="Filtros de reservas">
+          <div class="reservas-search">
+            <label for="reservas-busqueda">Buscar reserva</label>
+            <input id="reservas-busqueda" type="search" class="form-control" placeholder="Restaurante, mesa o número de reserva…">
+          </div>
+          <div>
+            <label for="reservas-estado">Estado</label>
+            <select id="reservas-estado" class="form-control">
+              <option value="">Todos los estados</option>
+              <option value="activas">Activas (pendientes y confirmadas)</option>
+              <option value="pendiente">Pendientes</option>
+              <option value="confirmada">Confirmadas</option>
+              <option value="finalizada">Finalizadas</option>
+              <option value="cancelada">Canceladas</option>
+            </select>
+          </div>
+          <div>
+            <label for="reservas-fecha">Fecha</label>
+            <input id="reservas-fecha" type="date" class="form-control">
+          </div>
+          <button id="reservas-limpiar" type="button" class="btn btn-secondary">Limpiar filtros</button>
+        </div>
+
         <div class="table-responsive glass">
           <table class="data-table">
             <thead>
@@ -311,6 +345,22 @@
               <!-- Inyectado dinámicamente -->
             </tbody>
           </table>
+        </div>
+        <div class="reservas-pagination">
+          <p id="reservas-resumen" role="status" aria-live="polite"></p>
+          <div class="reservas-page-size">
+            <label for="reservas-por-pagina">Por página</label>
+            <select id="reservas-por-pagina" class="form-control">
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
+          </div>
+          <nav class="reservas-page-buttons" aria-label="Páginas de reservas">
+            <button id="reservas-anterior" type="button" class="btn btn-secondary" disabled>Anterior</button>
+            <span id="reservas-pagina">Página 1 de 1</span>
+            <button id="reservas-siguiente" type="button" class="btn btn-secondary" disabled>Siguiente</button>
+          </nav>
         </div>
       </section>
 
@@ -381,7 +431,30 @@
         </div>
 
         <div class="historial-pedidos-container glass">
-          <h3>Historial de Pedidos Recientes</h3>
+          <div class="pedidos-history-header">
+            <div>
+              <h3>Historial de pedidos</h3>
+              <p class="reservas-subtitle">Del más reciente al más antiguo. Para consultar un día, usa la misma fecha en Desde y Hasta.</p>
+            </div>
+            <p id="pedidos-contador" class="pedidos-counter" role="status" aria-live="polite"></p>
+          </div>
+          <div class="pedidos-filters" role="group" aria-label="Filtros del historial de pedidos">
+            <div>
+              <label for="pedidos-filtro-restaurante">Restaurante del pedido</label>
+              <select id="pedidos-filtro-restaurante" class="form-control">
+                <option value="">Todos los restaurantes</option>
+              </select>
+            </div>
+            <div>
+              <label for="pedidos-desde">Desde</label>
+              <input id="pedidos-desde" type="date" class="form-control">
+            </div>
+            <div>
+              <label for="pedidos-hasta">Hasta</label>
+              <input id="pedidos-hasta" type="date" class="form-control">
+            </div>
+            <button id="pedidos-limpiar" type="button" class="btn btn-secondary">Limpiar filtros</button>
+          </div>
           <div class="table-responsive">
             <table class="data-table">
               <thead>
@@ -400,6 +473,22 @@
                 <!-- Inyectado dinámicamente -->
               </tbody>
             </table>
+          </div>
+          <div class="reservas-pagination">
+            <p id="pedidos-resumen"></p>
+            <div class="reservas-page-size">
+              <label for="pedidos-por-pagina">Pedidos por página</label>
+              <select id="pedidos-por-pagina" class="form-control">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+              </select>
+            </div>
+            <nav class="reservas-page-buttons" aria-label="Páginas de pedidos">
+              <button id="pedidos-anterior" type="button" class="btn btn-secondary" disabled>Anterior</button>
+              <span id="pedidos-pagina">Página 1 de 1</span>
+              <button id="pedidos-siguiente" type="button" class="btn btn-secondary" disabled>Siguiente</button>
+            </nav>
           </div>
         </div>
       </section>
@@ -455,7 +544,44 @@
           <button type="submit" class="btn btn-primary">Registrar asistencia</button>
         </form>
         <p id="asistencia-source" class="info-text"></p>
-        <div class="table-responsive glass"><table class="data-table"><thead><tr><th>Ingreso</th><th>Restaurante</th><th>Reserva</th><th>Personas</th></tr></thead><tbody id="asistencia-tbody"></tbody></table></div>
+        <div class="asistencia-history glass">
+          <div class="pedidos-history-header">
+            <div>
+              <h3>Historial de asistencia</h3>
+              <p class="reservas-subtitle">Llegadas más recientes primero. Una visita puede incluir varias personas.</p>
+            </div>
+            <p id="asistencia-contador" class="pedidos-counter" role="status" aria-live="polite"></p>
+          </div>
+          <div class="pedidos-filters" role="group" aria-label="Filtros del historial de asistencia">
+            <div>
+              <label for="asistencia-filtro-restaurante">Restaurante de la visita</label>
+              <select id="asistencia-filtro-restaurante" class="form-control"><option value="">Todos los restaurantes</option></select>
+            </div>
+            <div><label for="asistencia-desde">Desde</label><input id="asistencia-desde" type="date" class="form-control"></div>
+            <div><label for="asistencia-hasta">Hasta</label><input id="asistencia-hasta" type="date" class="form-control"></div>
+            <button id="asistencia-limpiar" type="button" class="btn btn-secondary">Limpiar filtros</button>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead><tr><th>Ingreso (Colombia)</th><th>Restaurante</th><th>Reserva</th><th>Personas</th></tr></thead>
+              <tbody id="asistencia-tbody"></tbody>
+            </table>
+          </div>
+          <div class="reservas-pagination">
+            <p id="asistencia-resumen"></p>
+            <div class="reservas-page-size">
+              <label for="asistencia-por-pagina">Visitas por página</label>
+              <select id="asistencia-por-pagina" class="form-control">
+                <option value="10">10</option><option value="20">20</option><option value="50">50</option>
+              </select>
+            </div>
+            <nav class="reservas-page-buttons" aria-label="Páginas de asistencia">
+              <button id="asistencia-anterior" type="button" class="btn btn-secondary" disabled>Anterior</button>
+              <span id="asistencia-pagina">Página 1 de 1</span>
+              <button id="asistencia-siguiente" type="button" class="btn btn-secondary" disabled>Siguiente</button>
+            </nav>
+          </div>
+        </div>
       </section>
 
       <!-- SECCIÓN: REPORTES (MÍNIMO 10) -->
@@ -740,17 +866,18 @@
   <div class="modal-backdrop" id="modal-mesa">
     <div class="modal-card glass">
       <div class="modal-header">
-        <h3>Agregar Mesa</h3>
+        <h3 id="modal-mesa-title">Agregar Mesa</h3>
         <button class="close-btn" onclick="closeModal('modal-mesa')">&times;</button>
       </div>
       <form id="form-modal-mesa">
+        <input type="hidden" id="mmesa-id">
         <div class="form-group">
           <label for="mmesa-restaurante">Restaurante</label>
           <select id="mmesa-restaurante" required class="form-control"></select>
         </div>
         <div class="form-group">
           <label for="mmesa-numero">Número de Mesa</label>
-          <input type="text" id="mmesa-numero" required placeholder="Ej: Mesa 104" class="form-control">
+          <input type="text" id="mmesa-numero" required maxlength="20" placeholder="Ej: Mesa 104" class="form-control">
         </div>
         <div class="form-group">
           <label for="mmesa-capacidad">Capacidad de Comensales</label>
@@ -758,11 +885,11 @@
         </div>
         <div class="form-group">
           <label for="mmesa-ubicacion">Ubicación física en el local</label>
-          <input type="text" id="mmesa-ubicacion" required placeholder="Ej: Terraza Mirador" class="form-control">
+          <input type="text" id="mmesa-ubicacion" required maxlength="100" placeholder="Ej: Terraza Mirador" class="form-control">
         </div>
         <div class="modal-actions">
           <button type="button" class="btn btn-secondary" onclick="closeModal('modal-mesa')">Cancelar</button>
-          <button type="submit" class="btn btn-success">Agregar Mesa</button>
+          <button type="submit" class="btn btn-success" id="btn-save-mesa">Agregar Mesa</button>
         </div>
       </form>
     </div>

@@ -1,5 +1,7 @@
 # Checklist del proyecto final — GastroTurismo
 
+> Revisión histórica del 27 de octubre. El listado vigente, con los avances del 29 de octubre y sus pendientes, está en [Seguimiento del proyecto](Seguimiento_proyecto.md).
+
 Revisión: 27 de octubre de 2026. Proyecto auditado: C:\Users\Jaider\Desktop\Bases de datos (Antigravity). Fuente vigente: C:\Users\Jaider\Desktop\Nuevo Semestres\semestre 6\Bases de datos 1\Proy final\Proyecto final BD1 - 2026-2.pdf, 7 páginas, 275209 bytes.
 
 Estados: CUMPLE = evidencia en código y/o prueba; PARCIAL = existe pero falta terminar o corregir; FALTA = no se encontró implementación; EXTERNO = requiere evidencia del grupo o de la profesora.
