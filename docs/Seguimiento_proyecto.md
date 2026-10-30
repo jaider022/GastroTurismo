@@ -1,6 +1,6 @@
 # Seguimiento del proyecto final — GastroTurismo
 
-**Versión 2 — 29 de octubre de 2026.** Este es el listado vigente para continuar y marcar avances. Sustituye como seguimiento al checklist del 27 de octubre, que se conserva como revisión histórica.
+**Versión 3 — 29 de octubre de 2026.** Este es el listado vigente para continuar y marcar avances. Sustituye como seguimiento al checklist del 27 de octubre, que se conserva como revisión histórica.
 
 Proyecto revisado: la carpeta **Bases de datos** del escritorio, abierta en Antigravity. Los avances de la copia separada de Documents no se cuentan como terminados en este proyecto.
 
@@ -42,7 +42,7 @@ La conexión con MySQL se deja **para después por indicación del usuario**. El
 | 20 | 🟡 | Notificaciones y recordatorios | Existe aviso al crear una reserva. Faltan recordatorios programados y completar permisos de lectura/marcado. |
 | 21 | 🟡 | Servidor local y MySQL | La aplicación responde en localhost:3001 en modo demo. Falta comprobar conexión MySQL y ejecutar pruebas con la base académica. No se arrancó MySQL en esta revisión. |
 | 22 | ☐ | Documento final | No se encontró un informe completo en la plantilla exigida entre los archivos revisados. Falta desarrollar y revisar el documento con integrantes, profesora, modelos, requisitos y evidencias. |
-| 23 | 🟡 | Guardar los últimos avances en GitHub | Hay repositorio local y seguimiento de `origin/main`. Los cambios recientes de interfaz, foto y documentación siguen sin registrar en un nuevo commit; falta guardarlos y comprobar su publicación. |
+| 23 | ✅ | Guardar los últimos avances en GitHub | Avance guardado y publicado en `jaider022/GastroTurismo`, rama `main`. El commit `735f88d` contiene el tema, fotografía, filtros, edición de mesas, pruebas y documentación. Se comprobó que la revisión local coincidiera con la remota. Credenciales y configuración exclusiva del equipo permanecen excluidas. |
 | 24 | ☐ | Aprobación y sustentación | Falta dejar constancia de aprobación de requisitos por la profesora y preparar/practicar la explicación de ambos integrantes. La asesoría y las preguntas preparadas son avances, no una sustentación realizada. |
 | 25 | 🟡 | Pruebas finales | Pasaron 24 pruebas base y después **5 pruebas específicas de edición de mesas**. También se comprobó su formulario y guardado en demo. Faltan pruebas completas por rol, cuatro tablas, reservas, documentos y reportes contra MySQL. |
 
@@ -55,7 +55,7 @@ La conexión con MySQL se deja **para después por indicación del usuario**. El
 5. **18, 19 y 20: experiencias, planes/pagos y recordatorios**, según el alcance académico acordado.
 6. **16 y 22: modelos y documento**, ajustados a lo que quede realmente implementado.
 7. **21 y 25: conexión y prueba integral**, en la jornada que se acuerde; después revisión de reportes y cierre de entrega.
-8. **23 y 24: publicación del avance y preparación de la sustentación**, actualizando evidencias durante el trabajo.
+8. **23: avance publicado en GitHub.** Sigue **24: preparación de la sustentación**, actualizando evidencias durante el trabajo. Los cambios nuevos deberán volver a guardarse.
 
 ## Verificación de esta revisión
 
@@ -79,5 +79,6 @@ La conexión con MySQL se deja **para después por indicación del usuario**. El
 |---|---|---|
 | 1 | 29/10/2026 | Listado inicial actualizado, pendientes diferenciados y 24 pruebas aisladas aprobadas. |
 | 2 | 29/10/2026 | Punto 08 terminado en pantalla, 5 pruebas nuevas aprobadas y guardado en modo demo comprobado. Punto 21 actualizado: servidor disponible, MySQL pendiente. |
+| 3 | 29/10/2026 | Punto 23 completado: avance publicado en GitHub y revisión local/remota coincidente. Se conserva pendiente la conexión y prueba de MySQL. |
 
 Al terminar una tarea se conserva su ID, se actualiza su estado con la comprobación realizada y se vuelve a mostrar el listado vigente al usuario. No se marca terminado lo que solo esté propuesto o exista en otra copia del proyecto.
