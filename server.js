@@ -726,26 +726,45 @@ app.post('/api/pagos', checkDbConnection, async (req, res) => {
 // --------------------------------------------------------------------
 // ENDPOINT NOTIFICACIONES
 // --------------------------------------------------------------------
-app.get('/api/notificaciones/:userId', checkDbConnection, async (req, res) => {
-  const { userId } = req.params;
+app.get('/api/notificaciones/:userId', requireSession, checkDbConnection, async (req, res) => {
+  const userId = Number(req.params.userId);
+  if (!/^[1-9]\d*$/.test(req.params.userId) || !positiveInteger(userId)) {
+    return res.status(400).json({ error: 'El usuario debe tener un identificador válido.' });
+  }
+  if (userId !== Number(req.user.id_usuario)) {
+    return res.status(403).json({ error: 'Solo puedes consultar tus propias notificaciones.' });
+  }
   try {
     const [rows] = await dbConnection.query(
-      'SELECT * FROM notificaciones WHERE id_usuario = ? ORDER BY fecha_envio DESC',
-      [userId]
+      'SELECT * FROM notificaciones WHERE id_usuario = ? ORDER BY fecha_envio DESC, id_notificacion DESC',
+      [req.user.id_usuario]
     );
     res.json(rows);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (_) {
+    res.status(500).json({ error: 'No se pudieron consultar las notificaciones.' });
   }
 });
 
-app.put('/api/notificaciones/leer/:id', checkDbConnection, async (req, res) => {
-  const { id } = req.params;
+app.put('/api/notificaciones/leer/:id', requireSession, checkDbConnection, async (req, res) => {
+  const id = Number(req.params.id);
+  if (!/^[1-9]\d*$/.test(req.params.id) || !positiveInteger(id)) {
+    return res.status(400).json({ error: 'La notificación debe tener un identificador válido.' });
+  }
   try {
-    await dbConnection.query('UPDATE notificaciones SET leido = TRUE WHERE id_notificacion = ?', [id]);
+    const params = [id, req.user.id_usuario];
+    const [result] = await dbConnection.query(
+      'UPDATE notificaciones SET leido = TRUE WHERE id_notificacion = ? AND id_usuario = ?', params
+    );
+    if (!result.affectedRows) {
+      // Algunos clientes cuentan solo cambios: una notificación propia ya leída sigue siendo válida.
+      const [existing] = await dbConnection.query(
+        'SELECT id_notificacion FROM notificaciones WHERE id_notificacion = ? AND id_usuario = ? LIMIT 1', params
+      );
+      if (!existing.length) return res.status(404).json({ error: 'La notificación no está disponible.' });
+    }
     res.json({ message: 'Notificación marcada como leída.' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (_) {
+    res.status(500).json({ error: 'No se pudo marcar la notificación como leída.' });
   }
 });
 
@@ -865,9 +884,15 @@ app.get('/api/reportes/9', checkDbConnection, async (req, res) => {
     const [rows] = await dbConnection.query(`
       SELECT u.nombre AS 'Cliente', u.correo AS 'Email', COUNT(r.id_reserva) AS 'Total Reservas' 
       FROM usuarios u INNER JOIN reservas r ON u.id_usuario = r.id_usuario 
+      WHERE u.tipo_usuario = 'cliente'
       GROUP BY u.id_usuario, u.nombre, u.correo 
       HAVING COUNT(r.id_reserva) > (
-          SELECT AVG(total_res) FROM (SELECT COUNT(id_reserva) AS total_res FROM reservas GROUP BY id_usuario) AS sub
+          SELECT AVG(total_res) FROM (
+              SELECT COUNT(r2.id_reserva) AS total_res
+              FROM usuarios u2 INNER JOIN reservas r2 ON u2.id_usuario = r2.id_usuario
+              WHERE u2.tipo_usuario = 'cliente'
+              GROUP BY u2.id_usuario
+          ) AS sub
       ) ORDER BY \`Total Reservas\` DESC
     `);
     res.json(rows);

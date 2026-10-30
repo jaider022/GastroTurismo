@@ -219,6 +219,8 @@ function simulateLocalStorageAPI(endpoint, options = {}) {
         return { message: 'Actualizado' };
       }
       if (method === 'DELETE') {
+        const used = getLS('gt_detalle_pedidos').some(d => d.id_plato == param) || getLS('gt_pedidos').some(p => (p.detalles || []).some(d => d.id_plato == param));
+        if (used) throw new Error('Este plato tiene pedidos registrados. Puedes marcarlo como no disponible para conservar el historial.');
         platos = platos.filter(p => p.id_plato != param);
         setLS('gt_platos', platos);
         return { message: 'Eliminado' };
@@ -409,17 +411,22 @@ function simulateLocalStorageAPI(endpoint, options = {}) {
 
     case 'notificaciones':
       let notifs = getLS('gt_notificaciones');
-      if (method === 'GET') {
-        // param es id_usuario
-        return notifs.filter(n => n.id_usuario == param).sort((a,b) => b.fecha_envio.localeCompare(a.fecha_envio));
+      if (!currentUser) throw new Error('Debes iniciar sesión.');
+      if (method === 'GET' && parts.length === 2) {
+        const userId = positiveRecordId(param);
+        if (!userId) throw new Error('Usuario no válido.');
+        if (userId !== Number(currentUser.id_usuario)) throw new Error('Solo puedes consultar tus notificaciones.');
+        return notifs.filter(n => Number(n.id_usuario) === userId).sort(compareNotifications);
       }
-      if (parts[1] === 'leer') {
-        const targetId = parts[2];
-        notifs = notifs.map(n => n.id_notificacion == targetId ? { ...n, leido: true } : n);
+      if (method === 'PUT' && parts[1] === 'leer' && parts.length === 3) {
+        const targetId = positiveRecordId(parts[2]);
+        if (!targetId) throw new Error('Notificación no válida.');
+        if (!notifs.some(n => Number(n.id_notificacion) === targetId && Number(n.id_usuario) === Number(currentUser.id_usuario))) throw new Error('No se encontró la notificación.');
+        notifs = notifs.map(n => Number(n.id_notificacion) === targetId && Number(n.id_usuario) === Number(currentUser.id_usuario) ? { ...n, leido: true } : n);
         setLS('gt_notificaciones', notifs);
         return { message: 'Leida' };
       }
-      break;
+      throw new Error('Operación de notificaciones no válida.');
 
     case 'visitas':
       return simulateVisitas(method, body);
@@ -448,7 +455,7 @@ function calculateMockReport(reportId) {
   switch (parseInt(reportId)) {
     case 1:
       // Directorio completo restaurantes
-      return rests.map(r => ({
+      return [...rests].sort((a,b) => a.nombre.localeCompare(b.nombre, 'es')).map(r => ({
         Restaurante: r.nombre,
         Direccion: r.direccion,
         Telefono: r.telefono,
@@ -457,18 +464,18 @@ function calculateMockReport(reportId) {
       }));
     case 2:
       // Clientes registrados
-      return users.filter(u => u.tipo_usuario === 'cliente').map(u => ({
+      return users.filter(u => u.tipo_usuario === 'cliente').sort((a,b) => String(b.fecha_registro || '').localeCompare(String(a.fecha_registro || ''))).map(u => ({
         Cliente: u.nombre,
         Email: u.correo,
-        Celular: u.telefono || 'N/A',
-        Registro: u.fecha_registro ? u.fecha_registro.split('T')[0] : 'Sin fecha'
+        Celular: u.telefono,
+        Registro: u.fecha_registro ? u.fecha_registro.slice(0, 10) : null
       }));
     case 3:
       // Platos disponibles
-      return platos.filter(p => p.disponibilidad).map(p => ({
+      return platos.filter(p => Number(p.disponibilidad) === 1).sort((a,b) => Number(a.precio) - Number(b.precio)).map(p => ({
         Plato: p.nombre,
         Descripcion: p.descripcion,
-        Precio: `$${p.precio.toLocaleString()} COP`,
+        Precio: Number(p.precio),
         Disponible: 'Sí'
       }));
     case 4:
@@ -476,30 +483,30 @@ function calculateMockReport(reportId) {
       return rests.map(r => {
         const reList = resenas.filter(x => x.id_restaurante == r.id_restaurante);
         const count = reList.length;
-        const avg = count > 0 ? (reList.reduce((acc, curr) => acc + curr.calificacion, 0) / count) : 0;
+        const avg = count > 0 ? (reList.reduce((acc, curr) => acc + Number(curr.calificacion), 0) / count) : 0;
         return {
           Restaurante: r.nombre,
           'Total Resenas': count,
-          'Calificacion Promedio': count > 0 ? parseFloat(avg.toFixed(1)) : 'Sin opiniones'
+          'Calificacion Promedio': count > 0 ? Math.round((avg + Number.EPSILON) * 10) / 10 : null
         };
-      }).sort((a,b) => (b['Calificacion Promedio'] === 'Sin opiniones' ? 0 : b['Calificacion Promedio']) - (a['Calificacion Promedio'] === 'Sin opiniones' ? 0 : a['Calificacion Promedio']));
+      }).sort((a,b) => (b['Calificacion Promedio'] ?? -Infinity) - (a['Calificacion Promedio'] ?? -Infinity));
     case 5:
       // Reservas por zona turística
       return zonas.map(z => {
-        const rIds = rests.filter(r => r.id_zona == z.id_zona).map(r => r.id_restaurante);
-        const mIds = mesas.filter(m => rIds.includes(m.id_restaurante)).map(m => m.id_mesa);
-        const resCount = reservas.filter(res => mIds.includes(res.id_mesa)).length;
+        const rIds = rests.filter(r => r.id_zona == z.id_zona).map(r => Number(r.id_restaurante));
+        const mIds = mesas.filter(m => rIds.includes(Number(m.id_restaurante))).map(m => Number(m.id_mesa));
+        const resCount = reservas.filter(res => mIds.includes(Number(res.id_mesa))).length;
         return {
           Zona: z.nombre_zona,
           Municipio: z.ciudad,
           Reservas: resCount
         };
-      }).sort((a,b) => b.Reservas - a.Reservas);
+      }).filter(row => row.Reservas > 0).sort((a,b) => b.Reservas - a.Reservas);
     case 6:
       // Ingresos totales por restaurante
       return rests.map(r => {
         const pList = pedidos.filter(p => p.id_restaurante == r.id_restaurante && p.estado_pedido === 'entregado');
-        const sum = pList.reduce((acc, curr) => acc + curr.total_pago, 0);
+        const sum = pList.reduce((acc, curr) => acc + Number(curr.total_pago), 0);
         return {
           Restaurante: r.nombre,
           Pedidos: pList.length,
@@ -519,21 +526,16 @@ function calculateMockReport(reportId) {
           Disponibles: disp,
           Reservadas: res
         };
-      });
+      }).filter(row => row['Total Mesas'] > 0);
     case 8:
       // Restaurantes que superan el promedio de la plataforma
-      const allRates = resenas.map(r => r.calificacion);
+      const allRates = resenas.map(r => Number(r.calificacion));
       const generalAvg = allRates.length > 0 ? (allRates.reduce((a,b)=>a+b, 0) / allRates.length) : 0;
-      
-      return rests.map(r => {
+      return rests.flatMap(r => {
         const reList = resenas.filter(x => x.id_restaurante == r.id_restaurante);
-        const avg = reList.length > 0 ? (reList.reduce((acc, curr) => acc + curr.calificacion, 0) / reList.length) : 0;
-        return {
-          Restaurante: r.nombre,
-          Calificacion: parseFloat(avg.toFixed(2)),
-          'Promedio General': parseFloat(generalAvg.toFixed(2))
-        };
-      }).filter(item => item.Calificacion > generalAvg);
+        const avg = reList.length > 0 ? (reList.reduce((acc, curr) => acc + Number(curr.calificacion), 0) / reList.length) : 0;
+        return reList.length && avg > generalAvg ? [{ Restaurante: r.nombre, Calificacion: Math.round((avg + Number.EPSILON) * 100) / 100 }] : [];
+      });
     case 9:
       // Clientes VIP
       const uResCount = users.filter(u => u.tipo_usuario === 'cliente').map(u => {
@@ -551,17 +553,17 @@ function calculateMockReport(reportId) {
     case 10:
       // Platos más vendidos por categoría por encima de la media de su categoría
       const salesMap = {};
-      pedidos.forEach(p => {
-        p.detalles.forEach(d => {
-          salesMap[d.id_plato] = (salesMap[d.id_plato] || 0) + d.cantidad;
-        });
-      });
+      const storedDetails = getLS('gt_detalle_pedidos');
+      const storedOrders = new Set(storedDetails.map(d => Number(d.id_pedido)));
+      // La tabla de detalles es la fuente principal; los pedidos demo nuevos conservan detalles anidados.
+      const reportDetails = storedDetails.concat(pedidos.filter(p => !storedOrders.has(Number(p.id_pedido))).flatMap(p => p.detalles || []));
+      reportDetails.forEach(d => { salesMap[d.id_plato] = (salesMap[d.id_plato] || 0) + Number(d.cantidad); });
 
       // Calcular medias por categoría
       const categoryAverages = {};
       categorias.forEach(cat => {
-        const catPlatos = platos.filter(p => p.id_categoria == cat.id_categoria);
-        const sales = catPlatos.map(p => salesMap[p.id_plato] || 0);
+        const catPlatos = platos.filter(p => p.id_categoria == cat.id_categoria && salesMap[p.id_plato] > 0);
+        const sales = catPlatos.map(p => salesMap[p.id_plato]);
         const totalSales = sales.reduce((a,b)=>a+b, 0);
         categoryAverages[cat.id_categoria] = catPlatos.length > 0 ? (totalSales / catPlatos.length) : 0;
       });
@@ -602,7 +604,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const stored = localStorage.getItem(DEMO_NAMESPACE + 'gt_logged_user');
       currentUser = stored ? JSON.parse(stored) : null;
     }
-    initApp();
+    await initApp();
     document.getElementById('report-fecha-corte').value = bogotaToday();
     document.getElementById('report-fecha-corte').max = bogotaToday();
   } catch (error) {
@@ -612,12 +614,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-function initApp() {
+async function initApp() {
   if (window.lucide) lucide.createIcons();
-  if (currentUser) showDashboard(); else showLogin();
+  if (currentUser) { showDashboard(); await resumePendingReservation(); } else showLogin();
 }
 
 function setupEventHandlers() {
+  document.getElementById('btn-explorar-restaurantes').addEventListener('click', showPublicRestaurants);
+  document.getElementById('btn-public-login').addEventListener('click', showLogin);
+  document.getElementById('public-rest-search').addEventListener('input', renderPublicRestaurants);
   // Navegación Sidebar
   document.querySelectorAll('.menu-item').forEach(item => {
     item.addEventListener('click', (e) => {
@@ -637,6 +642,7 @@ function setupEventHandlers() {
       if (target === 'section-dashboard') renderDashboardStats();
       if (target === 'section-restaurantes') renderRestaurantes();
       if (target === 'section-mesas') loadMesasFilterRestaurantes();
+      if (target === 'section-platos') loadPlatosSection();
       if (target === 'section-reservas') renderReservas();
       if (target === 'section-pedidos') loadPedidosSection();
       if (target === 'section-resenas') loadResenasSection();
@@ -677,6 +683,7 @@ function setupEventHandlers() {
         localStorage.setItem(DEMO_NAMESPACE + 'gt_logged_user', JSON.stringify(currentUser));
         showToast(`¡Bienvenido de nuevo, ${currentUser.nombre}!`, 'success');
         showDashboard();
+        await resumePendingReservation();
       }
     } catch (err) {
       showToast(err.message, 'danger');
@@ -704,6 +711,7 @@ function setupEventHandlers() {
         localStorage.setItem(DEMO_NAMESPACE + 'gt_logged_user', JSON.stringify(currentUser));
         showToast('Cuenta creada con éxito.', 'success');
         showDashboard();
+        await resumePendingReservation();
       }
     } catch (err) {
       showToast(err.message, 'danger');
@@ -714,6 +722,7 @@ function setupEventHandlers() {
   document.getElementById('btn-logout').addEventListener('click', async () => {
     if (isConnectedToDB) { try { await requestAPI('auth/logout', {method:'POST'}); } catch (e) { showToast(e.message, 'danger'); return; } }
     currentUser = null;
+    clearPendingReservation();
     localStorage.removeItem(DEMO_NAMESPACE + 'gt_logged_user');
     showLogin();
   });
@@ -721,11 +730,21 @@ function setupEventHandlers() {
   // Notificaciones Campana Toggle
   document.getElementById('bell-btn').addEventListener('click', (e) => {
     e.stopPropagation();
-    document.getElementById('notification-panel').classList.toggle('active');
+    const panel = document.getElementById('notification-panel');
+    panel.classList.toggle('active');
+    const expanded = panel.classList.contains('active');
+    document.getElementById('bell-btn').setAttribute('aria-expanded', String(expanded));
+    if (expanded) loadNotifications();
   });
+
+  document.getElementById('notification-panel').addEventListener('click', e => e.stopPropagation());
+  document.getElementById('notification-filter').addEventListener('change', () => { notificationPage = 1; renderNotifications(); });
+  document.getElementById('notification-prev').addEventListener('click', () => { notificationPage -= 1; renderNotifications(); });
+  document.getElementById('notification-next').addEventListener('click', () => { notificationPage += 1; renderNotifications(); });
 
   document.addEventListener('click', () => {
     document.getElementById('notification-panel').classList.remove('active');
+    document.getElementById('bell-btn').setAttribute('aria-expanded', 'false');
   });
 
   // Configuración de BD Form
@@ -779,6 +798,14 @@ function setupEventHandlers() {
   // Botón añadir mesa
   document.getElementById('btn-add-mesa').addEventListener('click', () => openMesaModal());
   document.getElementById('form-modal-mesa').addEventListener('submit', saveMesa);
+  document.getElementById('btn-add-plato').addEventListener('click', () => openPlatoModal());
+  document.getElementById('form-modal-plato').addEventListener('submit', savePlato);
+  document.getElementById('platos-restaurante').addEventListener('change', () => { platosAdminPage = 1; renderPlatosAdmin(); });
+  for (const id of ['platos-busqueda', 'platos-disponibilidad']) {
+    document.getElementById(id).addEventListener(id === 'platos-busqueda' ? 'input' : 'change', () => { platosAdminPage = 1; renderPlatosAdminPage(); });
+  }
+  document.getElementById('platos-anterior').addEventListener('click', () => { platosAdminPage -= 1; renderPlatosAdminPage(); });
+  document.getElementById('platos-siguiente').addEventListener('click', () => { platosAdminPage += 1; renderPlatosAdminPage(); });
 
   // Botón nueva reserva
   document.getElementById('btn-new-reserva').addEventListener('click', () => openReservaModal());
@@ -884,13 +911,156 @@ function setupEventHandlers() {
 // --------------------------------------------------------------------
 // 7. FLUJO DE SECCIONES (MOSTRAR U OCULTAR)
 // --------------------------------------------------------------------
+let publicRestaurants = [];
+let publicCatalogRequest = 0;
+let publicMenuRequest = 0;
+let pendingRestaurantId = null;
+let resumingPublicReservation = false;
+const PENDING_RESTAURANT_KEY = 'gt_pending_restaurant';
+
+function positiveRecordId(value) {
+  if (!/^\d+$/.test(String(value ?? ''))) return null;
+  const id = Number(value);
+  return Number.isSafeInteger(id) && id > 0 ? id : null;
+}
+
+function getPendingReservation() {
+  try {
+    const stored = sessionStorage.getItem(PENDING_RESTAURANT_KEY);
+    if (stored !== null) pendingRestaurantId = positiveRecordId(stored);
+  } catch (_) { /* Conserva la selección en memoria si el almacenamiento no está disponible. */ }
+  return pendingRestaurantId;
+}
+
+function clearPendingReservation() {
+  pendingRestaurantId = null;
+  try { sessionStorage.removeItem(PENDING_RESTAURANT_KEY); } catch (_) { /* El recorrido sigue funcionando sin almacenamiento. */ }
+}
+
+async function showPublicRestaurants() {
+  document.getElementById('login-container').style.display = 'none';
+  document.getElementById('app-container').style.display = 'none';
+  document.getElementById('public-container').style.display = 'block';
+  window.scrollTo({ top: 0, left: 0 });
+  const request = ++publicCatalogRequest;
+  const container = document.getElementById('public-restaurants');
+  const count = document.getElementById('public-rest-count');
+  publicRestaurants = [];
+  container.innerHTML = '<p class="info-text">Cargando restaurantes…</p>';
+  count.textContent = '';
+  try {
+    const restaurants = await requestAPI('restaurantes');
+    if (request !== publicCatalogRequest) return;
+    publicRestaurants = restaurants.filter(r => positiveRecordId(r.id_restaurante));
+    renderPublicRestaurants();
+  } catch (error) {
+    if (request !== publicCatalogRequest) return;
+    container.innerHTML = `<p class="info-text color-danger">${escapeHTML(error.message)}</p>`;
+  }
+}
+
+function renderPublicRestaurants() {
+  const normalize = value => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const query = normalize(document.getElementById('public-rest-search').value.trim());
+  const filtered = publicRestaurants.filter(r => normalize([r.nombre, r.especialidad, r.nombre_zona, r.ciudad].join(' ')).includes(query));
+  const container = document.getElementById('public-restaurants');
+  container.innerHTML = '';
+  document.getElementById('public-rest-count').textContent = `${filtered.length} restaurante${filtered.length === 1 ? '' : 's'} encontrado${filtered.length === 1 ? '' : 's'}`;
+  if (!filtered.length) container.innerHTML = '<p class="info-text">No se encontraron restaurantes. Prueba con otro nombre, especialidad o zona.</p>';
+  for (const restaurant of filtered) {
+    const card = document.createElement('article');
+    card.className = 'restaurant-card glass';
+    card.innerHTML = `<div class="restaurant-badge-container"><h3>${escapeHTML(restaurant.nombre)}</h3></div>
+      <div class="restaurant-card-body">
+        <p><i data-lucide="map-pin"></i><span>${escapeHTML(restaurant.direccion)} · ${escapeHTML(restaurant.nombre_zona || restaurant.ciudad || '')}</span></p>
+        <p><i data-lucide="utensils"></i><span>${escapeHTML(restaurant.especialidad || 'Cocina de la región')}</span></p>
+        <p><i data-lucide="phone"></i><span>${escapeHTML(restaurant.telefono || 'Consulta al restaurante')}</span></p>
+      </div><div class="restaurant-card-footer">
+        <button type="button" class="btn btn-secondary" data-public-menu>Ver menú</button>
+        <button type="button" class="btn btn-primary" data-public-reserve>Reservar</button>
+      </div>`;
+    card.querySelector('[data-public-menu]').addEventListener('click', () => openPublicMenu(restaurant.id_restaurante));
+    card.querySelector('[data-public-reserve]').addEventListener('click', () => beginGuestReservation(restaurant.id_restaurante));
+    container.appendChild(card);
+  }
+  if (window.lucide) lucide.createIcons();
+}
+
+async function openPublicMenu(value) {
+  const id = positiveRecordId(value);
+  const restaurant = publicRestaurants.find(r => Number(r.id_restaurante) === id);
+  if (!restaurant) { showToast('Selecciona un restaurante del listado.', 'warning'); return; }
+  const request = ++publicMenuRequest;
+  const modal = document.getElementById('modal-public-menu');
+  const container = document.getElementById('public-menu-items');
+  document.getElementById('public-menu-title').textContent = `Menú · ${restaurant.nombre}`;
+  document.getElementById('btn-public-reserve').onclick = () => beginGuestReservation(id);
+  container.innerHTML = '<p class="info-text">Cargando menú…</p>';
+  modal.classList.add('active');
+  try {
+    const dishes = await requestAPI('platos');
+    if (request !== publicMenuRequest || !modal.classList.contains('active')) return;
+    const available = dishes.filter(dish => Number(dish.id_restaurante) === id && Number(dish.disponibilidad) === 1);
+    container.innerHTML = '';
+    if (!available.length) container.innerHTML = '<p class="info-text">Este restaurante todavía no tiene platos disponibles en su menú.</p>';
+    for (const dish of available) {
+      const item = document.createElement('div');
+      item.className = 'menu-item-row';
+      const price = Number(dish.precio);
+      item.innerHTML = `<div><h4>${escapeHTML(dish.nombre)}</h4><p>${escapeHTML(dish.descripcion)}</p><small>${escapeHTML(dish.nombre_categoria || '')}</small></div><strong>${Number.isFinite(price) ? price.toLocaleString('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 2 }) : 'Consultar precio'}</strong>`;
+      container.appendChild(item);
+    }
+  } catch (error) {
+    if (request === publicMenuRequest && modal.classList.contains('active')) container.innerHTML = `<p class="info-text color-danger">${escapeHTML(error.message)}</p>`;
+  }
+}
+
+async function beginGuestReservation(value) {
+  const id = positiveRecordId(value);
+  if (!id || !publicRestaurants.some(r => Number(r.id_restaurante) === id)) {
+    showToast('Selecciona un restaurante del listado.', 'warning');
+    return;
+  }
+  pendingRestaurantId = id;
+  try { sessionStorage.setItem(PENDING_RESTAURANT_KEY, String(id)); } catch (_) { /* Se conserva en memoria durante el acceso. */ }
+  closeModal('modal-public-menu');
+  if (currentUser) { showDashboard(); await resumePendingReservation(); } else showLogin();
+}
+
+async function resumePendingReservation() {
+  const id = getPendingReservation();
+  if (!currentUser || !id || resumingPublicReservation) return;
+  resumingPublicReservation = true;
+  try {
+    const restaurants = await requestAPI('restaurantes');
+    if (!restaurants.some(r => Number(r.id_restaurante) === id)) {
+      clearPendingReservation();
+      showToast('El restaurante seleccionado ya no está disponible. Elige otro restaurante.', 'warning');
+      return;
+    }
+    await openReservaModal(id);
+    if (document.getElementById('modal-reserva').classList.contains('active') && getPendingReservation() === id) clearPendingReservation();
+  } catch (error) {
+    showToast(`No se pudo continuar con la reserva: ${error.message}. Tu selección se conserva; recarga la página para reintentar.`, 'warning');
+  } finally {
+    resumingPublicReservation = false;
+  }
+}
+
 function showLogin() {
+  resetNotifications();
+  document.getElementById('public-container').style.display = 'none';
   document.getElementById('login-container').style.display = 'flex';
   document.getElementById('app-container').style.display = 'none';
+  const pending = getPendingReservation();
+  const notice = document.getElementById('login-reserva-context');
+  notice.hidden = !pending;
+  notice.textContent = pending ? 'Tu restaurante está seleccionado. Inicia sesión o crea tu cuenta para continuar con la reserva.' : '';
   window.scrollTo({top: 0, left: 0});
 }
 
 function showDashboard() {
+  document.getElementById('public-container').style.display = 'none';
   document.getElementById('login-container').style.display = 'none';
   document.getElementById('app-container').style.display = 'grid';
 
@@ -903,6 +1073,7 @@ function showDashboard() {
   // Ajustes de rol
   const isAdmin = currentUser.tipo_usuario === 'administrador';
   const isRestOwner = currentUser.tipo_usuario === 'restaurante';
+  document.getElementById('menu-admin-platos').style.display = isAdmin || isRestOwner ? 'flex' : 'none';
   
   document.getElementById('btn-add-restaurante').style.display = (isAdmin || isRestOwner) ? 'inline-flex' : 'none';
   document.getElementById('btn-add-mesa').style.display = (isAdmin || isRestOwner) ? 'inline-flex' : 'none';
@@ -1385,6 +1556,166 @@ async function deleteMesa(id) {
 }
 
 // --------------------------------------------------------------------
+// ADMINISTRACIÓN DE PLATOS (INTERFAZ; PERMISOS DE SERVIDOR EN SEGUIMIENTO 15)
+// --------------------------------------------------------------------
+let platosAdminList = [];
+let platosAdminPage = 1;
+let platosAdminRequest = 0;
+
+function canManageMenuRestaurant(restaurant) {
+  return Boolean(restaurant && currentUser && (currentUser.tipo_usuario === 'administrador' ||
+    (currentUser.tipo_usuario === 'restaurante' && Number(restaurant.id_propietario) === Number(currentUser.id_usuario))));
+}
+
+async function loadPlatosSection() {
+  const select = document.getElementById('platos-restaurante');
+  const button = document.getElementById('btn-add-plato');
+  button.disabled = true;
+  try {
+    const restaurants = (await requestAPI('restaurantes')).filter(canManageMenuRestaurant);
+    const previous = select.value;
+    select.replaceChildren();
+    restaurants.forEach(r => select.add(new Option(r.nombre, r.id_restaurante)));
+    if (restaurants.some(r => String(r.id_restaurante) === previous)) select.value = previous;
+    button.disabled = !restaurants.length;
+    platosAdminPage = 1;
+    await renderPlatosAdmin();
+  } catch (error) {
+    document.getElementById('platos-tbody').innerHTML = `<tr><td colspan="5" class="info-text color-danger">${escapeHTML(error.message)}</td></tr>`;
+  }
+}
+
+async function renderPlatosAdmin() {
+  const tbody = document.getElementById('platos-tbody');
+  const requestId = ++platosAdminRequest;
+  platosAdminList = [];
+  renderPlatosAdminPage();
+  if (!document.getElementById('platos-restaurante').value) return;
+  tbody.innerHTML = '<tr><td colspan="5" class="info-text">Cargando menú...</td></tr>';
+  try {
+    const [platos, restaurants] = await Promise.all([requestAPI('platos'), requestAPI('restaurantes')]);
+    if (requestId !== platosAdminRequest) return;
+    const allowed = new Set(restaurants.filter(canManageMenuRestaurant).map(r => Number(r.id_restaurante)));
+    platosAdminList = platos.filter(p => allowed.has(Number(p.id_restaurante)));
+    renderPlatosAdminPage();
+  } catch (error) {
+    if (requestId !== platosAdminRequest) return;
+    tbody.innerHTML = `<tr><td colspan="5" class="info-text color-danger">${escapeHTML(error.message)}</td></tr>`;
+  }
+}
+
+function renderPlatosAdminPage() {
+  const tbody = document.getElementById('platos-tbody');
+  const restaurant = Number(document.getElementById('platos-restaurante').value);
+  const normalize = value => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const search = normalize(document.getElementById('platos-busqueda').value.trim());
+  const available = document.getElementById('platos-disponibilidad').value;
+  const filtered = platosAdminList.filter(p => Number(p.id_restaurante) === restaurant &&
+    (available === '' || Number(p.disponibilidad) === Number(available)) &&
+    (!search || normalize(`${p.nombre} ${p.nombre_categoria}`).includes(search)))
+    .sort((a, b) => String(a.nombre).localeCompare(String(b.nombre), 'es'));
+  const pages = Math.max(1, Math.ceil(filtered.length / 10));
+  platosAdminPage = Math.min(Math.max(1, platosAdminPage), pages);
+  const start = (platosAdminPage - 1) * 10;
+  document.getElementById('platos-resumen').textContent = filtered.length ? `Mostrando ${start + 1}–${Math.min(start + 10, filtered.length)} de ${filtered.length} ${filtered.length === 1 ? 'plato' : 'platos'}` : 'Sin platos para los filtros seleccionados.';
+  document.getElementById('platos-pagina').textContent = `Página ${platosAdminPage} de ${pages}`;
+  document.getElementById('platos-anterior').disabled = platosAdminPage === 1;
+  document.getElementById('platos-siguiente').disabled = platosAdminPage === pages;
+  tbody.innerHTML = filtered.length ? filtered.slice(start, start + 10).map(p => `
+    <tr>
+      <td><strong>${escapeHTML(p.nombre)}</strong><p class="plato-description">${escapeHTML(String(p.descripcion || '').slice(0, 110))}${String(p.descripcion || '').length > 110 ? '…' : ''}</p></td>
+      <td>${escapeHTML(p.nombre_categoria)}</td>
+      <td>$${Number(p.precio).toLocaleString('es-CO')} COP</td>
+      <td><span class="badge-status ${Number(p.disponibilidad) === 1 ? 'confirmada' : 'pendiente'}">${Number(p.disponibilidad) === 1 ? 'Disponible' : 'No disponible'}</span></td>
+      <td><div class="plato-actions"><button type="button" class="btn btn-sm btn-secondary" onclick="openPlatoModal(${Number(p.id_plato)})" aria-label="Editar plato ${escapeHTML(p.nombre)}">Editar</button><button type="button" class="btn btn-sm btn-danger" onclick="deletePlato(${Number(p.id_plato)})" aria-label="Eliminar plato ${escapeHTML(p.nombre)}">Eliminar</button></div></td>
+    </tr>`).join('') : '<tr><td colspan="5" class="info-text">No hay platos disponibles para esta consulta.</td></tr>';
+}
+
+async function openPlatoModal(id = null) {
+  if (!currentUser || !['administrador', 'restaurante'].includes(currentUser.tipo_usuario)) return;
+  const form = document.getElementById('form-modal-plato');
+  const selectRest = document.getElementById('mplato-restaurante');
+  const selectCategory = document.getElementById('mplato-categoria');
+  form.reset();
+  document.getElementById('mplato-id').value = '';
+  document.getElementById('mplato-disponible').value = '1';
+  selectRest.disabled = false;
+  try {
+    const [restaurants, categories] = await Promise.all([requestAPI('restaurantes'), requestAPI('categorias')]);
+    const allowed = restaurants.filter(canManageMenuRestaurant);
+    if (!allowed.length) throw new Error('Primero necesitas un restaurante propio para administrar su menú.');
+    selectRest.replaceChildren();
+    allowed.forEach(r => selectRest.add(new Option(r.nombre, r.id_restaurante)));
+    const selected = document.getElementById('platos-restaurante').value;
+    if (allowed.some(r => String(r.id_restaurante) === selected)) selectRest.value = selected;
+    selectCategory.replaceChildren(new Option('Selecciona una categoría', ''));
+    categories.forEach(c => selectCategory.add(new Option(c.nombre_categoria, c.id_categoria)));
+    if (id) {
+      const plato = (await requestAPI('platos')).find(p => Number(p.id_plato) === Number(id));
+      if (!plato || !allowed.some(r => Number(r.id_restaurante) === Number(plato.id_restaurante))) throw new Error('El plato no existe o no pertenece a tus restaurantes.');
+      document.getElementById('mplato-id').value = plato.id_plato;
+      selectRest.value = plato.id_restaurante;
+      selectRest.disabled = true;
+      selectCategory.value = plato.id_categoria;
+      document.getElementById('mplato-nombre').value = plato.nombre;
+      document.getElementById('mplato-descripcion').value = plato.descripcion || '';
+      document.getElementById('mplato-precio').value = Number(plato.precio);
+      document.getElementById('mplato-disponible').value = Number(plato.disponibilidad) === 1 ? '1' : '0';
+    }
+    document.getElementById('modal-plato-title').textContent = id ? 'Editar plato' : 'Agregar plato';
+    document.getElementById('btn-save-plato').textContent = id ? 'Guardar cambios' : 'Agregar plato';
+    document.getElementById('modal-plato').classList.add('active');
+  } catch (error) { showToast(error.message, 'danger'); }
+}
+
+async function savePlato(event) {
+  event.preventDefault();
+  const button = document.getElementById('btn-save-plato');
+  if (button.disabled) return;
+  const id = document.getElementById('mplato-id').value;
+  const nombre = document.getElementById('mplato-nombre').value.trim();
+  const descripcion = document.getElementById('mplato-descripcion').value.trim();
+  const priceText = document.getElementById('mplato-precio').value.trim();
+  const precio = Number(priceText);
+  const id_categoria = Number(document.getElementById('mplato-categoria').value);
+  const disponibilidad = Number(document.getElementById('mplato-disponible').value);
+  if (!nombre || nombre.length > 150 || descripcion.length > 4000 || !priceText || !Number.isFinite(precio) || precio < 0 || precio > 99999999.99 || Math.abs(precio * 100 - Math.round(precio * 100)) > 0.000001 || ![0, 1].includes(disponibilidad)) {
+    showToast('Revisa el nombre y el precio del plato (hasta dos decimales).', 'warning');
+    return;
+  }
+  button.disabled = true;
+  try {
+    const [platos, restaurants, categories] = await Promise.all([requestAPI('platos'), requestAPI('restaurantes'), requestAPI('categorias')]);
+    const original = id ? platos.find(p => Number(p.id_plato) === Number(id)) : null;
+    if (id && !original) throw new Error('El plato ya no existe. Actualiza el menú.');
+    const id_restaurante = Number(original ? original.id_restaurante : document.getElementById('mplato-restaurante').value);
+    if (!canManageMenuRestaurant(restaurants.find(r => Number(r.id_restaurante) === id_restaurante))) throw new Error('No tienes permiso para administrar este menú.');
+    if (!categories.some(c => Number(c.id_categoria) === id_categoria)) throw new Error('Selecciona una categoría válida.');
+    await requestAPI(id ? `platos/${id}` : 'platos', {method: id ? 'PUT' : 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({nombre, descripcion, precio, disponibilidad, id_categoria, id_restaurante})});
+    closeModal('modal-plato');
+    document.getElementById('platos-restaurante').value = id_restaurante;
+    await renderPlatosAdmin();
+    showToast(id ? 'Plato actualizado con éxito.' : 'Plato creado con éxito.', 'success');
+  } catch (error) { showToast(error.message, 'danger'); }
+  finally { button.disabled = false; }
+}
+
+async function deletePlato(id) {
+  try {
+    const [platos, restaurants, pedidos] = await Promise.all([requestAPI('platos'), requestAPI('restaurantes'), requestAPI('pedidos')]);
+    const plato = platos.find(p => Number(p.id_plato) === Number(id));
+    if (!plato || !canManageMenuRestaurant(restaurants.find(r => Number(r.id_restaurante) === Number(plato.id_restaurante)))) throw new Error('No tienes permiso para eliminar este plato.');
+    const used = pedidos.some(p => (p.detalles || []).some(d => Number(d.id_plato) === Number(id))) ||
+      (!isConnectedToDB && getLS('gt_detalle_pedidos').some(d => Number(d.id_plato) === Number(id)));
+    if (used) throw new Error('Este plato tiene pedidos registrados. Puedes marcarlo como no disponible para conservar el historial.');
+    if (!confirm(`¿Eliminar el plato «${plato.nombre}» del menú?`)) return;
+    await requestAPI(`platos/${id}`, {method: 'DELETE'});
+    await renderPlatosAdmin();
+    showToast('Plato eliminado del menú.', 'success');
+  } catch (error) { showToast(error.message, 'warning'); }
+}
+
+// --------------------------------------------------------------------
 // 11. MÓDULO CRUD: RESERVAS
 // --------------------------------------------------------------------
 let reservasList = [];
@@ -1817,7 +2148,7 @@ async function loadPedidoMenu() {
 
   try {
     const platos = await requestAPI('platos');
-    const filtered = platos.filter(p => p.id_restaurante == restId && p.disponibilidad);
+    const filtered = platos.filter(p => p.id_restaurante == restId && Number(p.disponibilidad) === 1);
 
     if (filtered.length === 0) {
       menuList.innerHTML = '<p class="info-text">Este restaurante no tiene platos disponibles en su menú.</p>';
@@ -1829,12 +2160,13 @@ async function loadPedidoMenu() {
       item.className = 'menu-item-row';
       item.innerHTML = `
         <div class="menu-item-info">
-          <h5>${p.nombre}</h5>
-          <p>${p.descripcion}</p>
-          <span class="menu-item-price">$${p.precio.toLocaleString()} COP</span>
+          <h5>${escapeHTML(p.nombre)}</h5>
+          <p>${escapeHTML(p.descripcion)}</p>
+          <span class="menu-item-price">$${Number(p.precio).toLocaleString('es-CO')} COP</span>
         </div>
-        <button class="btn btn-sm btn-primary" onclick="addToCart(${p.id_plato}, '${p.nombre.replace(/'/g, "\\'")}', ${p.precio})">Agregar</button>
+        <button type="button" class="btn btn-sm btn-primary">Agregar</button>
       `;
+      item.querySelector('button').addEventListener('click', () => addToCart(Number(p.id_plato), p.nombre, Number(p.precio)));
       menuList.appendChild(item);
     });
 
@@ -1874,7 +2206,7 @@ function updateCartUI() {
     row.className = 'cart-item';
     row.innerHTML = `
       <div>
-        <h5>${item.nombre}</h5>
+        <h5>${escapeHTML(item.nombre)}</h5>
         <p>Precio Unitario: $${item.precio_unitario.toLocaleString()}</p>
         <p>Cantidad: 
           <button class="btn btn-secondary btn-sm" style="padding: 2px 6px" onclick="changeCartQty(${item.id_plato}, -1)">-</button> 
@@ -2223,9 +2555,36 @@ const SQL_QUERIES = {
   
   8: `-- Reporte 8: Restaurantes con Calificación Superior al Promedio General\nSELECT \n    r.nombre AS 'Restaurante',\n    ROUND(AVG(re.calificacion), 2) AS 'Calificacion' \nFROM restaurantes r \nINNER JOIN resenas re ON r.id_restaurante = re.id_restaurante \nGROUP BY r.id_restaurante, r.nombre \nHAVING AVG(re.calificacion) > (SELECT AVG(calificacion) FROM resenas);`,
   
-  9: `-- Reporte 9: Clientes VIP (Apto para Gráfico)\nSELECT \n    u.nombre AS 'Cliente',\n    u.correo AS 'Email',\n    COUNT(r.id_reserva) AS 'Total Reservas' \nFROM usuarios u \nINNER JOIN reservas r ON u.id_usuario = r.id_usuario \nGROUP BY u.id_usuario, u.nombre, u.correo \nHAVING COUNT(r.id_reserva) > (\n    SELECT AVG(total_res) \n    FROM (SELECT COUNT(id_reserva) AS total_res FROM reservas GROUP BY id_usuario) AS sub\n) \nORDER BY \`Total Reservas\` DESC;`,
+  9: `-- Reporte 9: Clientes VIP (Apto para Gráfico)
+SELECT u.nombre AS 'Cliente', u.correo AS 'Email', COUNT(r.id_reserva) AS 'Total Reservas'
+FROM usuarios u INNER JOIN reservas r ON u.id_usuario = r.id_usuario
+WHERE u.tipo_usuario = 'cliente'
+GROUP BY u.id_usuario, u.nombre, u.correo
+HAVING COUNT(r.id_reserva) > (
+    SELECT AVG(total_res) FROM (
+        SELECT COUNT(r2.id_reserva) AS total_res
+        FROM usuarios u2 INNER JOIN reservas r2 ON u2.id_usuario = r2.id_usuario
+        WHERE u2.tipo_usuario = 'cliente'
+        GROUP BY u2.id_usuario
+    ) AS sub
+)
+ORDER BY \`Total Reservas\` DESC;`,
   
-  10: `-- Reporte 10: Platos más Vendidos por encima de la media de su categoría (Apto para Gráfico)\nSELECT \n    p.nombre AS 'Plato',\n    c.nombre_categoria AS 'Categoria',\n    SUM(dp.cantidad) AS 'Vendidos' \nFROM platos p \nINNER JOIN categorias c ON p.id_categoria = c.id_categoria \nINNER JOIN detalle_pedidos dp ON p.id_plato = dp.id_plato \nGROUP BY p.id_plato, p.nombre, c.nombre_categoria \nHAVING SUM(dp.cantidad) >= (\n    SELECT AVG(cantidad_plato) \n    FROM (\n        SELECT p2.id_categoria, SUM(dp2.cantidad) AS cantidad_plato \n        FROM platos p2 \n        INNER JOIN detalle_pedidos dp2 ON p2.id_plato = dp2.id_plato \n        GROUP BY p2.id_plato, p2.id_categoria\n    ) AS sub2 \n    WHERE sub2.id_categoria = p.id_categoria\n) \nORDER BY \`Vendidos\` DESC;`
+  10: `-- Reporte 10: Platos más vendidos al menos en la media de su categoría (Apto para Gráfico)
+SELECT p.nombre AS 'Plato', c.nombre_categoria AS 'Categoria', SUM(dp.cantidad) AS 'Vendidos'
+FROM platos p
+INNER JOIN categorias c ON p.id_categoria = c.id_categoria
+INNER JOIN detalle_pedidos dp ON p.id_plato = dp.id_plato
+GROUP BY p.id_plato, p.nombre, p.id_categoria, c.nombre_categoria
+HAVING SUM(dp.cantidad) >= (
+    SELECT AVG(cantidad_plato) FROM (
+        SELECT p2.id_categoria, SUM(dp2.cantidad) AS cantidad_plato
+        FROM platos p2
+        INNER JOIN detalle_pedidos dp2 ON p2.id_plato = dp2.id_plato
+        GROUP BY p2.id_plato, p2.id_categoria
+    ) AS sub2 WHERE sub2.id_categoria = p.id_categoria
+)
+ORDER BY \`Vendidos\` DESC;`
 };
 
 const MONTHLY_REPORT_HEADERS = {periodo: 'Periodo', desde: 'Desde', hasta: 'Hasta', personas_atendidas: 'Personas atendidas', visitas: 'Visitas', ingresos: 'Ingresos a la aplicación', usuarios_unicos: 'Usuarios distintos'};
@@ -2749,52 +3108,130 @@ function downloadActivePreviewPDF() {
 // --------------------------------------------------------------------
 // 16. MÓDULO NOTIFICACIONES Y RECORDATORIOS
 // --------------------------------------------------------------------
+const NOTIFICATION_PAGE_SIZE = 5;
+let notificationsList = [];
+let notificationPage = 1;
+let notificationUserId = null;
+let notificationRequest = 0;
+const notificationsBeingRead = new Set();
+
+function resetNotifications() {
+  notificationRequest += 1;
+  notificationUserId = null;
+  notificationsList = [];
+  notificationPage = 1;
+  notificationsBeingRead.clear();
+  document.getElementById('notification-count').textContent = '0';
+  document.getElementById('notification-count').style.display = 'none';
+  document.getElementById('notifications-list').innerHTML = '';
+  document.getElementById('notification-summary').textContent = '';
+  document.getElementById('notification-page').textContent = '1 / 1';
+  document.getElementById('notification-filter').value = 'pendientes';
+  document.getElementById('notification-prev').disabled = true;
+  document.getElementById('notification-next').disabled = true;
+  document.getElementById('notification-panel').classList.remove('active');
+  document.getElementById('bell-btn').setAttribute('aria-expanded', 'false');
+}
+
+function notificationIsRead(notification) {
+  return notification.leido === true || Number(notification.leido) === 1;
+}
+
+function notificationTimestamp(value) {
+  const raw = String(value ?? '');
+  const localDate = /^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}(?:\.\d+)?$/.test(raw);
+  return new Date(localDate ? raw.replace(' ', 'T') + '-05:00' : raw).getTime();
+}
+
+function compareNotifications(a, b) {
+  return (notificationTimestamp(b.fecha_envio) || 0) - (notificationTimestamp(a.fecha_envio) || 0) || Number(b.id_notificacion) - Number(a.id_notificacion);
+}
+
+function notificationDate(value) {
+  const timestamp = notificationTimestamp(value);
+  return Number.isNaN(timestamp) ? 'Fecha no disponible' : new Date(timestamp).toLocaleString('es-CO', { timeZone: 'America/Bogota', dateStyle: 'medium', timeStyle: 'short' });
+}
+
 async function loadNotifications() {
   const panel = document.getElementById('notifications-list');
-  const countBadge = document.getElementById('notification-count');
-  
-  if (!currentUser) return;
-
+  if (!currentUser) { resetNotifications(); return; }
+  const userId = Number(currentUser.id_usuario);
+  if (notificationUserId !== userId) resetNotifications();
+  notificationUserId = userId;
+  const request = ++notificationRequest;
+  panel.innerHTML = '<p class="empty-list">Cargando notificaciones…</p>';
+  document.getElementById('notification-summary').textContent = '';
+  document.getElementById('notification-prev').disabled = true;
+  document.getElementById('notification-next').disabled = true;
   try {
-    const list = await requestAPI(`notificaciones/${currentUser.id_usuario}`);
-    panel.innerHTML = '';
+    const list = await requestAPI(`notificaciones/${userId}`);
+    if (request !== notificationRequest || Number(currentUser?.id_usuario) !== userId) return;
+    notificationsList = list.filter(n => Number(n.id_usuario) === userId).sort(compareNotifications);
+    renderNotifications();
+  } catch(error) {
+    if (request !== notificationRequest || Number(currentUser?.id_usuario) !== userId) return;
+    notificationsList = [];
+    notificationPage = 1;
+    document.getElementById('notification-count').textContent = '0';
+    document.getElementById('notification-count').style.display = 'none';
+    document.getElementById('notification-page').textContent = '1 / 1';
+    document.getElementById('notification-summary').textContent = 'No se pudieron actualizar las notificaciones.';
+    panel.innerHTML = `<p class="empty-list color-danger">${escapeHTML(error.message)}. Vuelve a abrir la campana para reintentar.</p>`;
+  }
+}
 
-    const unread = list.filter(n => !n.leido);
-    
-    if (unread.length > 0) {
-      countBadge.textContent = unread.length;
-      countBadge.style.display = 'flex';
-    } else {
-      countBadge.style.display = 'none';
+function renderNotifications() {
+  if (!currentUser || Number(currentUser.id_usuario) !== notificationUserId) { resetNotifications(); return; }
+  const filter = document.getElementById('notification-filter').value;
+  const unreadCount = notificationsList.filter(n => !notificationIsRead(n)).length;
+  const badge = document.getElementById('notification-count');
+  badge.textContent = String(unreadCount);
+  badge.style.display = unreadCount ? 'flex' : 'none';
+  const filtered = notificationsList.filter(n => filter === 'leidas' ? notificationIsRead(n) : filter === 'todas' || !notificationIsRead(n));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / NOTIFICATION_PAGE_SIZE));
+  notificationPage = Math.min(totalPages, Math.max(1, notificationPage));
+  const offset = (notificationPage - 1) * NOTIFICATION_PAGE_SIZE;
+  document.getElementById('notification-summary').textContent = filtered.length ? `${offset + 1}–${Math.min(offset + NOTIFICATION_PAGE_SIZE, filtered.length)} de ${filtered.length} notificaciones` : '0 notificaciones';
+  document.getElementById('notification-page').textContent = `${notificationPage} / ${totalPages}`;
+  document.getElementById('notification-prev').disabled = notificationPage === 1;
+  document.getElementById('notification-next').disabled = notificationPage === totalPages;
+  const panel = document.getElementById('notifications-list');
+  panel.innerHTML = '';
+  if (!filtered.length) {
+    panel.innerHTML = `<p class="empty-list">${filter === 'leidas' ? 'Todavía no tienes notificaciones leídas.' : filter === 'todas' ? 'Todavía no tienes notificaciones.' : 'No tienes notificaciones pendientes.'}</p>`;
+  }
+  for (const notification of filtered.slice(offset, offset + NOTIFICATION_PAGE_SIZE)) {
+    const read = notificationIsRead(notification);
+    const item = document.createElement('article');
+    item.className = `notification-item${read ? '' : ' unread'}`;
+    item.innerHTML = `<p>${escapeHTML(notification.mensaje)}</p><span class="notification-date">${escapeHTML(notificationDate(notification.fecha_envio))}</span>${read ? '<span>Leída</span>' : '<button type="button" class="btn btn-sm btn-secondary">Marcar como leída</button>'}`;
+    if (!read) {
+      const button = item.querySelector('button');
+      button.disabled = notificationsBeingRead.has(Number(notification.id_notificacion));
+      button.addEventListener('click', () => markNotificationRead(notification.id_notificacion));
     }
+    panel.appendChild(item);
+  }
+}
 
-    if (list.length === 0) {
-      panel.innerHTML = '<p class="empty-list">No tienes notificaciones pendientes.</p>';
-      return;
+async function markNotificationRead(value) {
+  const id = positiveRecordId(value);
+  const userId = Number(currentUser?.id_usuario);
+  const notification = notificationsList.find(n => Number(n.id_notificacion) === id && Number(n.id_usuario) === userId);
+  if (!id || !notification || notificationIsRead(notification) || notificationsBeingRead.has(id)) return;
+  notificationsBeingRead.add(id);
+  renderNotifications();
+  try {
+    await requestAPI(`notificaciones/leer/${id}`, { method: 'PUT' });
+    if (Number(currentUser?.id_usuario) === userId && notificationUserId === userId) {
+      notificationRequest += 1; // Una lectura iniciada antes del marcado no debe restaurar un aviso pendiente.
+      notificationsList = notificationsList.map(n => Number(n.id_notificacion) === id ? { ...n, leido: true } : n);
     }
-
-    list.forEach(n => {
-      const item = document.createElement('div');
-      item.className = `notification-item ${n.leido ? '' : 'unread'}`;
-      item.innerHTML = `
-        <p>${n.mensaje}</p>
-        <span style="font-size: 0.7rem; color: var(--text-muted); display: block; margin-top: 4px;">
-          ${new Date(n.fecha_envio).toLocaleTimeString()} - ${new Date(n.fecha_envio).toLocaleDateString()}
-        </span>
-      `;
-      
-      // Marcar como leída al pulsar
-      item.addEventListener('click', async () => {
-        if (!n.leido) {
-          await requestAPI(`notificaciones/leer/${n.id_notificacion}`, { method: 'PUT' });
-          loadNotifications();
-        }
-      });
-      panel.appendChild(item);
-    });
-
-  } catch(e) {
-    console.error(e);
+  } catch (error) {
+    if (Number(currentUser?.id_usuario) === userId) showToast(`No se pudo marcar la notificación: ${error.message}`, 'danger');
+  } finally {
+    notificationsBeingRead.delete(id);
+    if (Number(currentUser?.id_usuario) === userId && notificationUserId === userId) renderNotifications();
   }
 }
 

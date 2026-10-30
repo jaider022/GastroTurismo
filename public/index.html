@@ -30,6 +30,7 @@
 
       <!-- Formularios -->
       <div class="form-container">
+        <p id="login-reserva-context" class="login-reserva-context" hidden></p>
         <!-- Form Login -->
         <form id="form-login" class="auth-form active">
           <h2>Iniciar Sesión</h2>
@@ -105,6 +106,7 @@
         </form>
       </div>
       
+      <div class="login-explore"><button id="btn-explorar-restaurantes" type="button" class="btn btn-secondary btn-block">Explorar restaurantes sin cuenta</button></div>
       <!-- Indicador de conexión rápida para demo -->
       <div class="demo-badge-container">
         <span class="db-status-badge offline" id="login-db-status">
@@ -119,6 +121,16 @@
   <!-- ==========================================
        CONTENEDOR PRINCIPAL DE LA APLICACIÓN (DASHBOARD)
        ========================================== -->
+  <main id="public-container" class="public-layout" style="display: none;">
+    <header class="public-header"><div class="public-brand"><i data-lucide="chef-hat"></i><strong>GastroTurismo</strong></div><button id="btn-public-login" type="button" class="btn btn-primary">Iniciar sesión</button></header>
+    <section class="public-hero"><h1>Encuentra tu próxima experiencia gastronómica</h1><p>Explora los restaurantes y sus menús. Te pediremos iniciar sesión o crear tu cuenta cuando vayas a reservar.</p><a href="https://www.valledelcocora.com.co/w/producto/restaurante-bosques-de-cocora-donde-juanb/" target="_blank" rel="noopener noreferrer">Fotografía: Bosques de Cocora · Quindío</a></section>
+    <section aria-label="Explorar restaurantes">
+      <div class="action-header public-search"><h2>Restaurantes del Eje Cafetero</h2><div><label for="public-rest-search">Buscar restaurante</label><input id="public-rest-search" type="search" class="form-control" placeholder="Nombre, especialidad o zona…"></div></div>
+      <p id="public-rest-count" class="reservas-subtitle" role="status"></p>
+      <div id="public-restaurants" class="restaurantes-list-grid"></div>
+    </section>
+  </main>
+
   <div id="app-container" class="app-layout" style="display: none;">
     <!-- Sidebar de Navegación -->
     <aside class="sidebar glass">
@@ -144,6 +156,9 @@
         </a>
         <a href="#" class="menu-item" data-target="section-mesas">
           <i data-lucide="grid"></i> Mesas
+        </a>
+        <a href="#" class="menu-item" data-target="section-platos" id="menu-admin-platos" style="display: none;">
+          <i data-lucide="utensils"></i> Platos y menú
         </a>
         <a href="#" class="menu-item" data-target="section-reservas">
           <i data-lucide="calendar-check"></i> Reservas
@@ -185,14 +200,26 @@
         <div class="topbar-right">
           <!-- Notificaciones -->
           <div class="notifications-dropdown">
-            <button class="icon-btn" id="bell-btn">
+            <button class="icon-btn" id="bell-btn" type="button" aria-label="Ver notificaciones" aria-expanded="false" aria-controls="notification-panel">
               <i data-lucide="bell"></i>
               <span class="badge" id="notification-count" style="display: none;">0</span>
             </button>
             <div class="notification-panel glass" id="notification-panel">
               <h3>Notificaciones</h3>
-              <div class="notifications-list" id="notifications-list">
+              <label class="notification-filter-label" for="notification-filter">Mostrar</label>
+              <select id="notification-filter" class="form-control">
+                <option value="pendientes">Pendientes</option>
+                <option value="todas">Todas</option>
+                <option value="leidas">Leídas</option>
+              </select>
+              <p id="notification-summary" class="notification-summary" role="status"></p>
+              <div class="notifications-list" id="notifications-list" aria-label="Listado de notificaciones">
                 <p class="empty-list">No tienes notificaciones pendientes.</p>
+              </div>
+              <div class="notification-pagination">
+                <button id="notification-prev" type="button" class="btn btn-sm btn-secondary" aria-label="Página anterior de notificaciones" disabled>Anterior</button>
+                <span id="notification-page">1 / 1</span>
+                <button id="notification-next" type="button" class="btn btn-sm btn-secondary" aria-label="Página siguiente de notificaciones" disabled>Siguiente</button>
               </div>
             </div>
           </div>
@@ -290,6 +317,30 @@
         
         <div class="mesas-visual-grid" id="mesas-container">
           <!-- Inyectado dinámicamente -->
+        </div>
+      </section>
+
+      <!-- SECCIÓN: ADMINISTRACIÓN DEL MENÚ -->
+      <section id="section-platos" class="content-section">
+        <div class="action-header">
+          <div><h3>Administración del menú</h3><p class="reservas-subtitle">Gestiona los platos y su disponibilidad en cada restaurante.</p></div>
+          <button type="button" id="btn-add-plato" class="btn btn-success"><i data-lucide="plus"></i> Agregar plato</button>
+        </div>
+        <div class="platos-filters glass" role="group" aria-label="Filtros del menú">
+          <div><label for="platos-restaurante">Restaurante del menú</label><select id="platos-restaurante" class="form-control"></select></div>
+          <div><label for="platos-busqueda">Buscar plato</label><input id="platos-busqueda" class="form-control" type="search" placeholder="Nombre o categoría…"></div>
+          <div><label for="platos-disponibilidad">Disponibilidad</label><select id="platos-disponibilidad" class="form-control"><option value="">Todos los platos</option><option value="1">Disponibles</option><option value="0">No disponibles</option></select></div>
+        </div>
+        <div class="table-responsive glass">
+          <table class="data-table"><thead><tr><th>Plato</th><th>Categoría</th><th>Precio</th><th>Disponibilidad</th><th>Acciones</th></tr></thead><tbody id="platos-tbody"></tbody></table>
+        </div>
+        <div class="reservas-pagination">
+          <p id="platos-resumen" role="status" aria-live="polite"></p>
+          <nav class="reservas-page-buttons" aria-label="Páginas del menú">
+            <button id="platos-anterior" type="button" class="btn btn-secondary" disabled>Anterior</button>
+            <span id="platos-pagina">Página 1 de 1</span>
+            <button id="platos-siguiente" type="button" class="btn btn-secondary" disabled>Siguiente</button>
+          </nav>
         </div>
       </section>
 
@@ -892,6 +943,33 @@
           <button type="submit" class="btn btn-success" id="btn-save-mesa">Agregar Mesa</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Modal de administración de platos -->
+  <div class="modal-backdrop" id="modal-plato">
+    <div class="modal-card glass modal-plato-card">
+      <div class="modal-header"><h3 id="modal-plato-title">Agregar plato</h3><button type="button" class="close-btn" onclick="closeModal('modal-plato')" aria-label="Cerrar plato">&times;</button></div>
+      <form id="form-modal-plato">
+        <input type="hidden" id="mplato-id">
+        <div class="form-group"><label for="mplato-restaurante">Restaurante</label><select id="mplato-restaurante" class="form-control" required></select></div>
+        <div class="form-group"><label for="mplato-nombre">Nombre del plato</label><input id="mplato-nombre" class="form-control" required maxlength="150" placeholder="Ej: Trucha con patacón"></div>
+        <div class="form-group"><label for="mplato-descripcion">Descripción</label><textarea id="mplato-descripcion" class="form-control" rows="2" maxlength="4000" placeholder="Ingredientes o presentación"></textarea></div>
+        <div class="plato-form-grid">
+          <div class="form-group"><label for="mplato-categoria">Categoría</label><select id="mplato-categoria" class="form-control" required></select></div>
+          <div class="form-group"><label for="mplato-precio">Precio (COP)</label><input id="mplato-precio" class="form-control" type="number" min="0" max="99999999.99" step="0.01" required></div>
+        </div>
+        <div class="form-group"><label for="mplato-disponible">Disponibilidad del plato</label><select id="mplato-disponible" class="form-control"><option value="1">Disponible</option><option value="0">No disponible</option></select></div>
+        <div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="closeModal('modal-plato')">Cancelar</button><button type="submit" class="btn btn-success" id="btn-save-plato">Agregar plato</button></div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modal-public-menu">
+    <div class="modal-card glass modal-plato-card">
+      <div class="modal-header"><h3 id="public-menu-title">Menú del restaurante</h3><button class="close-btn" type="button" onclick="closeModal('modal-public-menu')" aria-label="Cerrar menú público">&times;</button></div>
+      <div id="public-menu-items"></div>
+      <div class="modal-actions"><button id="btn-public-reserve" type="button" class="btn btn-primary">Reservar en este restaurante</button></div>
     </div>
   </div>
 

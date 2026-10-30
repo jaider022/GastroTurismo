@@ -4,6 +4,8 @@ Proyecto final de Bases de Datos I, únicamente caso de restaurantes.
 
 El listado vigente de tareas terminadas, parciales y pendientes está en [Seguimiento del proyecto](docs/Seguimiento_proyecto.md). Se actualiza al cerrar cada mejora.
 
+La clasificación de los diez reportes exigidos y sus criterios de cálculo están en [Reportes académicos](docs/Reportes_academicos.md).
+
 ## Ensayar en este equipo
 
 1. Abre esta carpeta en Antigravity.
@@ -26,6 +28,7 @@ El archivo .env configura la base nueva gastronomia_turistica_academica en3307. 
 - Sesión mediante cookie, cierre de sesión y protección de contraseñas; migración de claves antiguas al ingresar.
 - Pedidos calculados con precios del menú y pagos correspondientes a pedido o plan.
 - Vista previa y descarga de comprobantes/facturas comparten los datos consultados y el total registrado del pedido.
+- Edición de mesas y administración de platos desde pantalla, con disponibilidad del menú y conservación de platos usados en pedidos.
 
 ## Reproducir
 

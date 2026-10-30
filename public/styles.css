@@ -136,6 +136,26 @@ h1, h2, h3, h4, h5, h6 {
   text-decoration: none;
 }
 .login-photo-credit:hover { background: #194d3b; text-decoration: underline; }
+.login-explore { padding: 0 26px 18px; }
+.login-explore .btn { font-size: 0.78rem; }
+.login-reserva-context { padding: 12px; margin-bottom: 18px; border-radius: 10px; background: #eaf2df; color: #245037; font-size: 0.8rem; line-height: 1.5; }
+.login-reserva-context[hidden] { display: none; }
+.public-layout { max-width: 1240px; margin: 0 auto; padding: 28px; min-height: 100vh; }
+.public-header, .public-brand { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.public-brand { color: var(--secondary); font-size: 1.5rem; }
+.public-hero { padding: 40px; margin: 28px 0; border-radius: 22px; background: linear-gradient(90deg, rgba(18, 52, 32, 0.9), rgba(18, 52, 32, 0.3)), url('images/cocora-restaurante.jpg') center/cover; color: #fffdf2; }
+.public-hero h1 { max-width: 650px; font-size: clamp(1.8rem, 4vw, 2.6rem); }
+.public-hero p { max-width: 650px; margin-top: 16px; line-height: 1.7; }
+.public-hero a { display: inline-block; margin-top: 22px; color: #f4e8cb; font-size: 0.7rem; }
+.public-search { margin-bottom: 12px; }
+.public-search label { display: block; margin-bottom: 6px; font-size: 0.8rem; color: var(--text-muted); }
+#public-rest-count { margin-bottom: 18px; }
+#public-restaurants { grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
+#public-restaurants .restaurant-card-footer { flex-wrap: wrap; }
+#public-restaurants h3, #public-menu-items h4 { overflow-wrap: anywhere; }
+#public-menu-items { display: grid; gap: 12px; }
+#public-menu-items .menu-item-row { gap: 16px; }
+@media (max-width: 700px) { .public-layout { padding: 18px; } .public-hero { padding: 26px; } .public-layout .public-search { align-items: stretch; flex-direction: column; } .public-header { flex-wrap: wrap; } }
 
 @media (max-width: 700px) {
   .login-wrapper {
@@ -814,6 +834,18 @@ button:focus-visible, a:focus-visible, select:focus-visible {
 
 .mesa-actions { display: flex; gap: 8px; width: 100%; margin-top: 10px; }
 .mesa-actions .btn { flex: 1; padding-inline: 10px; }
+
+.platos-filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; padding: 20px; }
+.platos-filters label { display: block; color: var(--text-muted); font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; }
+.plato-description { margin-top: 5px; max-width: 300px; font-size: 0.78rem; line-height: 1.5; color: var(--text-muted); }
+#section-platos .data-table th, #section-platos .data-table td { padding: 14px 12px; }
+#section-platos .data-table td:nth-child(3) { white-space: nowrap; }
+.plato-actions { display: flex; gap: 8px; align-items: center; }
+.plato-actions .btn { min-height: 32px; padding: 6px 10px; white-space: nowrap; }
+.modal-plato-card { max-width: 580px; max-height: calc(100vh - 40px); max-height: calc(100svh - 40px); overflow-y: auto; }
+.plato-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+#platos-pagina { white-space: nowrap; }
+@media (max-width: 700px) { .platos-filters, .plato-form-grid { grid-template-columns: minmax(0, 1fr); } }
 
 .mesa-table-icon {
   width: 60px;
@@ -1498,7 +1530,9 @@ button:focus-visible, a:focus-visible, select:focus-visible {
   position: absolute;
   top: 55px;
   right: 0;
-  width: 320px;
+  width: min(360px, calc(100vw - 32px));
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
   padding: 16px;
   box-shadow: var(--shadow-lg);
   display: none;
@@ -1534,7 +1568,6 @@ button:focus-visible, a:focus-visible, select:focus-visible {
   font-size: 0.8rem;
   padding: 8px;
   border-bottom: 1px solid var(--glass-border);
-  cursor: pointer;
   transition: background 0.15s ease;
 }
 
@@ -1546,6 +1579,14 @@ button:focus-visible, a:focus-visible, select:focus-visible {
   border-left: 2px solid var(--primary);
   background: #fff5e6;
 }
+
+.notification-filter-label { display: block; margin-bottom: 6px; font-size: 0.78rem; color: var(--text-muted); }
+.notification-summary { margin: 10px 0; color: var(--text-muted); font-size: 0.75rem; }
+.notification-pagination { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 12px; font-size: 0.75rem; }
+.notification-pagination .btn { padding: 6px 10px; }
+.notification-item p { overflow-wrap: anywhere; line-height: 1.5; }
+.notification-date { display: block; margin: 6px 0; font-size: 0.7rem; color: var(--text-muted); }
+.notification-item .btn { font-size: 0.72rem; padding: 5px 8px; }
 
 /* Toast Container */
 .toast-container {
