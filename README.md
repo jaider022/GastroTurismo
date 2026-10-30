@@ -25,6 +25,7 @@ El archivo .env configura la base nueva gastronomia_turistica_academica en3307. 
 - Exportación de reportes con criterios; impresión como PDF si faltan bibliotecas externas.
 - Sesión mediante cookie, cierre de sesión y protección de contraseñas; migración de claves antiguas al ingresar.
 - Pedidos calculados con precios del menú y pagos correspondientes a pedido o plan.
+- Vista previa y descarga de comprobantes/facturas comparten los datos consultados y el total registrado del pedido.
 
 ## Reproducir
 
@@ -38,6 +39,6 @@ Si MySQL no conecta hay una demostración separada; la fuente se indica en panta
 
 ## Pendientes finales
 
-Actualizar diagramas Oracle/EERCASE con visitas, accesos y regla de pagos. Revisar alcance con profesora, permisos por rol y CRUD antiguos, plantillas y presentación final. Esta versión es un avance funcional comprobado; no significa que toda la entrega esté terminada.
+Actualizar diagramas Oracle/EERCASE con visitas, accesos y regla de pagos. Revisar alcance con profesora, permisos por rol y CRUD antiguos, probar plantillas con MySQL y completar la presentación final. Esta versión es un avance funcional comprobado; no significa que toda la entrega esté terminada.
 
 Reglas detalladas: docs/datos-y-modelo.md.

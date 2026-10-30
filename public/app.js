@@ -2435,6 +2435,8 @@ function exportReportToPDF() {
 // 15. MÓDULO DOCUMENTOS & PLANTILLAS (VISTA PREVIA Y PDF)
 // --------------------------------------------------------------------
 async function loadDocumentosSection() {
+  clearDocumentPreview();
+  document.getElementById('preview-doc-container').style.display = 'none';
   const selectRes = document.getElementById('doc-reserva-select');
   const selectPed = document.getElementById('doc-pedido-select');
   
@@ -2467,63 +2469,73 @@ async function loadDocumentosSection() {
   }
 }
 
-let activePreviewType = "";
-let activePreviewId = null;
+let activeDocumentPreview = null;
+let documentPreviewRequest = 0;
+
+function clearDocumentPreview() {
+  activeDocumentPreview = null;
+  documentPreviewRequest += 1;
+  document.getElementById('btn-download-preview-pdf').disabled = true;
+}
 
 async function generateDocumentPDF(type) {
   const previewContainer = document.getElementById('preview-doc-container');
   const previewCanvas = document.getElementById('preview-canvas-content');
+  clearDocumentPreview();
+  const requestId = documentPreviewRequest;
+  let previewRecord;
   
   previewContainer.style.display = 'block';
   previewCanvas.innerHTML = 'Generando vista previa...';
 
-  activePreviewType = type;
-
+  try {
   if (type === 'reserva') {
     const id = document.getElementById('doc-reserva-select').value;
-    activePreviewId = id;
     if (!id) {
       previewCanvas.innerHTML = 'Selecciona una reserva válida.';
       return;
     }
 
     const list = await requestAPI('reservas');
-    const res = list.find(x => x.id_reserva == id);
-    if (!res) return;
+    if (requestId !== documentPreviewRequest) return;
+    const record = list.find(x => x.id_reserva == id);
+    if (!record) throw new Error('La reserva seleccionada ya no está disponible.');
+    const res = JSON.parse(JSON.stringify(record));
+    previewRecord = res;
 
     previewCanvas.innerHTML = `
       <div class="invoice-box" style="text-align: center; border: 2px dashed #f59e0b; padding: 20px;">
         <h2 style="color: var(--primary); font-size: 1.5rem; margin-bottom: 10px;">COMPROBANTE DE RESERVA</h2>
-        <p style="font-size: 0.85rem; color: #6b7280; margin-bottom: 20px;">Código Único: <strong>RES-${res.id_reserva}</strong></p>
+        <p style="font-size: 0.85rem; color: #6b7280; margin-bottom: 20px;">Código Único: <strong>RES-${escapeHTML(res.id_reserva)}</strong></p>
         
         <table style="width: 100%; border-collapse: collapse; text-align: left; margin-bottom: 20px;">
           <tr>
             <td style="padding: 8px; border-bottom: 1px solid #f3f4f6; font-weight: bold;">Restaurante:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #f3f4f6;">${res.nombre_restaurante}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #f3f4f6;">${escapeHTML(res.nombre_restaurante)}</td>
           </tr>
           <tr>
             <td style="padding: 8px; border-bottom: 1px solid #f3f4f6; font-weight: bold;">Mesa asignada:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #f3f4f6;">${res.numero_mesa} (${res.ubicacion_mesa})</td>
+            <td style="padding: 8px; border-bottom: 1px solid #f3f4f6;">${escapeHTML(res.numero_mesa)} (${escapeHTML(res.ubicacion_mesa)})</td>
           </tr>
           <tr>
             <td style="padding: 8px; border-bottom: 1px solid #f3f4f6; font-weight: bold;">Titular Reserva:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #f3f4f6;">${res.nombre_usuario}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #f3f4f6;">${escapeHTML(res.nombre_usuario)}</td>
           </tr>
           <tr>
             <td style="padding: 8px; border-bottom: 1px solid #f3f4f6; font-weight: bold;">Correo:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #f3f4f6;">${res.correo_usuario}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #f3f4f6;">${escapeHTML(res.correo_usuario)}</td>
           </tr>
           <tr>
             <td style="padding: 8px; border-bottom: 1px solid #f3f4f6; font-weight: bold;">Fecha & Hora:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #f3f4f6;">${res.fecha_reserva} a las ${res.hora_reserva}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #f3f4f6;">${escapeHTML(res.fecha_reserva)} a las ${escapeHTML(res.hora_reserva)}</td>
           </tr>
           <tr>
             <td style="padding: 8px; border-bottom: 1px solid #f3f4f6; font-weight: bold;">Cantidad Personas:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #f3f4f6;">${res.cantidad_personas} adultos</td>
+            <td style="padding: 8px; border-bottom: 1px solid #f3f4f6;">${escapeHTML(res.cantidad_personas)} personas</td>
           </tr>
           <tr>
             <td style="padding: 8px; border-bottom: 1px solid #f3f4f6; font-weight: bold;">Estado actual:</td>
-            <td style="padding: 8px; border-bottom: 1px solid #f3f4f6; color: var(--secondary); font-weight: bold;">${res.estado_reserva.toUpperCase()}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #f3f4f6; color: var(--secondary); font-weight: bold;">${escapeHTML(String(res.estado_reserva).toUpperCase())}</td>
           </tr>
         </table>
         
@@ -2533,29 +2545,36 @@ async function generateDocumentPDF(type) {
 
   } else if (type === 'pedido') {
     const id = document.getElementById('doc-pedido-select').value;
-    activePreviewId = id;
     if (!id) {
       previewCanvas.innerHTML = 'Selecciona un pedido válido.';
       return;
     }
 
     const list = await requestAPI('pedidos');
-    const ped = list.find(x => x.id_pedido == id);
-    if (!ped) return;
+    if (requestId !== documentPreviewRequest) return;
+    const record = list.find(x => x.id_pedido == id);
+    if (!record) throw new Error('El pedido seleccionado ya no está disponible.');
+    const ped = JSON.parse(JSON.stringify(record));
+    ped.total_pago = Number(ped.total_pago);
+    if (!Array.isArray(ped.detalles) || !ped.detalles.length || !Number.isFinite(ped.total_pago)) {
+      throw new Error('El pedido no tiene un detalle o un total válido.');
+    }
+    ped.detalles = ped.detalles.map(d => ({...d, cantidad: Number(d.cantidad), precio_unitario: Number(d.precio_unitario)}));
+    if (ped.detalles.some(d => !Number.isInteger(d.cantidad) || d.cantidad < 1 || !Number.isFinite(d.precio_unitario) || d.precio_unitario < 0)) {
+      throw new Error('El pedido tiene cantidades o precios inválidos.');
+    }
+    previewRecord = ped;
 
     let itemsRows = '';
     ped.detalles.forEach(d => {
       const rowTotal = d.precio_unitario * d.cantidad;
       itemsRows += `
         <tr class="item">
-          <td style="padding: 8px; border-bottom: 1px solid #eee;">${d.nombre_plato} x${d.cantidad}</td>
-          <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">$${rowTotal.toLocaleString()} COP</td>
+          <td style="padding: 8px; border-bottom: 1px solid #eee;">${escapeHTML(d.nombre_plato)} x${d.cantidad}</td>
+          <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">$${rowTotal.toLocaleString('es-CO')} COP</td>
         </tr>
       `;
     });
-
-    const iva = ped.total_pago * 0.08; // Impuesto al consumo de comida colombiana 8%
-    const subtotal = ped.total_pago - iva;
 
     previewCanvas.innerHTML = `
       <div class="invoice-box" style="border: 1px solid #eee; padding: 30px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);">
@@ -2566,8 +2585,8 @@ async function generateDocumentPDF(type) {
                 <tr>
                   <td class="title" style="color: var(--primary);">GASTROTURISMO</td>
                   <td style="text-align: right;">
-                    Factura #: FACT-${ped.id_pedido.toString().slice(-6)}<br>
-                    Fecha: ${new Date(ped.fecha_pedido).toLocaleDateString()}<br>
+                    Factura #: FACT-${escapeHTML(ped.id_pedido)}<br>
+                    Fecha: ${pedidoFechaLocal(ped.fecha_pedido).split('-').reverse().join('/')}<br>
                   </td>
                 </tr>
               </table>
@@ -2578,12 +2597,12 @@ async function generateDocumentPDF(type) {
               <table style="width: 100%;">
                 <tr>
                   <td>
-                    Restaurante: <strong>${ped.nombre_restaurante}</strong><br>
-                    Tipo Servicio: ${ped.tipo_servicio.toUpperCase()}<br>
-                    Entrega: ${ped.direccion_entrega || 'Comedor del Local'}
+                    Restaurante: <strong>${escapeHTML(ped.nombre_restaurante)}</strong><br>
+                    Tipo Servicio: ${escapeHTML(String(ped.tipo_servicio).toUpperCase())}<br>
+                    Entrega: ${escapeHTML(ped.direccion_entrega || 'Comedor del Local')}
                   </td>
                   <td style="text-align: right;">
-                    Cliente: <strong>${ped.nombre_usuario}</strong><br>
+                    Cliente: <strong>${escapeHTML(ped.nombre_usuario)}</strong><br>
                     Eje Cafetero Gastronomía
                   </td>
                 </tr>
@@ -2598,42 +2617,47 @@ async function generateDocumentPDF(type) {
           <tr class="total">
             <td></td>
             <td style="text-align: right; padding-top: 20px;">
-               Subtotal: $${subtotal.toLocaleString()} COP<br>
-               Impoconsumo (8%): $${iva.toLocaleString()} COP<br>
-               <span style="font-size: 1.2rem; font-weight: bold; color: var(--secondary);">Total: $${ped.total_pago.toLocaleString()} COP</span>
+               <span style="font-size: 1.2rem; font-weight: bold; color: var(--secondary);">Total registrado: $${ped.total_pago.toLocaleString('es-CO')} COP</span>
             </td>
           </tr>
         </table>
       </div>
     `;
+  } else {
+    throw new Error('Selecciona un tipo de documento válido.');
   }
+  activeDocumentPreview = {type, id: type === 'reserva' ? previewRecord.id_reserva : previewRecord.id_pedido, data: previewRecord};
   
   // Agregar listener para descargar
   document.getElementById('btn-download-preview-pdf').onclick = downloadActivePreviewPDF;
+  document.getElementById('btn-download-preview-pdf').disabled = false;
+  } catch (error) {
+    if (requestId !== documentPreviewRequest) return;
+    activeDocumentPreview = null;
+    previewCanvas.textContent = error.message;
+    document.getElementById('btn-download-preview-pdf').disabled = true;
+  }
 }
 
 function downloadActivePreviewPDF() {
-  if (!activePreviewId) return;
+  const preview = activeDocumentPreview;
+  if (!preview) return;
+  if (!window.jspdf?.jsPDF) {
+    showToast('No se pudo cargar la herramienta PDF. Recarga la página e inténtalo de nuevo.', 'warning');
+    return;
+  }
+  try {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
+  if (typeof doc.autoTable !== 'function') throw new Error('No se pudo cargar la herramienta de tablas PDF. Recarga la página.');
 
-  if (activePreviewType === 'reserva') {
-    const list = getLS('gt_reservas');
-    const users = getLS('gt_usuarios');
-    const mesas = getLS('gt_mesas');
-    const rests = getLS('gt_restaurantes');
+  if (preview.type === 'reserva') {
+    const res = preview.data;
 
-    const res = list.find(x => x.id_reserva == activePreviewId);
-    if (!res) return;
-
-    const u = users.find(x => x.id_usuario == res.id_usuario) || {};
-    const m = mesas.find(x => x.id_mesa == res.id_mesa) || {};
-    const r = rests.find(x => x.id_restaurante == m.id_restaurante) || {};
-
-    doc.setFillColor(10, 15, 29);
+    doc.setFillColor(25, 77, 59);
     doc.rect(0, 0, 210, 45, 'F');
-    doc.setTextColor(245, 158, 11);
-    doc.setFontSize(22);
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(19);
     doc.text('COMPROBANTE DE RESERVA', 20, 22);
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(10);
@@ -2643,12 +2667,11 @@ function downloadActivePreviewPDF() {
     doc.setFontSize(12);
     
     const rows = [
-      ['Establecimiento', r.nombre],
-      ['Ubicación', r.direccion],
-      ['Número de Mesa', m.numero_mesa],
-      ['Ubicación Mesa', m.ubicacion],
-      ['Cliente Titular', u.nombre],
-      ['Contacto Tel.', u.telefono || 'N/A'],
+      ['Establecimiento', res.nombre_restaurante],
+      ['Número de Mesa', res.numero_mesa],
+      ['Ubicación Mesa', res.ubicacion_mesa],
+      ['Cliente Titular', res.nombre_usuario],
+      ['Correo', res.correo_usuario || 'No registrado'],
       ['Fecha Reservada', res.fecha_reserva],
       ['Hora de Llegada', res.hora_reserva],
       ['Comensales', `${res.cantidad_personas} personas`],
@@ -2660,38 +2683,33 @@ function downloadActivePreviewPDF() {
       head: [['Concepto', 'Detalle']],
       body: rows,
       theme: 'striped',
-      headStyles: { fillColor: [245, 158, 11] }
+      headStyles: { fillColor: [38, 115, 78], textColor: [255, 255, 255] }
     });
 
     doc.setFontSize(9);
-    doc.setTextColor(156, 163, 175);
-    doc.text('Por favor, presenta este tiquete en tu celular al llegar al establecimiento gastronómico.', 20, 150);
+    doc.setTextColor(89, 104, 93);
+    let noteY = doc.lastAutoTable.finalY + 12;
+    if (noteY > 270) { doc.addPage(); noteY = 25; }
+    doc.text(doc.splitTextToSize('Por favor, preséntate 10 minutos antes en el establecimiento.', 170), 20, noteY);
 
     doc.save(`Comprobante_Reserva_${res.id_reserva}.pdf`);
 
-  } else if (activePreviewType === 'pedido') {
-    const list = getLS('gt_pedidos');
-    const users = getLS('gt_usuarios');
-    const rests = getLS('gt_restaurantes');
+  } else if (preview.type === 'pedido') {
+    const ped = preview.data;
 
-    const ped = list.find(x => x.id_pedido == activePreviewId);
-    if (!ped) return;
-
-    const u = users.find(x => x.id_usuario == ped.id_usuario) || {};
-    const r = rests.find(x => x.id_restaurante == ped.id_restaurante) || {};
-
-    doc.setFillColor(16, 185, 129);
+    doc.setFillColor(25, 77, 59);
     doc.rect(0, 0, 210, 45, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(22);
     doc.text('FACTURA COMERCIAL', 20, 22);
     doc.setFontSize(10);
-    doc.text(`NÚMERO DE PEDIDO: FACT-${ped.id_pedido.toString().slice(-6)}`, 20, 32);
+    doc.text(`NÚMERO DE PEDIDO: FACT-${ped.id_pedido}`, 20, 32);
+    doc.text(`Fecha: ${pedidoFechaLocal(ped.fecha_pedido).split('-').reverse().join('/')}`, 20, 39);
 
     doc.setTextColor(31, 41, 55);
     doc.setFontSize(11);
-    doc.text(`Establecimiento: ${r.nombre}`, 20, 60);
-    doc.text(`Cliente: ${u.nombre}`, 20, 66);
+    doc.text(`Establecimiento: ${ped.nombre_restaurante}`, 20, 60);
+    doc.text(`Cliente: ${ped.nombre_usuario}`, 20, 66);
     doc.text(`Servicio: ${ped.tipo_servicio.toUpperCase()}`, 20, 72);
     if (ped.direccion_entrega) {
       doc.text(`Dirección Delivery: ${ped.direccion_entrega}`, 20, 78);
@@ -2701,33 +2719,31 @@ function downloadActivePreviewPDF() {
     const rows = ped.detalles.map(d => [
       d.nombre_plato,
       d.cantidad,
-      `$${d.precio_unitario.toLocaleString()} COP`,
-      `$${(d.precio_unitario * d.cantidad).toLocaleString()} COP`
+      `$${d.precio_unitario.toLocaleString('es-CO')} COP`,
+      `$${(d.precio_unitario * d.cantidad).toLocaleString('es-CO')} COP`
     ]);
-
-    const iva = ped.total_pago * 0.08;
-    const subtotal = ped.total_pago - iva;
 
     doc.autoTable({
       startY: 88,
       head: [headers],
       body: rows,
       theme: 'grid',
-      headStyles: { fillColor: [16, 185, 129] }
+      headStyles: { fillColor: [38, 115, 78], textColor: [255, 255, 255] }
     });
 
-    const finalY = doc.lastAutoTable.finalY + 15;
-    doc.setFontSize(11);
-    doc.text(`Subtotal: $${subtotal.toLocaleString()} COP`, 140, finalY);
-    doc.text(`Impoconsumo (8%): $${iva.toLocaleString()} COP`, 140, finalY + 6);
+    let finalY = doc.lastAutoTable.finalY + 15;
+    if (finalY > 275) { doc.addPage(); finalY = 25; }
     doc.setFontSize(13);
     doc.setFont('helvetica', 'bold');
-    doc.text(`TOTAL FACTURA: $${ped.total_pago.toLocaleString()} COP`, 140, finalY + 14);
+    doc.text(`TOTAL REGISTRADO: $${ped.total_pago.toLocaleString('es-CO')} COP`, 190, finalY, {align: 'right'});
 
-    doc.save(`Factura_Pedido_${ped.id_pedido.toString().slice(-4)}.pdf`);
+    doc.save(`Factura_Pedido_${ped.id_pedido}.pdf`);
   }
 
   showToast('Documento exportado a PDF con éxito.', 'success');
+  } catch (error) {
+    showToast(error.message, 'danger');
+  }
 }
 
 // --------------------------------------------------------------------

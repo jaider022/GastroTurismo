@@ -1,6 +1,6 @@
 # Seguimiento del proyecto final — GastroTurismo
 
-**Versión 3 — 29 de octubre de 2026.** Este es el listado vigente para continuar y marcar avances. Sustituye como seguimiento al checklist del 27 de octubre, que se conserva como revisión histórica.
+**Versión 4 — 29 de octubre de 2026.** Este es el listado vigente para continuar y marcar avances. Sustituye como seguimiento al checklist del 27 de octubre, que se conserva como revisión histórica.
 
 Proyecto revisado: la carpeta **Bases de datos** del escritorio, abierta en Antigravity. Los avances de la copia separada de Documents no se cuentan como terminados en este proyecto.
 
@@ -33,7 +33,7 @@ La conexión con MySQL se deja **para después por indicación del usuario**. El
 | 11 | 🟡 | Pedidos y delivery | Existe selección de platos, carrito, dirección de entrega y cálculo del total en servidor. Falta completar permisos de cambios de estado y pruebas integradas. |
 | 12 | 🟡 | Reportes y gráficas | Hay 12 opciones, comparativos mensuales y gráficas en 6, 9 y 10. Falta el recorrido final con MySQL y validar la clasificación exigida de 3 simples, 4 intermedios y 3 con subconsultas. |
 | 13 | ✅ | Exportación básica de reportes | La exportación de tabla y criterios está implementada; un PDF de reporte se generó y revisó en el avance anterior. La revisión final de todos los reportes con datos reales queda en el punto 25. Incluir gráficas dentro del PDF no se identificó como requisito expreso. |
-| 14 | 🟡 | Comprobantes y factura | La vista previa consulta la API; la descarga vuelve a la copia del navegador. Falta que ambas usen el mismo registro para evitar documentos antiguos o diferentes. |
+| 14 | ✅ | Comprobantes y factura | Vista previa y descarga comparten una copia del mismo registro consultado. Una selección vacía, error o respuesta antigua no permite descargar el documento anterior. Se normalizan importes numéricos de la API y se conserva el total registrado, sin añadir un desglose de impuestos ausente en los datos. Pasaron 12 pruebas aisladas y se descargaron/revisaron visualmente un comprobante y una factura en demo. Integración MySQL pendiente en 21/25. |
 | 15 | 🟡 | Permisos de clientes y propietarios | El acceso general está protegido parcialmente. Falta aplicar rol y propiedad en consultas y cambios de los módulos antiguos; ocultar botones no completa esta protección. |
 | 16 | 🟡 | Coherencia de los dos modelos | Existen entidad-relación y relacional. Falta cerrar la comparación con las 16 tablas, representar accesos al sistema y revisar la obligatoriedad/exclusividad de pedido o plan en pagos. |
 | 17 | ☐ | Explorar antes de registrarse | Propuesta del usuario: ver restaurantes, elegir y pedir acceso/registro al confirmar, conservando la selección. Todavía no está implementada. Es una mejora del recorrido, no un requisito adicional de la profesora. |
@@ -42,14 +42,14 @@ La conexión con MySQL se deja **para después por indicación del usuario**. El
 | 20 | 🟡 | Notificaciones y recordatorios | Existe aviso al crear una reserva. Faltan recordatorios programados y completar permisos de lectura/marcado. |
 | 21 | 🟡 | Servidor local y MySQL | La aplicación responde en localhost:3001 en modo demo. Falta comprobar conexión MySQL y ejecutar pruebas con la base académica. No se arrancó MySQL en esta revisión. |
 | 22 | ☐ | Documento final | No se encontró un informe completo en la plantilla exigida entre los archivos revisados. Falta desarrollar y revisar el documento con integrantes, profesora, modelos, requisitos y evidencias. |
-| 23 | ✅ | Guardar los últimos avances en GitHub | Avance guardado y publicado en `jaider022/GastroTurismo`, rama `main`. El commit `735f88d` contiene el tema, fotografía, filtros, edición de mesas, pruebas y documentación. Se comprobó que la revisión local coincidiera con la remota. Credenciales y configuración exclusiva del equipo permanecen excluidas. |
+| 23 | ✅ | Guardar los últimos avances en GitHub | Avance guardado en `jaider022/GastroTurismo`, rama `main`. Se publica la corrección del punto 14 junto con sus pruebas y este seguimiento. En cada guardado se comprueba la coincidencia local/remota. Credenciales y configuración exclusiva del equipo permanecen excluidas. |
 | 24 | ☐ | Aprobación y sustentación | Falta dejar constancia de aprobación de requisitos por la profesora y preparar/practicar la explicación de ambos integrantes. La asesoría y las preguntas preparadas son avances, no una sustentación realizada. |
-| 25 | 🟡 | Pruebas finales | Pasaron 24 pruebas base y después **5 pruebas específicas de edición de mesas**. También se comprobó su formulario y guardado en demo. Faltan pruebas completas por rol, cuatro tablas, reservas, documentos y reportes contra MySQL. |
+| 25 | 🟡 | Pruebas finales | Pasaron 24 pruebas base, 5 de edición de mesas y **12 de documentos** en sus revisiones respectivas. Se comprobaron formulario/guardado de mesas y dos descargas PDF en demo. Faltan pruebas completas por rol, cuatro tablas, reservas, documentos y reportes contra MySQL. |
 
 ## Orden de trabajo propuesto
 
 1. **08: edición de mesas completada en pantalla.** Sigue **09: administración de platos**, para cerrar las pantallas de las cuatro tablas principales propuestas: restaurantes, mesas, platos y reservas.
-2. **14: comprobantes y factura**, unificando el origen de los datos.
+2. **14: comprobantes y factura completados**, compartiendo los datos entre vista previa y descarga. Se adelantó esta corrección por su alcance acotado mientras se espera la revisión de la profesora.
 3. **15 y 10: permisos y reglas de reservas**, con comprobaciones aisladas antes de la integración.
 4. **17: explorar antes del registro**, enlazando cada reserva con su usuario y mesa, sin perder la selección al acceder.
 5. **18, 19 y 20: experiencias, planes/pagos y recordatorios**, según el alcance académico acordado.
@@ -73,6 +73,14 @@ La conexión con MySQL se deja **para después por indicación del usuario**. El
 - El guardado visual se comprobó conservando los valores existentes de una mesa de demostración. Los cambios de valores y las validaciones se probaron de forma aislada, sin registros de MySQL.
 - No se cambió el servidor ni la estructura de la base. La autorización completa en servidor permanece pendiente en el punto 15.
 
+### Punto 14 — versión 4
+
+- Pruebas específicas: `node --test tests/frontend-documentos.test.js`: **12 aprobadas, 0 fallidas**.
+- Cubren datos API diferentes de la copia demo, cambio posterior de selector, copia profunda de datos, selección vacía, error, registro eliminado, respuestas fuera de orden, importes DECIMAL como texto y librerías PDF ausentes.
+- Descarga desde la aplicación: comprobante RES-364 y factura FACT-349. Se verificaron sus datos contra la vista previa y se renderizó/revisó cada página de ambos archivos.
+- El documento descargado utiliza el total guardado en el pedido. Se retiró el cálculo de impuestos que no estaba representado en sus datos.
+- No se modificaron entidades, esquema ni servidor, y no se inició MySQL. Su prueba real permanece pendiente.
+
 ## Registro de avances
 
 | Versión | Fecha | Cambio |
@@ -80,5 +88,6 @@ La conexión con MySQL se deja **para después por indicación del usuario**. El
 | 1 | 29/10/2026 | Listado inicial actualizado, pendientes diferenciados y 24 pruebas aisladas aprobadas. |
 | 2 | 29/10/2026 | Punto 08 terminado en pantalla, 5 pruebas nuevas aprobadas y guardado en modo demo comprobado. Punto 21 actualizado: servidor disponible, MySQL pendiente. |
 | 3 | 29/10/2026 | Punto 23 completado: avance publicado en GitHub y revisión local/remota coincidente. Se conserva pendiente la conexión y prueba de MySQL. |
+| 4 | 29/10/2026 | Punto 14 completado en la aplicación; 12 pruebas de documentos aprobadas y dos PDF de demostración descargados y revisados. |
 
 Al terminar una tarea se conserva su ID, se actualiza su estado con la comprobación realizada y se vuelve a mostrar el listado vigente al usuario. No se marca terminado lo que solo esté propuesto o exista en otra copia del proyecto.

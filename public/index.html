@@ -684,7 +684,7 @@
           <div class="doc-card glass">
             <div class="doc-icon"><i data-lucide="receipt"></i></div>
             <h3>Factura de Pedido</h3>
-            <p>Genera el recibo detallado del consumo de alimentos para restaurante o delivery, detallando impuestos (IVA), precios unitarios y montos finales.</p>
+            <p>Genera el recibo detallado del consumo para restaurante o delivery, con cantidades, precios y el total registrado del pedido.</p>
             <div class="form-group">
               <label for="doc-pedido-select">Selecciona el Pedido:</label>
               <select id="doc-pedido-select" class="form-control">
@@ -701,7 +701,7 @@
         <div class="preview-doc-container glass" id="preview-doc-container" style="display: none;">
           <div class="preview-header">
             <h3>Vista Previa del Documento</h3>
-            <button class="btn btn-success btn-sm" id="btn-download-preview-pdf">Descargar PDF</button>
+            <button class="btn btn-success btn-sm" id="btn-download-preview-pdf" disabled>Descargar PDF</button>
           </div>
           <div class="preview-canvas" id="preview-canvas-content">
             <!-- Representación HTML estética de la factura/comprobante -->
