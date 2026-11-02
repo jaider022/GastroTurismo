@@ -57,7 +57,7 @@ function catalog({ session = new Map(), restaurants, dishes } = {}) {
     calls.push({ route, method: options.method || 'GET' });
     if (route === 'restaurantes') return rests;
     if (route === 'platos') return plates;
-    if (route === 'mesas' || route === 'reservas') return [];
+    if (route === 'mesas' || route === 'reservas' || route.startsWith('mesas/disponibilidad?')) return [];
     if (route === 'auth/login') {
       if (JSON.parse(options.body).contrasena !== 'Correcta2026!') throw new Error('Credenciales inválidas.');
       return { success: true, user };
@@ -255,7 +255,8 @@ test('el formulario original precarga el restaurante seleccionado sin guardar un
   assert.equal(view.node('modal-reserva-title').textContent, 'Nueva Reserva de Mesa');
   assert.equal(view.node('modal-reserva').classList.contains('active'), true);
   assert.equal(view.context.getPendingReservation(), null);
-  assert.ok(view.calls.some(call => call.route === 'mesas'));
-  assert.ok(view.calls.some(call => call.route === 'reservas'));
+  // La disponibilidad se consulta al servidor sin leer las reservas de otros clientes.
+  assert.ok(view.calls.some(call => call.route === 'mesas/disponibilidad?id_restaurante=2&fecha=' + view.context.bogotaToday() + '&excluir_reserva=0'));
+  assert.ok(!view.calls.some(call => call.route === 'reservas'));
   assert.equal(view.writes.length, 0);
 });

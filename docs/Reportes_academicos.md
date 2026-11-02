@@ -33,3 +33,7 @@ Se corrigieron sumas de importes y calificaciones recibidos como texto; precios 
 El SQL de VIP ahora aplica el mismo filtro de clientes en la población y en su media. El SQL mostrado del reporte 10 incluye también `id_categoria` en su agrupación, igual que el servidor.
 
 `tests/reportes-academicos.test.js` ejecuta las diez consultas reales del servidor mediante un motor SQL independiente **en memoria**, con equivalentes de IF y DATE_FORMAT, y compara sus resultados con los cálculos demo sobre datos ficticios y casos de borde. También comprueba clasificación y coincidencia del SQL mostrado. Esta verificación no sustituye la ejecución en MySQL ni valida sus modos SQL, permisos o configuración. No se modificaron datos del usuario ni los modelos.
+
+## Corrección del 2 de noviembre de 2026 (reporte 10 en MariaDB)
+
+Al ejecutar en MariaDB 10.4 (XAMPP), la versión anterior del reporte 10 —una tabla derivada filtrada con la referencia externa `p.id_categoria`— devolvió solo 2 platos en lugar de 13. Se reemplazó por una subconsulta correlacionada directa: `SUM(dp2.cantidad) * 1.0 / COUNT(DISTINCT p2.id_plato)` de los platos con ventas de la misma categoría. Calcula la misma media y se comprobó contra MariaDB en `tests/mysql.modulos.integration.test.js`.

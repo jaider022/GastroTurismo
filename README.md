@@ -30,6 +30,17 @@ El archivo .env configura la base nueva gastronomia_turistica_academica en3307. 
 - Vista previa y descarga de comprobantes/facturas comparten los datos consultados y el total registrado del pedido.
 - Edición de mesas y administración de platos desde pantalla, con disponibilidad del menú y conservación de platos usados en pedidos.
 
+## Versión 3 — cierre de la entrega (2 de noviembre de 2026)
+
+- **Experiencias gastronómicas** (catas, clases de cocina, tours, maridajes, desayunos): CRUD para propietarios, inscripción con cupo controlado en transacción y **pago en línea** para clientes, cancelación y registro de asistencia.
+- **Planes con vigencia**: tabla `suscripciones`; contratar, renovar o cambiar de plan con pago en línea. Al vencer, el restaurante vuelve al plan Básico automáticamente.
+- **Recordatorios personalizados**: tabla `recordatorios`; el cliente elige la anticipación de su reserva (24 h, 3 h, 1 h o ninguno) y crea recordatorios propios. El servidor los convierte en notificaciones cada minuto.
+- **Reglas en servidor**: reservas sin fechas pasadas, en horario 6:00–22:59, sin exceder la mesa y con una reserva activa por mesa y día; transiciones válidas de reservas y pedidos; pagos que coinciden con el total del pedido.
+- **Permisos por rol y propiedad** en restaurantes, mesas, platos, reservas, pedidos, reseñas y experiencias. Los listados de reservas y pedidos se filtran por rol en el servidor.
+- 20 tablas en total. Modelos actualizados en `docs/modelos/*_v3.png` (fuente Mermaid `.mmd`).
+
+Para una base existente de 16 tablas: `database/migracion-v3.sql`. Para empezar limpio: `npm run db:recrear` (solo borra `gastronomia_turistica_academica`).
+
 ## Reproducir
 
 `npm run db:cargar` carga database/demo-inicial.sql en la base académica. Conserva registros existentes; no migra una base antigua.
@@ -42,6 +53,6 @@ Si MySQL no conecta hay una demostración separada; la fuente se indica en panta
 
 ## Pendientes finales
 
-Actualizar diagramas Oracle/EERCASE con visitas, accesos y regla de pagos. Revisar alcance con profesora, permisos por rol y CRUD antiguos, probar plantillas con MySQL y completar la presentación final. Esta versión es un avance funcional comprobado; no significa que toda la entrega esté terminada.
+Ejecutar `npm run db:recrear` y `GASTRO_MYSQL_TEST=1 node --test tests/mysql.integration.test.js` en XAMPP, recorrer la aplicación con los tres roles, trasladar las cuatro entidades nuevas al diagrama de EERCASE si la profesora lo exige en esa herramienta y preparar la sustentación.
 
 Reglas detalladas: docs/datos-y-modelo.md.

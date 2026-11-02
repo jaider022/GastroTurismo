@@ -2,7 +2,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
-const TABLES = ['zonas', 'usuarios', 'planes_suscripcion', 'categorias', 'metodos_pago', 'restaurantes', 'mesas', 'platos', 'reservas', 'pedidos', 'detalle_pedidos', 'pagos', 'resenas', 'notificaciones', 'visitas', 'accesos_sistema'];
+const TABLES = ['zonas', 'usuarios', 'planes_suscripcion', 'categorias', 'metodos_pago', 'restaurantes', 'mesas', 'platos', 'reservas', 'pedidos', 'detalle_pedidos', 'experiencias', 'inscripciones_experiencia', 'pagos', 'suscripciones', 'resenas', 'notificaciones', 'visitas', 'accesos_sistema', 'recordatorios'];
+const addMonths = (date, months) => new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + months, date.getUTCDate(), 12));
 const DEMO_PASSWORD = 'Gastro2026!';
 const dateText = date => date.toISOString().slice(0, 10);
 const addDays = (date, days) => new Date(date.getTime() + days * 86400000);
@@ -64,8 +65,8 @@ function generateDataset(cutoff = todayBogota()) {
         order.total_pago += detail.cantidad * detail.precio_unitario;
       });
       data.pedidos.push(order);
-      if (!cancelled) data.pagos.push({ id_pago: data.pagos.length + 1, monto: order.total_pago, fecha_pago: `${fecha} 14:15:00`, estado_pago: 'aprobado', id_usuario: userId, id_metodo: 1 + (dayIndex + ri) % 5, id_pedido: order.id_pedido, id_plan: null });
-      if (day.getUTCDate() === 1 && (r.id_plan === 2 || (r.id_plan === 3 && dayIndex === 0))) data.pagos.push({ id_pago: data.pagos.length + 1, monto: data.planes_suscripcion.find(p => p.id_plan === r.id_plan).costo, fecha_pago: `${fecha} 09:00:00`, estado_pago: 'aprobado', id_usuario: r.id_propietario, id_metodo: 2, id_pedido: null, id_plan: r.id_plan });
+      if (!cancelled) data.pagos.push({ id_pago: data.pagos.length + 1, monto: order.total_pago, fecha_pago: `${fecha} 14:15:00`, estado_pago: 'aprobado', id_usuario: userId, id_metodo: 1 + (dayIndex + ri) % 5, id_pedido: order.id_pedido, id_plan: null, id_inscripcion: null });
+      if (day.getUTCDate() === 1 && (r.id_plan === 2 || (r.id_plan === 3 && dayIndex === 0))) data.pagos.push({ id_pago: data.pagos.length + 1, monto: data.planes_suscripcion.find(p => p.id_plan === r.id_plan).costo, fecha_pago: `${fecha} 09:00:00`, estado_pago: 'aprobado', id_usuario: r.id_propietario, id_metodo: 2, id_pedido: null, id_plan: r.id_plan, id_inscripcion: null });
       if (!cancelled && !data.resenas.some(x => x.id_usuario === userId && x.id_restaurante === r.id_restaurante)) data.resenas.push({ id_resena: data.resenas.length + 1, calificacion: 3 + (dayIndex + ri) % 3, comentario: ['Buena atención y platos bien presentados.', 'Disfrutamos los sabores de la región.', 'El lugar es agradable y las porciones adecuadas.'][(dayIndex + ri) % 3], fecha_opinion: fecha, id_usuario: userId, id_restaurante: r.id_restaurante });
       if (dayIndex % 8 === 0) data.notificaciones.push({ id_notificacion: data.notificaciones.length + 1, mensaje: `Reserva ${reservation.id_reserva} ${cancelled ? 'cancelada' : 'finalizada'} en ${r.nombre}.`, fecha_envio: `${fecha} 15:00:00`, leido: dayIndex % 16 === 0, id_usuario: userId });
       data.accesos_sistema.push({ id_acceso: data.accesos_sistema.length + 1, id_usuario: userId, fecha_ingreso: `${fecha} 10:00:00` });
@@ -78,6 +79,72 @@ function generateDataset(cutoff = todayBogota()) {
     const mesa = data.mesas[(i * 3) % data.mesas.length];
     data.reservas.push({ id_reserva: data.reservas.length + 1, fecha_reserva: dateText(addDays(end, i)), hora_reserva: '13:00:00', cantidad_personas: Math.min(4, mesa.capacidad), estado_reserva: i % 3 === 0 ? 'pendiente' : 'confirmada', id_usuario: 6 + i, id_mesa: mesa.id_mesa });
   }
+
+  // Experiencias gastronómicas: cuatro realizadas en el periodo y dos programadas por restaurante.
+  const catalog = [
+    ['cata', 'Cata de cafés de origen', 'Recorrido sensorial por tres perfiles de café del Quindío con barista certificado.', 90, 10, 45000],
+    ['clase_cocina', 'Clase de cocina cafetera', 'Preparación guiada de arepas, hogao y frijoles con ingredientes de la huerta.', 150, 8, 85000],
+    ['tour', 'Recorrido gastronómico por el pueblo', 'Caminata con degustaciones en tiendas tradicionales y plaza de mercado.', 180, 12, 70000],
+    ['maridaje', 'Maridaje de postres y café', 'Cuatro postres de la casa acompañados de métodos de preparación de café.', 75, 10, 55000],
+    ['desayuno', 'Desayuno campesino con vista', 'Desayuno típico servido al amanecer con productos de fincas vecinas.', 90, 14, 38000]
+  ];
+  const clients = data.usuarios.filter(u => u.tipo_usuario === 'cliente');
+  const pastDays = Math.floor((end - start) / 86400000);
+  data.restaurantes.forEach((r, ri) => {
+    for (let k = 0; k < 6; k++) {
+      const [tipo, nombre, descripcion, duracion, cupo, precio] = catalog[(ri + k) % catalog.length];
+      const future = k >= 4;
+      const day = future ? addDays(end, 4 + ri * 2 + (k - 4) * 6) : addDays(start, Math.min(pastDays, 6 + k * 14 + ri * 3));
+      const exp = { id_experiencia: data.experiencias.length + 1, nombre, descripcion, tipo_experiencia: tipo, fecha_experiencia: dateText(day), hora_inicio: tipo === 'desayuno' ? '07:00:00' : '15:00:00', duracion_minutos: duracion, cupo_maximo: cupo, precio_persona: precio + ri * 2000, idioma: (ri + k) % 3 === 0 ? 'Español e inglés' : 'Español', estado_experiencia: future ? 'programada' : 'realizada', id_restaurante: r.id_restaurante };
+      data.experiencias.push(exp);
+      const attendees = future ? 2 : 3 + (k + ri) % 2;
+      for (let a = 0; a < attendees; a++) {
+        const user = clients[(ri * 7 + k * 3 + a * 5) % clients.length];
+        if (data.inscripciones_experiencia.some(i => i.id_experiencia === exp.id_experiencia && i.id_usuario === user.id_usuario)) continue;
+        const personas = 1 + (a + k) % 3;
+        const cancelled = !future && (a + k + ri) % 7 === 0;
+        const signup = addDays(day, -(3 + a));
+        const ins = { id_inscripcion: data.inscripciones_experiencia.length + 1, id_experiencia: exp.id_experiencia, id_usuario: user.id_usuario, cantidad_personas: personas, total: personas * exp.precio_persona, fecha_inscripcion: `${dateText(signup)} 11:${String(10 + a).padStart(2, '0')}:00`, estado_inscripcion: future ? 'confirmada' : cancelled ? 'cancelada' : 'asistio' };
+        data.inscripciones_experiencia.push(ins);
+        if (!cancelled) data.pagos.push({ id_pago: data.pagos.length + 1, monto: ins.total, fecha_pago: ins.fecha_inscripcion, estado_pago: 'aprobado', id_usuario: user.id_usuario, id_metodo: 1 + (a + ri) % 3, id_pedido: null, id_plan: null, id_inscripcion: ins.id_inscripcion });
+      }
+    }
+  });
+  // Cada pago de plan origina una suscripción con vigencia; el plan Básico no genera pago.
+  data.restaurantes.forEach(r => {
+    const planPayments = data.pagos.filter(p => p.id_plan !== null && p.id_usuario === r.id_propietario);
+    const plan = data.planes_suscripcion.find(p => p.id_plan === r.id_plan);
+    const periods = planPayments.length ? planPayments.map(p => ({ inicio: new Date(`${p.fecha_pago.slice(0, 10)}T12:00:00Z`), id_pago: p.id_pago, id_plan: p.id_plan }))
+      : [{ inicio: start, id_pago: null, id_plan: r.id_plan }];
+    periods.forEach(period => {
+      const months = data.planes_suscripcion.find(p => p.id_plan === period.id_plan).duracion_meses;
+      const fin = addMonths(period.inicio, months);
+      data.suscripciones.push({ id_suscripcion: data.suscripciones.length + 1, id_restaurante: r.id_restaurante, id_plan: period.id_plan, fecha_inicio: dateText(period.inicio), fecha_fin: dateText(fin), estado_suscripcion: dateText(fin) > cutoff ? 'activa' : 'vencida', id_pago: period.id_pago });
+    });
+    if (!plan) throw new Error('Restaurante sin plan.');
+  });
+  // Recordatorios: un día antes de reservas futuras y experiencias, cinco días antes del vencimiento del plan y notas personales.
+  const reminder = (fields, programmed) => {
+    const sent = programmed <= `${cutoff} 23:59:59`;
+    data.recordatorios.push({ id_recordatorio: data.recordatorios.length + 1, tipo_recordatorio: 'personal', id_reserva: null, id_inscripcion: null, id_suscripcion: null, ...fields, fecha_programada: programmed, enviado: sent, fecha_envio: sent ? programmed : null });
+    if (sent) data.notificaciones.push({ id_notificacion: data.notificaciones.length + 1, mensaje: `Recordatorio: ${fields.titulo}. ${fields.mensaje}`, fecha_envio: programmed, leido: true, id_usuario: fields.id_usuario });
+  };
+  data.reservas.filter(r => r.fecha_reserva > cutoff).forEach(r => {
+    const mesa = data.mesas.find(m => m.id_mesa === r.id_mesa);
+    const rest = data.restaurantes.find(x => x.id_restaurante === mesa.id_restaurante);
+    reminder({ id_usuario: r.id_usuario, tipo_recordatorio: 'reserva', id_reserva: r.id_reserva, titulo: `Reserva en ${rest.nombre}`, mensaje: `Te esperamos el ${r.fecha_reserva} a las ${r.hora_reserva.slice(0, 5)} para ${r.cantidad_personas} personas.` }, `${dateText(addDays(new Date(`${r.fecha_reserva}T12:00:00Z`), -1))} 13:00:00`);
+  });
+  data.inscripciones_experiencia.filter(i => i.estado_inscripcion === 'confirmada').forEach(i => {
+    const exp = data.experiencias.find(e => e.id_experiencia === i.id_experiencia);
+    reminder({ id_usuario: i.id_usuario, tipo_recordatorio: 'experiencia', id_inscripcion: i.id_inscripcion, titulo: exp.nombre, mensaje: `La experiencia inicia el ${exp.fecha_experiencia} a las ${exp.hora_inicio.slice(0, 5)}.` }, `${dateText(addDays(new Date(`${exp.fecha_experiencia}T12:00:00Z`), -1))} 09:00:00`);
+  });
+  data.suscripciones.filter(s => s.estado_suscripcion === 'activa').forEach(s => {
+    const rest = data.restaurantes.find(x => x.id_restaurante === s.id_restaurante);
+    const plan = data.planes_suscripcion.find(p => p.id_plan === s.id_plan);
+    reminder({ id_usuario: rest.id_propietario, tipo_recordatorio: 'plan', id_suscripcion: s.id_suscripcion, titulo: `Renovación del plan ${plan.nombre_plan}`, mensaje: `El plan de ${rest.nombre} vence el ${s.fecha_fin}.` }, `${dateText(addDays(new Date(`${s.fecha_fin}T12:00:00Z`), -5))} 08:00:00`);
+  });
+  reminder({ id_usuario: 6, titulo: 'Probar el café de Buenavista', mensaje: 'Reservar un espacio para la cata de cafés antes de regresar a casa.' }, `${dateText(addDays(end, 2))} 18:00:00`);
+  reminder({ id_usuario: 6, titulo: 'Confirmar transporte a Salento', mensaje: 'Revisar horario del bus desde Armenia para llegar a tiempo al almuerzo.' }, `${dateText(addDays(end, -3))} 07:30:00`);
   data.meta.filas = Object.fromEntries(TABLES.map(t => [t, data[t].length]));
   return data;
 }

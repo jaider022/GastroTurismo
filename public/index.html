@@ -166,6 +166,15 @@
         <a href="#" class="menu-item" data-target="section-pedidos">
           <i data-lucide="shopping-bag"></i> Pedidos / Delivery
         </a>
+        <a href="#" class="menu-item" data-target="section-experiencias">
+          <i data-lucide="sparkles"></i> Experiencias gastronómicas
+        </a>
+        <a href="#" class="menu-item" data-target="section-recordatorios">
+          <i data-lucide="alarm-clock"></i> Recordatorios
+        </a>
+        <a href="#" class="menu-item" data-target="section-planes" id="menu-planes" style="display: none;">
+          <i data-lucide="credit-card"></i> Planes y suscripción
+        </a>
         <a href="#" class="menu-item" data-target="section-resenas">
           <i data-lucide="star"></i> Reseñas y Calificación
         </a>
@@ -545,6 +554,59 @@
       </section>
 
       <!-- SECCIÓN: RESEÑAS -->
+      <!-- SECCIÓN: EXPERIENCIAS GASTRONÓMICAS -->
+      <section id="section-experiencias" class="content-section">
+        <div class="action-header">
+          <div><h3>Experiencias gastronómicas para turistas</h3><p class="reservas-subtitle">Catas, clases de cocina y recorridos con cupo limitado y pago en línea.</p></div>
+          <button type="button" id="btn-add-experiencia" class="btn btn-success" style="display: none;"><i data-lucide="plus"></i> Nueva experiencia</button>
+        </div>
+        <div class="platos-filters glass" role="group" aria-label="Filtros de experiencias">
+          <div><label for="exp-filtro-restaurante">Restaurante</label><select id="exp-filtro-restaurante" class="form-control"><option value="">Todos</option></select></div>
+          <div><label for="exp-filtro-tipo">Tipo</label><select id="exp-filtro-tipo" class="form-control"><option value="">Todos</option><option value="cata">Cata de café</option><option value="clase_cocina">Clase de cocina</option><option value="tour">Tour gastronómico</option><option value="maridaje">Maridaje</option><option value="desayuno">Desayuno típico</option></select></div>
+          <div><label for="exp-filtro-estado">Estado</label><select id="exp-filtro-estado" class="form-control"><option value="programada">Programadas</option><option value="">Todas</option><option value="realizada">Realizadas</option><option value="cancelada">Canceladas</option></select></div>
+        </div>
+        <div id="experiencias-container" class="restaurantes-list-grid"></div>
+        <h3 id="inscripciones-title" style="margin-top: 28px;">Inscripciones</h3>
+        <div class="table-responsive glass">
+          <table class="data-table"><thead><tr><th>Experiencia</th><th>Fecha</th><th>Turista</th><th>Personas</th><th>Total pagado</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="inscripciones-tbody"></tbody></table>
+        </div>
+      </section>
+
+      <!-- SECCIÓN: RECORDATORIOS -->
+      <section id="section-recordatorios" class="content-section">
+        <div class="action-header">
+          <div><h3>Recordatorios personalizados</h3><p class="reservas-subtitle">Programa avisos propios o asociados a tus reservas. Al llegar la hora aparecen en tus notificaciones.</p></div>
+        </div>
+        <form id="form-recordatorio" class="glass asistencia-form" style="padding: 20px; margin-bottom: 20px;">
+          <div class="plato-form-grid">
+            <div class="form-group"><label for="rec-titulo">Título</label><input id="rec-titulo" class="form-control" required maxlength="150" placeholder="Ej: Llevar chaqueta para el desayuno en el mirador"></div>
+            <div class="form-group"><label for="rec-fecha">Fecha y hora del aviso</label><input id="rec-fecha" type="datetime-local" class="form-control" required></div>
+          </div>
+          <div class="form-group"><label for="rec-mensaje">Mensaje</label><textarea id="rec-mensaje" class="form-control" rows="2" required maxlength="1000"></textarea></div>
+          <div class="form-group"><label for="rec-reserva">Asociar a una reserva (opcional)</label><select id="rec-reserva" class="form-control"><option value="">Sin asociar (recordatorio personal)</option></select></div>
+          <button type="submit" class="btn btn-primary"><i data-lucide="alarm-clock"></i> Programar recordatorio</button>
+        </form>
+        <div class="table-responsive glass">
+          <table class="data-table"><thead><tr><th>Recordatorio</th><th>Tipo</th><th>Programado para</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="recordatorios-tbody"></tbody></table>
+        </div>
+      </section>
+
+      <!-- SECCIÓN: PLANES Y SUSCRIPCIÓN -->
+      <section id="section-planes" class="content-section">
+        <div class="action-header">
+          <div><h3>Planes de la plataforma</h3><p class="reservas-subtitle">Contrata o renueva el plan de tu restaurante con pago en línea. Al vencer, el restaurante vuelve al plan Básico.</p></div>
+        </div>
+        <div class="platos-filters glass" role="group" aria-label="Datos de la contratación">
+          <div><label for="plan-restaurante">Restaurante</label><select id="plan-restaurante" class="form-control"></select></div>
+          <div><label for="plan-metodo">Medio de pago en línea</label><select id="plan-metodo" class="form-control"></select></div>
+        </div>
+        <div id="planes-container" class="restaurantes-list-grid"></div>
+        <h3 style="margin-top: 28px;">Historial de suscripciones y vigencia</h3>
+        <div class="table-responsive glass">
+          <table class="data-table"><thead><tr><th>Restaurante</th><th>Plan</th><th>Inicio</th><th>Vence</th><th>Pago</th><th>Estado</th></tr></thead><tbody id="suscripciones-tbody"></tbody></table>
+        </div>
+      </section>
+
       <section id="section-resenas" class="content-section">
         <div class="resenas-split-layout">
           <!-- Crear Reseña -->
@@ -807,7 +869,7 @@
               <h4>Resumen Técnico:</h4>
               <ul>
                 <li>Estudiantes Máximos: 3</li>
-                <li>Tablas: 14 de negocio + asistencia y accesos</li>
+                <li>Tablas: 18 de negocio + asistencia y accesos (20 en total)</li>
                 <li>Reportes: 10 académicos + 2 comparativos mensuales</li>
                 <li>Bonificación: Gráficos Estadísticos implementados con Chart.js</li>
                 <li>Exportación: Descarga PDF automatizada</li>
@@ -824,6 +886,45 @@
        MODALES DIÁLOGO (CRUD - REGISTRO / EDICIÓN)
        ========================================== -->
   
+  <!-- Modal Experiencia -->
+  <div class="modal-backdrop" id="modal-experiencia">
+    <div class="modal-card glass modal-plato-card">
+      <div class="modal-header"><h3 id="modal-experiencia-title">Nueva experiencia gastronómica</h3><button type="button" class="close-btn" onclick="closeModal('modal-experiencia')" aria-label="Cerrar experiencia">&times;</button></div>
+      <form id="form-modal-experiencia">
+        <input type="hidden" id="mexp-id">
+        <div class="form-group"><label for="mexp-restaurante">Restaurante</label><select id="mexp-restaurante" class="form-control" required></select></div>
+        <div class="form-group"><label for="mexp-nombre">Nombre</label><input id="mexp-nombre" class="form-control" required maxlength="150" placeholder="Ej: Cata de cafés de origen"></div>
+        <div class="form-group"><label for="mexp-descripcion">Descripción</label><textarea id="mexp-descripcion" class="form-control" rows="2" maxlength="4000"></textarea></div>
+        <div class="plato-form-grid">
+          <div class="form-group"><label for="mexp-tipo">Tipo</label><select id="mexp-tipo" class="form-control" required><option value="cata">Cata de café</option><option value="clase_cocina">Clase de cocina</option><option value="tour">Tour gastronómico</option><option value="maridaje">Maridaje</option><option value="desayuno">Desayuno típico</option></select></div>
+          <div class="form-group"><label for="mexp-idioma">Idioma</label><input id="mexp-idioma" class="form-control" maxlength="50" value="Español"></div>
+          <div class="form-group"><label for="mexp-fecha">Fecha</label><input id="mexp-fecha" type="date" class="form-control" required></div>
+          <div class="form-group"><label for="mexp-hora">Hora de inicio</label><input id="mexp-hora" type="time" class="form-control" required value="15:00"></div>
+          <div class="form-group"><label for="mexp-duracion">Duración (minutos)</label><input id="mexp-duracion" type="number" min="30" max="600" step="15" value="90" class="form-control" required></div>
+          <div class="form-group"><label for="mexp-cupo">Cupo máximo</label><input id="mexp-cupo" type="number" min="1" max="200" value="10" class="form-control" required></div>
+          <div class="form-group"><label for="mexp-precio">Precio por persona (COP)</label><input id="mexp-precio" type="number" min="0" step="1000" value="45000" class="form-control" required></div>
+          <div class="form-group" id="mexp-estado-group"><label for="mexp-estado">Estado</label><select id="mexp-estado" class="form-control"><option value="programada">Programada</option><option value="realizada">Realizada</option><option value="cancelada">Cancelada</option></select></div>
+        </div>
+        <div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="closeModal('modal-experiencia')">Cancelar</button><button type="submit" class="btn btn-success">Guardar experiencia</button></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Inscripción y pago -->
+  <div class="modal-backdrop" id="modal-inscripcion">
+    <div class="modal-card glass">
+      <div class="modal-header"><h3>Inscripción y pago en línea</h3><button type="button" class="close-btn" onclick="closeModal('modal-inscripcion')" aria-label="Cerrar inscripción">&times;</button></div>
+      <form id="form-modal-inscripcion">
+        <input type="hidden" id="mins-experiencia">
+        <p id="mins-resumen" class="reservas-subtitle"></p>
+        <div class="form-group"><label for="mins-personas">Personas</label><input id="mins-personas" type="number" min="1" value="1" class="form-control" required></div>
+        <div class="form-group"><label for="mins-metodo">Medio de pago en línea</label><select id="mins-metodo" class="form-control" required></select></div>
+        <p class="total-row">Total a pagar: <strong id="mins-total" class="total-highlight">$0</strong></p>
+        <div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="closeModal('modal-inscripcion')">Cancelar</button><button type="submit" class="btn btn-primary">Pagar e inscribirme</button></div>
+      </form>
+    </div>
+  </div>
+
   <!-- Modal Reserva -->
   <div class="modal-backdrop" id="modal-reserva">
     <div class="modal-card glass">
@@ -854,11 +955,20 @@
         </div>
         <div class="form-group">
           <label for="mres-hora">Hora:</label>
-          <input type="time" id="mres-hora" required class="form-control">
+          <input type="time" id="mres-hora" required min="06:00" max="22:59" class="form-control">
         </div>
         <div class="form-group">
           <label for="mres-personas">Cantidad de Personas:</label>
           <input type="number" id="mres-personas" min="1" max="10" value="2" required class="form-control">
+        </div>
+        <div class="form-group" id="mres-recordatorio-group">
+          <label for="mres-recordatorio">Recordatorio:</label>
+          <select id="mres-recordatorio" class="form-control">
+            <option value="24">Avisarme 24 horas antes</option>
+            <option value="3">Avisarme 3 horas antes</option>
+            <option value="1">Avisarme 1 hora antes</option>
+            <option value="0">Sin recordatorio</option>
+          </select>
         </div>
         <div class="modal-actions">
           <button type="button" class="btn btn-secondary" onclick="closeModal('modal-reserva')">Cancelar</button>
@@ -984,5 +1094,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
   <!-- Aplicación Principal JS -->
   <script src="app.js"></script>
+  <script src="modulos-extra.js"></script>
 </body>
 </html>

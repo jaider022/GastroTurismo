@@ -1,0 +1,205 @@
+erDiagram
+  zonas {
+    int id_zona PK
+    varchar nombre_zona
+    varchar ciudad
+    text descripcion_turistica
+  }
+  usuarios {
+    int id_usuario PK
+    varchar nombre
+    varchar correo
+    varchar contrasena
+    varchar telefono
+    enum tipo_usuario
+    timestamp fecha_registro
+  }
+  planes_suscripcion {
+    int id_plan PK
+    varchar nombre_plan
+    decimal costo
+    int duracion_meses
+    text descripcion
+  }
+  categorias {
+    int id_categoria PK
+    varchar nombre_categoria
+    text descripcion
+  }
+  metodos_pago {
+    int id_metodo PK
+    varchar nombre_metodo
+    enum tipo_pago
+  }
+  restaurantes {
+    int id_restaurante PK
+    varchar nombre
+    varchar direccion
+    varchar telefono
+    varchar email
+    int capacidad_total
+    varchar especialidad
+    int id_zona FK
+    int id_propietario FK
+    int id_plan FK
+  }
+  mesas {
+    int id_mesa PK
+    varchar numero_mesa
+    int capacidad
+    varchar ubicacion
+    enum estado
+    int id_restaurante FK
+  }
+  platos {
+    int id_plato PK
+    varchar nombre
+    text descripcion
+    decimal precio
+    boolean disponibilidad
+    int id_categoria FK
+    int id_restaurante FK
+  }
+  reservas {
+    int id_reserva PK
+    date fecha_reserva
+    time hora_reserva
+    int cantidad_personas
+    enum estado_reserva
+    int id_usuario FK
+    int id_mesa FK
+  }
+  pedidos {
+    int id_pedido PK
+    timestamp fecha_pedido
+    enum tipo_servicio
+    enum estado_pedido
+    decimal total_pago
+    varchar direccion_entrega
+    int id_usuario FK
+    int id_restaurante FK
+  }
+  detalle_pedidos {
+    int id_pedido PK,FK
+    int id_plato PK,FK
+    int cantidad
+    decimal precio_unitario
+  }
+  experiencias {
+    int id_experiencia PK
+    varchar nombre
+    text descripcion
+    enum tipo_experiencia
+    date fecha_experiencia
+    time hora_inicio
+    int duracion_minutos
+    int cupo_maximo
+    decimal precio_persona
+    varchar idioma
+    enum estado_experiencia
+    int id_restaurante FK
+  }
+  inscripciones_experiencia {
+    int id_inscripcion PK
+    int id_experiencia FK
+    int id_usuario FK
+    int cantidad_personas
+    decimal total
+    datetime fecha_inscripcion
+    enum estado_inscripcion
+  }
+  pagos {
+    int id_pago PK
+    decimal monto
+    timestamp fecha_pago
+    enum estado_pago
+    int id_usuario FK
+    int id_metodo FK
+    int id_pedido FK
+    int id_plan FK
+    int id_inscripcion FK
+  }
+  suscripciones {
+    int id_suscripcion PK
+    int id_restaurante FK
+    int id_plan FK
+    date fecha_inicio
+    date fecha_fin
+    enum estado_suscripcion
+    int id_pago FK
+  }
+  resenas {
+    int id_resena PK
+    int calificacion
+    text comentario
+    date fecha_opinion
+    int id_usuario FK
+    int id_restaurante FK
+  }
+  notificaciones {
+    int id_notificacion PK
+    text mensaje
+    timestamp fecha_envio
+    boolean leido
+    int id_usuario FK
+  }
+  visitas {
+    int id_visita PK
+    int id_restaurante FK
+    int id_reserva FK
+    int id_usuario FK
+    datetime fecha_ingreso
+    int cantidad_personas
+  }
+  accesos_sistema {
+    int id_acceso PK
+    int id_usuario FK
+    datetime fecha_ingreso
+  }
+  recordatorios {
+    int id_recordatorio PK
+    int id_usuario FK
+    enum tipo_recordatorio
+    varchar titulo
+    text mensaje
+    datetime fecha_programada
+    boolean enviado
+    datetime fecha_envio
+    int id_reserva FK
+    int id_inscripcion FK
+    int id_suscripcion FK
+  }
+  zonas ||--o{ restaurantes : "id_zona"
+  usuarios ||--o{ restaurantes : "id_propietario"
+  planes_suscripcion ||--o{ restaurantes : "id_plan"
+  restaurantes ||--o{ mesas : "id_restaurante"
+  categorias ||--o{ platos : "id_categoria"
+  restaurantes ||--o{ platos : "id_restaurante"
+  usuarios ||--o{ reservas : "id_usuario"
+  mesas ||--o{ reservas : "id_mesa"
+  usuarios ||--o{ pedidos : "id_usuario"
+  restaurantes ||--o{ pedidos : "id_restaurante"
+  pedidos ||--o{ detalle_pedidos : "id_pedido"
+  platos ||--o{ detalle_pedidos : "id_plato"
+  restaurantes ||--o{ experiencias : "id_restaurante"
+  experiencias ||--o{ inscripciones_experiencia : "id_experiencia"
+  usuarios ||--o{ inscripciones_experiencia : "id_usuario"
+  usuarios ||--o{ pagos : "id_usuario"
+  metodos_pago ||--o{ pagos : "id_metodo"
+  pedidos |o--o{ pagos : "id_pedido"
+  planes_suscripcion |o--o{ pagos : "id_plan"
+  inscripciones_experiencia |o--o{ pagos : "id_inscripcion"
+  restaurantes ||--o{ suscripciones : "id_restaurante"
+  planes_suscripcion ||--o{ suscripciones : "id_plan"
+  pagos |o--o{ suscripciones : "id_pago"
+  usuarios ||--o{ resenas : "id_usuario"
+  restaurantes ||--o{ resenas : "id_restaurante"
+  usuarios ||--o{ notificaciones : "id_usuario"
+  restaurantes ||--o{ visitas : "id_restaurante"
+  reservas |o--o{ visitas : "id_reserva"
+  usuarios |o--o{ visitas : "id_usuario"
+  usuarios ||--o{ accesos_sistema : "id_usuario"
+  usuarios ||--o{ recordatorios : "id_usuario"
+  reservas |o--o{ recordatorios : "id_reserva"
+  inscripciones_experiencia |o--o{ recordatorios : "id_inscripcion"
+  suscripciones |o--o{ recordatorios : "id_suscripcion"

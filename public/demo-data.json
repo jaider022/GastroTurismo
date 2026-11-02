@@ -17459,6 +17459,994 @@
       "precio_unitario": 12000
     }
   ],
+  "experiencias": [
+    {
+      "id_experiencia": 1,
+      "nombre": "Cata de cafés de origen",
+      "descripcion": "Recorrido sensorial por tres perfiles de café del Quindío con barista certificado.",
+      "tipo_experiencia": "cata",
+      "fecha_experiencia": "2026-08-07",
+      "hora_inicio": "15:00:00",
+      "duracion_minutos": 90,
+      "cupo_maximo": 10,
+      "precio_persona": 45000,
+      "idioma": "Español e inglés",
+      "estado_experiencia": "realizada",
+      "id_restaurante": 1
+    },
+    {
+      "id_experiencia": 2,
+      "nombre": "Clase de cocina cafetera",
+      "descripcion": "Preparación guiada de arepas, hogao y frijoles con ingredientes de la huerta.",
+      "tipo_experiencia": "clase_cocina",
+      "fecha_experiencia": "2026-08-21",
+      "hora_inicio": "15:00:00",
+      "duracion_minutos": 150,
+      "cupo_maximo": 8,
+      "precio_persona": 85000,
+      "idioma": "Español",
+      "estado_experiencia": "realizada",
+      "id_restaurante": 1
+    },
+    {
+      "id_experiencia": 3,
+      "nombre": "Recorrido gastronómico por el pueblo",
+      "descripcion": "Caminata con degustaciones en tiendas tradicionales y plaza de mercado.",
+      "tipo_experiencia": "tour",
+      "fecha_experiencia": "2026-09-04",
+      "hora_inicio": "15:00:00",
+      "duracion_minutos": 180,
+      "cupo_maximo": 12,
+      "precio_persona": 70000,
+      "idioma": "Español",
+      "estado_experiencia": "realizada",
+      "id_restaurante": 1
+    },
+    {
+      "id_experiencia": 4,
+      "nombre": "Maridaje de postres y café",
+      "descripcion": "Cuatro postres de la casa acompañados de métodos de preparación de café.",
+      "tipo_experiencia": "maridaje",
+      "fecha_experiencia": "2026-09-18",
+      "hora_inicio": "15:00:00",
+      "duracion_minutos": 75,
+      "cupo_maximo": 10,
+      "precio_persona": 55000,
+      "idioma": "Español e inglés",
+      "estado_experiencia": "realizada",
+      "id_restaurante": 1
+    },
+    {
+      "id_experiencia": 5,
+      "nombre": "Desayuno campesino con vista",
+      "descripcion": "Desayuno típico servido al amanecer con productos de fincas vecinas.",
+      "tipo_experiencia": "desayuno",
+      "fecha_experiencia": "2026-10-31",
+      "hora_inicio": "07:00:00",
+      "duracion_minutos": 90,
+      "cupo_maximo": 14,
+      "precio_persona": 38000,
+      "idioma": "Español",
+      "estado_experiencia": "programada",
+      "id_restaurante": 1
+    },
+    {
+      "id_experiencia": 6,
+      "nombre": "Cata de cafés de origen",
+      "descripcion": "Recorrido sensorial por tres perfiles de café del Quindío con barista certificado.",
+      "tipo_experiencia": "cata",
+      "fecha_experiencia": "2026-11-06",
+      "hora_inicio": "15:00:00",
+      "duracion_minutos": 90,
+      "cupo_maximo": 10,
+      "precio_persona": 45000,
+      "idioma": "Español",
+      "estado_experiencia": "programada",
+      "id_restaurante": 1
+    },
+    {
+      "id_experiencia": 7,
+      "nombre": "Clase de cocina cafetera",
+      "descripcion": "Preparación guiada de arepas, hogao y frijoles con ingredientes de la huerta.",
+      "tipo_experiencia": "clase_cocina",
+      "fecha_experiencia": "2026-08-10",
+      "hora_inicio": "15:00:00",
+      "duracion_minutos": 150,
+      "cupo_maximo": 8,
+      "precio_persona": 87000,
+      "idioma": "Español",
+      "estado_experiencia": "realizada",
+      "id_restaurante": 2
+    },
+    {
+      "id_experiencia": 8,
+      "nombre": "Recorrido gastronómico por el pueblo",
+      "descripcion": "Caminata con degustaciones en tiendas tradicionales y plaza de mercado.",
+      "tipo_experiencia": "tour",
+      "fecha_experiencia": "2026-08-24",
+      "hora_inicio": "15:00:00",
+      "duracion_minutos": 180,
+      "cupo_maximo": 12,
+      "precio_persona": 72000,
+      "idioma": "Español",
+      "estado_experiencia": "realizada",
+      "id_restaurante": 2
+    },
+    {
+      "id_experiencia": 9,
+      "nombre": "Maridaje de postres y café",
+      "descripcion": "Cuatro postres de la casa acompañados de métodos de preparación de café.",
+      "tipo_experiencia": "maridaje",
+      "fecha_experiencia": "2026-09-07",
+      "hora_inicio": "15:00:00",
+      "duracion_minutos": 75,
+      "cupo_maximo": 10,
+      "precio_persona": 57000,
+      "idioma": "Español e inglés",
+      "estado_experiencia": "realizada",
+      "id_restaurante": 2
+    },
+    {
+      "id_experiencia": 10,
+      "nombre": "Desayuno campesino con vista",
+      "descripcion": "Desayuno típico servido al amanecer con productos de fincas vecinas.",
+      "tipo_experiencia": "desayuno",
+      "fecha_experiencia": "2026-09-21",
+      "hora_inicio": "07:00:00",
+      "duracion_minutos": 90,
+      "cupo_maximo": 14,
+      "precio_persona": 40000,
+      "idioma": "Español",
+      "estado_experiencia": "realizada",
+      "id_restaurante": 2
+    },
+    {
+      "id_experiencia": 11,
+      "nombre": "Cata de cafés de origen",
+      "descripcion": "Recorrido sensorial por tres perfiles de café del Quindío con barista certificado.",
+      "tipo_experiencia": "cata",
+      "fecha_experiencia": "2026-11-02",
+      "hora_inicio": "15:00:00",
+      "duracion_minutos": 90,
+      "cupo_maximo": 10,
+      "precio_persona": 47000,
+      "idioma": "Español",
+      "estado_experiencia": "programada",
+      "id_restaurante": 2
+    },
+    {
+      "id_experiencia": 12,
+      "nombre": "Clase de cocina cafetera",
+      "descripcion": "Preparación guiada de arepas, hogao y frijoles con ingredientes de la huerta.",
+      "tipo_experiencia": "clase_cocina",
+      "fecha_experiencia": "2026-11-08",
+      "hora_inicio": "15:00:00",
+      "duracion_minutos": 150,
+      "cupo_maximo": 8,
+      "precio_persona": 87000,
+      "idioma": "Español e inglés",
+      "estado_experiencia": "programada",
+      "id_restaurante": 2
+    },
+    {
+      "id_experiencia": 13,
+      "nombre": "Recorrido gastronómico por el pueblo",
+      "descripcion": "Caminata con degustaciones en tiendas tradicionales y plaza de mercado.",
+      "tipo_experiencia": "tour",
+      "fecha_experiencia": "2026-08-13",
+      "hora_inicio": "15:00:00",
+      "duracion_minutos": 180,
+      "cupo_maximo": 12,
+      "precio_persona": 74000,
+      "idioma": "Español",
+      "estado_experiencia": "realizada",
+      "id_restaurante": 3
+    },
+    {
+      "id_experiencia": 14,
+      "nombre": "Maridaje de postres y café",
+      "descripcion": "Cuatro postres de la casa acompañados de métodos de preparación de café.",
+      "tipo_experiencia": "maridaje",
+      "fecha_experiencia": "2026-08-27",
+      "hora_inicio": "15:00:00",
+      "duracion_minutos": 75,
+      "cupo_maximo": 10,
+      "precio_persona": 59000,
+      "idioma": "Español e inglés",
+      "estado_experiencia": "realizada",
+      "id_restaurante": 3
+    },
+    {
+      "id_experiencia": 15,
+      "nombre": "Desayuno campesino con vista",
+      "descripcion": "Desayuno típico servido al amanecer con productos de fincas vecinas.",
+      "tipo_experiencia": "desayuno",
+      "fecha_experiencia": "2026-09-10",
+      "hora_inicio": "07:00:00",
+      "duracion_minutos": 90,
+      "cupo_maximo": 14,
+      "precio_persona": 42000,
+      "idioma": "Español",
+      "estado_experiencia": "realizada",
+      "id_restaurante": 3
+    },
+    {
+      "id_experiencia": 16,
+      "nombre": "Cata de cafés de origen",
+      "descripcion": "Recorrido sensorial por tres perfiles de café del Quindío con barista certificado.",
+      "tipo_experiencia": "cata",
+      "fecha_experiencia": "2026-09-24",
+      "hora_inicio": "15:00:00",
+      "duracion_minutos": 90,
+      "cupo_maximo": 10,
+      "precio_persona": 49000,
+      "idioma": "Español",
+      "estado_experiencia": "realizada",
+      "id_restaurante": 3
+    },
+    {
+      "id_experiencia": 17,
+      "nombre": "Clase de cocina cafetera",
+      "descripcion": "Preparación guiada de arepas, hogao y frijoles con ingredientes de la huerta.",
+      "tipo_experiencia": "clase_cocina",
+      "fecha_experiencia": "2026-11-04",
+      "hora_inicio": "15:00:00",
+      "duracion_minutos": 150,
+      "cupo_maximo": 8,
+      "precio_persona": 89000,
+      "idioma": "Español e inglés",
+      "estado_experiencia": "programada",
+      "id_restaurante": 3
+    },
+    {
+      "id_experiencia": 18,
+      "nombre": "Recorrido gastronómico por el pueblo",
+      "descripcion": "Caminata con degustaciones en tiendas tradicionales y plaza de mercado.",
+      "tipo_experiencia": "tour",
+      "fecha_experiencia": "2026-11-10",
+      "hora_inicio": "15:00:00",
+      "duracion_minutos": 180,
+      "cupo_maximo": 12,
+      "precio_persona": 74000,
+      "idioma": "Español",
+      "estado_experiencia": "programada",
+      "id_restaurante": 3
+    },
+    {
+      "id_experiencia": 19,
+      "nombre": "Maridaje de postres y café",
+      "descripcion": "Cuatro postres de la casa acompañados de métodos de preparación de café.",
+      "tipo_experiencia": "maridaje",
+      "fecha_experiencia": "2026-08-16",
+      "hora_inicio": "15:00:00",
+      "duracion_minutos": 75,
+      "cupo_maximo": 10,
+      "precio_persona": 61000,
+      "idioma": "Español e inglés",
+      "estado_experiencia": "realizada",
+      "id_restaurante": 4
+    },
+    {
+      "id_experiencia": 20,
+      "nombre": "Desayuno campesino con vista",
+      "descripcion": "Desayuno típico servido al amanecer con productos de fincas vecinas.",
+      "tipo_experiencia": "desayuno",
+      "fecha_experiencia": "2026-08-30",
+      "hora_inicio": "07:00:00",
+      "duracion_minutos": 90,
+      "cupo_maximo": 14,
+      "precio_persona": 44000,
+      "idioma": "Español",
+      "estado_experiencia": "realizada",
+      "id_restaurante": 4
+    },
+    {
+      "id_experiencia": 21,
+      "nombre": "Cata de cafés de origen",
+      "descripcion": "Recorrido sensorial por tres perfiles de café del Quindío con barista certificado.",
+      "tipo_experiencia": "cata",
+      "fecha_experiencia": "2026-09-13",
+      "hora_inicio": "15:00:00",
+      "duracion_minutos": 90,
+      "cupo_maximo": 10,
+      "precio_persona": 51000,
+      "idioma": "Español",
+      "estado_experiencia": "realizada",
+      "id_restaurante": 4
+    },
+    {
+      "id_experiencia": 22,
+      "nombre": "Clase de cocina cafetera",
+      "descripcion": "Preparación guiada de arepas, hogao y frijoles con ingredientes de la huerta.",
+      "tipo_experiencia": "clase_cocina",
+      "fecha_experiencia": "2026-09-27",
+      "hora_inicio": "15:00:00",
+      "duracion_minutos": 150,
+      "cupo_maximo": 8,
+      "precio_persona": 91000,
+      "idioma": "Español e inglés",
+      "estado_experiencia": "realizada",
+      "id_restaurante": 4
+    },
+    {
+      "id_experiencia": 23,
+      "nombre": "Recorrido gastronómico por el pueblo",
+      "descripcion": "Caminata con degustaciones en tiendas tradicionales y plaza de mercado.",
+      "tipo_experiencia": "tour",
+      "fecha_experiencia": "2026-11-06",
+      "hora_inicio": "15:00:00",
+      "duracion_minutos": 180,
+      "cupo_maximo": 12,
+      "precio_persona": 76000,
+      "idioma": "Español",
+      "estado_experiencia": "programada",
+      "id_restaurante": 4
+    },
+    {
+      "id_experiencia": 24,
+      "nombre": "Maridaje de postres y café",
+      "descripcion": "Cuatro postres de la casa acompañados de métodos de preparación de café.",
+      "tipo_experiencia": "maridaje",
+      "fecha_experiencia": "2026-11-12",
+      "hora_inicio": "15:00:00",
+      "duracion_minutos": 75,
+      "cupo_maximo": 10,
+      "precio_persona": 61000,
+      "idioma": "Español",
+      "estado_experiencia": "programada",
+      "id_restaurante": 4
+    }
+  ],
+  "inscripciones_experiencia": [
+    {
+      "id_inscripcion": 1,
+      "id_experiencia": 1,
+      "id_usuario": 6,
+      "cantidad_personas": 1,
+      "total": 45000,
+      "fecha_inscripcion": "2026-08-04 11:10:00",
+      "estado_inscripcion": "cancelada"
+    },
+    {
+      "id_inscripcion": 2,
+      "id_experiencia": 1,
+      "id_usuario": 11,
+      "cantidad_personas": 2,
+      "total": 90000,
+      "fecha_inscripcion": "2026-08-03 11:11:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 3,
+      "id_experiencia": 1,
+      "id_usuario": 16,
+      "cantidad_personas": 3,
+      "total": 135000,
+      "fecha_inscripcion": "2026-08-02 11:12:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 4,
+      "id_experiencia": 2,
+      "id_usuario": 9,
+      "cantidad_personas": 2,
+      "total": 170000,
+      "fecha_inscripcion": "2026-08-18 11:10:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 5,
+      "id_experiencia": 2,
+      "id_usuario": 14,
+      "cantidad_personas": 3,
+      "total": 255000,
+      "fecha_inscripcion": "2026-08-17 11:11:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 6,
+      "id_experiencia": 2,
+      "id_usuario": 19,
+      "cantidad_personas": 1,
+      "total": 85000,
+      "fecha_inscripcion": "2026-08-16 11:12:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 7,
+      "id_experiencia": 2,
+      "id_usuario": 24,
+      "cantidad_personas": 2,
+      "total": 170000,
+      "fecha_inscripcion": "2026-08-15 11:13:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 8,
+      "id_experiencia": 3,
+      "id_usuario": 12,
+      "cantidad_personas": 3,
+      "total": 210000,
+      "fecha_inscripcion": "2026-09-01 11:10:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 9,
+      "id_experiencia": 3,
+      "id_usuario": 17,
+      "cantidad_personas": 1,
+      "total": 70000,
+      "fecha_inscripcion": "2026-08-31 11:11:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 10,
+      "id_experiencia": 3,
+      "id_usuario": 22,
+      "cantidad_personas": 2,
+      "total": 140000,
+      "fecha_inscripcion": "2026-08-30 11:12:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 11,
+      "id_experiencia": 4,
+      "id_usuario": 15,
+      "cantidad_personas": 1,
+      "total": 55000,
+      "fecha_inscripcion": "2026-09-15 11:10:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 12,
+      "id_experiencia": 4,
+      "id_usuario": 20,
+      "cantidad_personas": 2,
+      "total": 110000,
+      "fecha_inscripcion": "2026-09-14 11:11:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 13,
+      "id_experiencia": 4,
+      "id_usuario": 25,
+      "cantidad_personas": 3,
+      "total": 165000,
+      "fecha_inscripcion": "2026-09-13 11:12:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 14,
+      "id_experiencia": 4,
+      "id_usuario": 30,
+      "cantidad_personas": 1,
+      "total": 55000,
+      "fecha_inscripcion": "2026-09-12 11:13:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 15,
+      "id_experiencia": 5,
+      "id_usuario": 18,
+      "cantidad_personas": 2,
+      "total": 76000,
+      "fecha_inscripcion": "2026-10-28 11:10:00",
+      "estado_inscripcion": "confirmada"
+    },
+    {
+      "id_inscripcion": 16,
+      "id_experiencia": 5,
+      "id_usuario": 23,
+      "cantidad_personas": 3,
+      "total": 114000,
+      "fecha_inscripcion": "2026-10-27 11:11:00",
+      "estado_inscripcion": "confirmada"
+    },
+    {
+      "id_inscripcion": 17,
+      "id_experiencia": 6,
+      "id_usuario": 21,
+      "cantidad_personas": 3,
+      "total": 135000,
+      "fecha_inscripcion": "2026-11-03 11:10:00",
+      "estado_inscripcion": "confirmada"
+    },
+    {
+      "id_inscripcion": 18,
+      "id_experiencia": 6,
+      "id_usuario": 26,
+      "cantidad_personas": 1,
+      "total": 45000,
+      "fecha_inscripcion": "2026-11-02 11:11:00",
+      "estado_inscripcion": "confirmada"
+    },
+    {
+      "id_inscripcion": 19,
+      "id_experiencia": 7,
+      "id_usuario": 13,
+      "cantidad_personas": 1,
+      "total": 87000,
+      "fecha_inscripcion": "2026-08-07 11:10:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 20,
+      "id_experiencia": 7,
+      "id_usuario": 18,
+      "cantidad_personas": 2,
+      "total": 174000,
+      "fecha_inscripcion": "2026-08-06 11:11:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 21,
+      "id_experiencia": 7,
+      "id_usuario": 23,
+      "cantidad_personas": 3,
+      "total": 261000,
+      "fecha_inscripcion": "2026-08-05 11:12:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 22,
+      "id_experiencia": 7,
+      "id_usuario": 28,
+      "cantidad_personas": 1,
+      "total": 87000,
+      "fecha_inscripcion": "2026-08-04 11:13:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 23,
+      "id_experiencia": 8,
+      "id_usuario": 16,
+      "cantidad_personas": 2,
+      "total": 144000,
+      "fecha_inscripcion": "2026-08-21 11:10:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 24,
+      "id_experiencia": 8,
+      "id_usuario": 21,
+      "cantidad_personas": 3,
+      "total": 216000,
+      "fecha_inscripcion": "2026-08-20 11:11:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 25,
+      "id_experiencia": 8,
+      "id_usuario": 26,
+      "cantidad_personas": 1,
+      "total": 72000,
+      "fecha_inscripcion": "2026-08-19 11:12:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 26,
+      "id_experiencia": 9,
+      "id_usuario": 19,
+      "cantidad_personas": 3,
+      "total": 171000,
+      "fecha_inscripcion": "2026-09-04 11:10:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 27,
+      "id_experiencia": 9,
+      "id_usuario": 24,
+      "cantidad_personas": 1,
+      "total": 57000,
+      "fecha_inscripcion": "2026-09-03 11:11:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 28,
+      "id_experiencia": 9,
+      "id_usuario": 29,
+      "cantidad_personas": 2,
+      "total": 114000,
+      "fecha_inscripcion": "2026-09-02 11:12:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 29,
+      "id_experiencia": 9,
+      "id_usuario": 6,
+      "cantidad_personas": 3,
+      "total": 171000,
+      "fecha_inscripcion": "2026-09-01 11:13:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 30,
+      "id_experiencia": 10,
+      "id_usuario": 22,
+      "cantidad_personas": 1,
+      "total": 40000,
+      "fecha_inscripcion": "2026-09-18 11:10:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 31,
+      "id_experiencia": 10,
+      "id_usuario": 27,
+      "cantidad_personas": 2,
+      "total": 80000,
+      "fecha_inscripcion": "2026-09-17 11:11:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 32,
+      "id_experiencia": 10,
+      "id_usuario": 32,
+      "cantidad_personas": 3,
+      "total": 120000,
+      "fecha_inscripcion": "2026-09-16 11:12:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 33,
+      "id_experiencia": 11,
+      "id_usuario": 25,
+      "cantidad_personas": 2,
+      "total": 94000,
+      "fecha_inscripcion": "2026-10-30 11:10:00",
+      "estado_inscripcion": "confirmada"
+    },
+    {
+      "id_inscripcion": 34,
+      "id_experiencia": 11,
+      "id_usuario": 30,
+      "cantidad_personas": 3,
+      "total": 141000,
+      "fecha_inscripcion": "2026-10-29 11:11:00",
+      "estado_inscripcion": "confirmada"
+    },
+    {
+      "id_inscripcion": 35,
+      "id_experiencia": 12,
+      "id_usuario": 28,
+      "cantidad_personas": 3,
+      "total": 261000,
+      "fecha_inscripcion": "2026-11-05 11:10:00",
+      "estado_inscripcion": "confirmada"
+    },
+    {
+      "id_inscripcion": 36,
+      "id_experiencia": 12,
+      "id_usuario": 33,
+      "cantidad_personas": 1,
+      "total": 87000,
+      "fecha_inscripcion": "2026-11-04 11:11:00",
+      "estado_inscripcion": "confirmada"
+    },
+    {
+      "id_inscripcion": 37,
+      "id_experiencia": 13,
+      "id_usuario": 20,
+      "cantidad_personas": 1,
+      "total": 74000,
+      "fecha_inscripcion": "2026-08-10 11:10:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 38,
+      "id_experiencia": 13,
+      "id_usuario": 25,
+      "cantidad_personas": 2,
+      "total": 148000,
+      "fecha_inscripcion": "2026-08-09 11:11:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 39,
+      "id_experiencia": 13,
+      "id_usuario": 30,
+      "cantidad_personas": 3,
+      "total": 222000,
+      "fecha_inscripcion": "2026-08-08 11:12:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 40,
+      "id_experiencia": 14,
+      "id_usuario": 23,
+      "cantidad_personas": 2,
+      "total": 118000,
+      "fecha_inscripcion": "2026-08-24 11:10:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 41,
+      "id_experiencia": 14,
+      "id_usuario": 28,
+      "cantidad_personas": 3,
+      "total": 177000,
+      "fecha_inscripcion": "2026-08-23 11:11:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 42,
+      "id_experiencia": 14,
+      "id_usuario": 33,
+      "cantidad_personas": 1,
+      "total": 59000,
+      "fecha_inscripcion": "2026-08-22 11:12:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 43,
+      "id_experiencia": 14,
+      "id_usuario": 10,
+      "cantidad_personas": 2,
+      "total": 118000,
+      "fecha_inscripcion": "2026-08-21 11:13:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 44,
+      "id_experiencia": 15,
+      "id_usuario": 26,
+      "cantidad_personas": 3,
+      "total": 126000,
+      "fecha_inscripcion": "2026-09-07 11:10:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 45,
+      "id_experiencia": 15,
+      "id_usuario": 31,
+      "cantidad_personas": 1,
+      "total": 42000,
+      "fecha_inscripcion": "2026-09-06 11:11:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 46,
+      "id_experiencia": 15,
+      "id_usuario": 8,
+      "cantidad_personas": 2,
+      "total": 84000,
+      "fecha_inscripcion": "2026-09-05 11:12:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 47,
+      "id_experiencia": 16,
+      "id_usuario": 29,
+      "cantidad_personas": 1,
+      "total": 49000,
+      "fecha_inscripcion": "2026-09-21 11:10:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 48,
+      "id_experiencia": 16,
+      "id_usuario": 6,
+      "cantidad_personas": 2,
+      "total": 98000,
+      "fecha_inscripcion": "2026-09-20 11:11:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 49,
+      "id_experiencia": 16,
+      "id_usuario": 11,
+      "cantidad_personas": 3,
+      "total": 147000,
+      "fecha_inscripcion": "2026-09-19 11:12:00",
+      "estado_inscripcion": "cancelada"
+    },
+    {
+      "id_inscripcion": 50,
+      "id_experiencia": 16,
+      "id_usuario": 16,
+      "cantidad_personas": 1,
+      "total": 49000,
+      "fecha_inscripcion": "2026-09-18 11:13:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 51,
+      "id_experiencia": 17,
+      "id_usuario": 32,
+      "cantidad_personas": 2,
+      "total": 178000,
+      "fecha_inscripcion": "2026-11-01 11:10:00",
+      "estado_inscripcion": "confirmada"
+    },
+    {
+      "id_inscripcion": 52,
+      "id_experiencia": 17,
+      "id_usuario": 9,
+      "cantidad_personas": 3,
+      "total": 267000,
+      "fecha_inscripcion": "2026-10-31 11:11:00",
+      "estado_inscripcion": "confirmada"
+    },
+    {
+      "id_inscripcion": 53,
+      "id_experiencia": 18,
+      "id_usuario": 7,
+      "cantidad_personas": 3,
+      "total": 222000,
+      "fecha_inscripcion": "2026-11-07 11:10:00",
+      "estado_inscripcion": "confirmada"
+    },
+    {
+      "id_inscripcion": 54,
+      "id_experiencia": 18,
+      "id_usuario": 12,
+      "cantidad_personas": 1,
+      "total": 74000,
+      "fecha_inscripcion": "2026-11-06 11:11:00",
+      "estado_inscripcion": "confirmada"
+    },
+    {
+      "id_inscripcion": 55,
+      "id_experiencia": 19,
+      "id_usuario": 27,
+      "cantidad_personas": 1,
+      "total": 61000,
+      "fecha_inscripcion": "2026-08-13 11:10:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 56,
+      "id_experiencia": 19,
+      "id_usuario": 32,
+      "cantidad_personas": 2,
+      "total": 122000,
+      "fecha_inscripcion": "2026-08-12 11:11:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 57,
+      "id_experiencia": 19,
+      "id_usuario": 9,
+      "cantidad_personas": 3,
+      "total": 183000,
+      "fecha_inscripcion": "2026-08-11 11:12:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 58,
+      "id_experiencia": 19,
+      "id_usuario": 14,
+      "cantidad_personas": 1,
+      "total": 61000,
+      "fecha_inscripcion": "2026-08-10 11:13:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 59,
+      "id_experiencia": 20,
+      "id_usuario": 30,
+      "cantidad_personas": 2,
+      "total": 88000,
+      "fecha_inscripcion": "2026-08-27 11:10:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 60,
+      "id_experiencia": 20,
+      "id_usuario": 7,
+      "cantidad_personas": 3,
+      "total": 132000,
+      "fecha_inscripcion": "2026-08-26 11:11:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 61,
+      "id_experiencia": 20,
+      "id_usuario": 12,
+      "cantidad_personas": 1,
+      "total": 44000,
+      "fecha_inscripcion": "2026-08-25 11:12:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 62,
+      "id_experiencia": 21,
+      "id_usuario": 33,
+      "cantidad_personas": 3,
+      "total": 153000,
+      "fecha_inscripcion": "2026-09-10 11:10:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 63,
+      "id_experiencia": 21,
+      "id_usuario": 10,
+      "cantidad_personas": 1,
+      "total": 51000,
+      "fecha_inscripcion": "2026-09-09 11:11:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 64,
+      "id_experiencia": 21,
+      "id_usuario": 15,
+      "cantidad_personas": 2,
+      "total": 102000,
+      "fecha_inscripcion": "2026-09-08 11:12:00",
+      "estado_inscripcion": "cancelada"
+    },
+    {
+      "id_inscripcion": 65,
+      "id_experiencia": 21,
+      "id_usuario": 20,
+      "cantidad_personas": 3,
+      "total": 153000,
+      "fecha_inscripcion": "2026-09-07 11:13:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 66,
+      "id_experiencia": 22,
+      "id_usuario": 8,
+      "cantidad_personas": 1,
+      "total": 91000,
+      "fecha_inscripcion": "2026-09-24 11:10:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 67,
+      "id_experiencia": 22,
+      "id_usuario": 13,
+      "cantidad_personas": 2,
+      "total": 182000,
+      "fecha_inscripcion": "2026-09-23 11:11:00",
+      "estado_inscripcion": "cancelada"
+    },
+    {
+      "id_inscripcion": 68,
+      "id_experiencia": 22,
+      "id_usuario": 18,
+      "cantidad_personas": 3,
+      "total": 273000,
+      "fecha_inscripcion": "2026-09-22 11:12:00",
+      "estado_inscripcion": "asistio"
+    },
+    {
+      "id_inscripcion": 69,
+      "id_experiencia": 23,
+      "id_usuario": 11,
+      "cantidad_personas": 2,
+      "total": 152000,
+      "fecha_inscripcion": "2026-11-03 11:10:00",
+      "estado_inscripcion": "confirmada"
+    },
+    {
+      "id_inscripcion": 70,
+      "id_experiencia": 23,
+      "id_usuario": 16,
+      "cantidad_personas": 3,
+      "total": 228000,
+      "fecha_inscripcion": "2026-11-02 11:11:00",
+      "estado_inscripcion": "confirmada"
+    },
+    {
+      "id_inscripcion": 71,
+      "id_experiencia": 24,
+      "id_usuario": 14,
+      "cantidad_personas": 3,
+      "total": 183000,
+      "fecha_inscripcion": "2026-11-09 11:10:00",
+      "estado_inscripcion": "confirmada"
+    },
+    {
+      "id_inscripcion": 72,
+      "id_experiencia": 24,
+      "id_usuario": 19,
+      "cantidad_personas": 1,
+      "total": 61000,
+      "fecha_inscripcion": "2026-11-08 11:11:00",
+      "estado_inscripcion": "confirmada"
+    }
+  ],
   "pagos": [
     {
       "id_pago": 1,
@@ -17468,7 +18456,8 @@
       "id_usuario": 2,
       "id_metodo": 2,
       "id_pedido": null,
-      "id_plan": 2
+      "id_plan": 2,
+      "id_inscripcion": null
     },
     {
       "id_pago": 2,
@@ -17478,7 +18467,8 @@
       "id_usuario": 11,
       "id_metodo": 2,
       "id_pedido": 2,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 3,
@@ -17488,7 +18478,8 @@
       "id_usuario": 3,
       "id_metodo": 2,
       "id_pedido": null,
-      "id_plan": 3
+      "id_plan": 3,
+      "id_inscripcion": null
     },
     {
       "id_pago": 4,
@@ -17498,7 +18489,8 @@
       "id_usuario": 16,
       "id_metodo": 3,
       "id_pedido": 3,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 5,
@@ -17508,7 +18500,8 @@
       "id_usuario": 21,
       "id_metodo": 4,
       "id_pedido": 4,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 6,
@@ -17518,7 +18511,8 @@
       "id_usuario": 5,
       "id_metodo": 2,
       "id_pedido": null,
-      "id_plan": 2
+      "id_plan": 2,
+      "id_inscripcion": null
     },
     {
       "id_pago": 7,
@@ -17528,7 +18522,8 @@
       "id_usuario": 9,
       "id_metodo": 2,
       "id_pedido": 5,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 8,
@@ -17538,7 +18533,8 @@
       "id_usuario": 14,
       "id_metodo": 3,
       "id_pedido": 6,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 9,
@@ -17548,7 +18544,8 @@
       "id_usuario": 19,
       "id_metodo": 4,
       "id_pedido": 7,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 10,
@@ -17558,7 +18555,8 @@
       "id_usuario": 24,
       "id_metodo": 5,
       "id_pedido": 8,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 11,
@@ -17568,7 +18566,8 @@
       "id_usuario": 12,
       "id_metodo": 3,
       "id_pedido": 9,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 12,
@@ -17578,7 +18577,8 @@
       "id_usuario": 17,
       "id_metodo": 4,
       "id_pedido": 10,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 13,
@@ -17588,7 +18588,8 @@
       "id_usuario": 22,
       "id_metodo": 5,
       "id_pedido": 11,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 14,
@@ -17598,7 +18599,8 @@
       "id_usuario": 27,
       "id_metodo": 1,
       "id_pedido": 12,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 15,
@@ -17608,7 +18610,8 @@
       "id_usuario": 15,
       "id_metodo": 4,
       "id_pedido": 13,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 16,
@@ -17618,7 +18621,8 @@
       "id_usuario": 20,
       "id_metodo": 5,
       "id_pedido": 14,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 17,
@@ -17628,7 +18632,8 @@
       "id_usuario": 25,
       "id_metodo": 1,
       "id_pedido": 15,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 18,
@@ -17638,7 +18643,8 @@
       "id_usuario": 30,
       "id_metodo": 2,
       "id_pedido": 16,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 19,
@@ -17648,7 +18654,8 @@
       "id_usuario": 18,
       "id_metodo": 5,
       "id_pedido": 17,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 20,
@@ -17658,7 +18665,8 @@
       "id_usuario": 23,
       "id_metodo": 1,
       "id_pedido": 18,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 21,
@@ -17668,7 +18676,8 @@
       "id_usuario": 28,
       "id_metodo": 2,
       "id_pedido": 19,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 22,
@@ -17678,7 +18687,8 @@
       "id_usuario": 33,
       "id_metodo": 3,
       "id_pedido": 20,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 23,
@@ -17688,7 +18698,8 @@
       "id_usuario": 21,
       "id_metodo": 1,
       "id_pedido": 21,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 24,
@@ -17698,7 +18709,8 @@
       "id_usuario": 26,
       "id_metodo": 2,
       "id_pedido": 22,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 25,
@@ -17708,7 +18720,8 @@
       "id_usuario": 31,
       "id_metodo": 3,
       "id_pedido": 23,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 26,
@@ -17718,7 +18731,8 @@
       "id_usuario": 8,
       "id_metodo": 4,
       "id_pedido": 24,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 27,
@@ -17728,7 +18742,8 @@
       "id_usuario": 24,
       "id_metodo": 2,
       "id_pedido": 25,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 28,
@@ -17738,7 +18753,8 @@
       "id_usuario": 29,
       "id_metodo": 3,
       "id_pedido": 26,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 29,
@@ -17748,7 +18764,8 @@
       "id_usuario": 6,
       "id_metodo": 4,
       "id_pedido": 27,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 30,
@@ -17758,7 +18775,8 @@
       "id_usuario": 11,
       "id_metodo": 5,
       "id_pedido": 28,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 31,
@@ -17768,7 +18786,8 @@
       "id_usuario": 27,
       "id_metodo": 3,
       "id_pedido": 29,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 32,
@@ -17778,7 +18797,8 @@
       "id_usuario": 32,
       "id_metodo": 4,
       "id_pedido": 30,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 33,
@@ -17788,7 +18808,8 @@
       "id_usuario": 9,
       "id_metodo": 5,
       "id_pedido": 31,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 34,
@@ -17798,7 +18819,8 @@
       "id_usuario": 14,
       "id_metodo": 1,
       "id_pedido": 32,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 35,
@@ -17808,7 +18830,8 @@
       "id_usuario": 30,
       "id_metodo": 4,
       "id_pedido": 33,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 36,
@@ -17818,7 +18841,8 @@
       "id_usuario": 7,
       "id_metodo": 5,
       "id_pedido": 34,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 37,
@@ -17828,7 +18852,8 @@
       "id_usuario": 12,
       "id_metodo": 1,
       "id_pedido": 35,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 38,
@@ -17838,7 +18863,8 @@
       "id_usuario": 33,
       "id_metodo": 5,
       "id_pedido": 37,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 39,
@@ -17848,7 +18874,8 @@
       "id_usuario": 10,
       "id_metodo": 1,
       "id_pedido": 38,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 40,
@@ -17858,7 +18885,8 @@
       "id_usuario": 20,
       "id_metodo": 3,
       "id_pedido": 40,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 41,
@@ -17868,7 +18896,8 @@
       "id_usuario": 8,
       "id_metodo": 1,
       "id_pedido": 41,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 42,
@@ -17878,7 +18907,8 @@
       "id_usuario": 18,
       "id_metodo": 3,
       "id_pedido": 43,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 43,
@@ -17888,7 +18918,8 @@
       "id_usuario": 23,
       "id_metodo": 4,
       "id_pedido": 44,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 44,
@@ -17898,7 +18929,8 @@
       "id_usuario": 16,
       "id_metodo": 3,
       "id_pedido": 46,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 45,
@@ -17908,7 +18940,8 @@
       "id_usuario": 21,
       "id_metodo": 4,
       "id_pedido": 47,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 46,
@@ -17918,7 +18951,8 @@
       "id_usuario": 26,
       "id_metodo": 5,
       "id_pedido": 48,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 47,
@@ -17928,7 +18962,8 @@
       "id_usuario": 14,
       "id_metodo": 3,
       "id_pedido": 49,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 48,
@@ -17938,7 +18973,8 @@
       "id_usuario": 19,
       "id_metodo": 4,
       "id_pedido": 50,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 49,
@@ -17948,7 +18984,8 @@
       "id_usuario": 24,
       "id_metodo": 5,
       "id_pedido": 51,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 50,
@@ -17958,7 +18995,8 @@
       "id_usuario": 29,
       "id_metodo": 1,
       "id_pedido": 52,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 51,
@@ -17968,7 +19006,8 @@
       "id_usuario": 17,
       "id_metodo": 4,
       "id_pedido": 53,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 52,
@@ -17978,7 +19017,8 @@
       "id_usuario": 22,
       "id_metodo": 5,
       "id_pedido": 54,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 53,
@@ -17988,7 +19028,8 @@
       "id_usuario": 27,
       "id_metodo": 1,
       "id_pedido": 55,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 54,
@@ -17998,7 +19039,8 @@
       "id_usuario": 32,
       "id_metodo": 2,
       "id_pedido": 56,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 55,
@@ -18008,7 +19050,8 @@
       "id_usuario": 20,
       "id_metodo": 5,
       "id_pedido": 57,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 56,
@@ -18018,7 +19061,8 @@
       "id_usuario": 25,
       "id_metodo": 1,
       "id_pedido": 58,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 57,
@@ -18028,7 +19072,8 @@
       "id_usuario": 30,
       "id_metodo": 2,
       "id_pedido": 59,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 58,
@@ -18038,7 +19083,8 @@
       "id_usuario": 7,
       "id_metodo": 3,
       "id_pedido": 60,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 59,
@@ -18048,7 +19094,8 @@
       "id_usuario": 23,
       "id_metodo": 1,
       "id_pedido": 61,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 60,
@@ -18058,7 +19105,8 @@
       "id_usuario": 28,
       "id_metodo": 2,
       "id_pedido": 62,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 61,
@@ -18068,7 +19116,8 @@
       "id_usuario": 33,
       "id_metodo": 3,
       "id_pedido": 63,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 62,
@@ -18078,7 +19127,8 @@
       "id_usuario": 10,
       "id_metodo": 4,
       "id_pedido": 64,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 63,
@@ -18088,7 +19138,8 @@
       "id_usuario": 26,
       "id_metodo": 2,
       "id_pedido": 65,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 64,
@@ -18098,7 +19149,8 @@
       "id_usuario": 31,
       "id_metodo": 3,
       "id_pedido": 66,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 65,
@@ -18108,7 +19160,8 @@
       "id_usuario": 8,
       "id_metodo": 4,
       "id_pedido": 67,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 66,
@@ -18118,7 +19171,8 @@
       "id_usuario": 13,
       "id_metodo": 5,
       "id_pedido": 68,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 67,
@@ -18128,7 +19182,8 @@
       "id_usuario": 29,
       "id_metodo": 3,
       "id_pedido": 69,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 68,
@@ -18138,7 +19193,8 @@
       "id_usuario": 6,
       "id_metodo": 4,
       "id_pedido": 70,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 69,
@@ -18148,7 +19204,8 @@
       "id_usuario": 11,
       "id_metodo": 5,
       "id_pedido": 71,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 70,
@@ -18158,7 +19215,8 @@
       "id_usuario": 16,
       "id_metodo": 1,
       "id_pedido": 72,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 71,
@@ -18168,7 +19226,8 @@
       "id_usuario": 32,
       "id_metodo": 4,
       "id_pedido": 73,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 72,
@@ -18178,7 +19237,8 @@
       "id_usuario": 9,
       "id_metodo": 5,
       "id_pedido": 74,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 73,
@@ -18188,7 +19248,8 @@
       "id_usuario": 14,
       "id_metodo": 1,
       "id_pedido": 75,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 74,
@@ -18198,7 +19259,8 @@
       "id_usuario": 19,
       "id_metodo": 2,
       "id_pedido": 76,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 75,
@@ -18208,7 +19270,8 @@
       "id_usuario": 7,
       "id_metodo": 5,
       "id_pedido": 77,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 76,
@@ -18218,7 +19281,8 @@
       "id_usuario": 12,
       "id_metodo": 1,
       "id_pedido": 78,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 77,
@@ -18228,7 +19292,8 @@
       "id_usuario": 17,
       "id_metodo": 2,
       "id_pedido": 79,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 78,
@@ -18238,7 +19303,8 @@
       "id_usuario": 10,
       "id_metodo": 1,
       "id_pedido": 81,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 79,
@@ -18248,7 +19314,8 @@
       "id_usuario": 15,
       "id_metodo": 2,
       "id_pedido": 82,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 80,
@@ -18258,7 +19325,8 @@
       "id_usuario": 25,
       "id_metodo": 4,
       "id_pedido": 84,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 81,
@@ -18268,7 +19336,8 @@
       "id_usuario": 13,
       "id_metodo": 2,
       "id_pedido": 85,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 82,
@@ -18278,7 +19347,8 @@
       "id_usuario": 23,
       "id_metodo": 4,
       "id_pedido": 87,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 83,
@@ -18288,7 +19358,8 @@
       "id_usuario": 28,
       "id_metodo": 5,
       "id_pedido": 88,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 84,
@@ -18298,7 +19369,8 @@
       "id_usuario": 21,
       "id_metodo": 4,
       "id_pedido": 90,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 85,
@@ -18308,7 +19380,8 @@
       "id_usuario": 26,
       "id_metodo": 5,
       "id_pedido": 91,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 86,
@@ -18318,7 +19391,8 @@
       "id_usuario": 31,
       "id_metodo": 1,
       "id_pedido": 92,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 87,
@@ -18328,7 +19402,8 @@
       "id_usuario": 19,
       "id_metodo": 4,
       "id_pedido": 93,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 88,
@@ -18338,7 +19413,8 @@
       "id_usuario": 24,
       "id_metodo": 5,
       "id_pedido": 94,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 89,
@@ -18348,7 +19424,8 @@
       "id_usuario": 29,
       "id_metodo": 1,
       "id_pedido": 95,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 90,
@@ -18358,7 +19435,8 @@
       "id_usuario": 6,
       "id_metodo": 2,
       "id_pedido": 96,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 91,
@@ -18368,7 +19446,8 @@
       "id_usuario": 22,
       "id_metodo": 5,
       "id_pedido": 97,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 92,
@@ -18378,7 +19457,8 @@
       "id_usuario": 27,
       "id_metodo": 1,
       "id_pedido": 98,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 93,
@@ -18388,7 +19468,8 @@
       "id_usuario": 32,
       "id_metodo": 2,
       "id_pedido": 99,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 94,
@@ -18398,7 +19479,8 @@
       "id_usuario": 9,
       "id_metodo": 3,
       "id_pedido": 100,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 95,
@@ -18408,7 +19490,8 @@
       "id_usuario": 25,
       "id_metodo": 1,
       "id_pedido": 101,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 96,
@@ -18418,7 +19501,8 @@
       "id_usuario": 30,
       "id_metodo": 2,
       "id_pedido": 102,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 97,
@@ -18428,7 +19512,8 @@
       "id_usuario": 7,
       "id_metodo": 3,
       "id_pedido": 103,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 98,
@@ -18438,7 +19523,8 @@
       "id_usuario": 12,
       "id_metodo": 4,
       "id_pedido": 104,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 99,
@@ -18448,7 +19534,8 @@
       "id_usuario": 28,
       "id_metodo": 2,
       "id_pedido": 105,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 100,
@@ -18458,7 +19545,8 @@
       "id_usuario": 33,
       "id_metodo": 3,
       "id_pedido": 106,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 101,
@@ -18468,7 +19556,8 @@
       "id_usuario": 10,
       "id_metodo": 4,
       "id_pedido": 107,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 102,
@@ -18478,7 +19567,8 @@
       "id_usuario": 15,
       "id_metodo": 5,
       "id_pedido": 108,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 103,
@@ -18488,7 +19578,8 @@
       "id_usuario": 31,
       "id_metodo": 3,
       "id_pedido": 109,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 104,
@@ -18498,7 +19589,8 @@
       "id_usuario": 8,
       "id_metodo": 4,
       "id_pedido": 110,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 105,
@@ -18508,7 +19600,8 @@
       "id_usuario": 13,
       "id_metodo": 5,
       "id_pedido": 111,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 106,
@@ -18518,7 +19611,8 @@
       "id_usuario": 18,
       "id_metodo": 1,
       "id_pedido": 112,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 107,
@@ -18528,7 +19622,8 @@
       "id_usuario": 6,
       "id_metodo": 4,
       "id_pedido": 113,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 108,
@@ -18538,7 +19633,8 @@
       "id_usuario": 11,
       "id_metodo": 5,
       "id_pedido": 114,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 109,
@@ -18548,7 +19644,8 @@
       "id_usuario": 16,
       "id_metodo": 1,
       "id_pedido": 115,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 110,
@@ -18558,7 +19655,8 @@
       "id_usuario": 21,
       "id_metodo": 2,
       "id_pedido": 116,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 111,
@@ -18568,7 +19666,8 @@
       "id_usuario": 9,
       "id_metodo": 5,
       "id_pedido": 117,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 112,
@@ -18578,7 +19677,8 @@
       "id_usuario": 14,
       "id_metodo": 1,
       "id_pedido": 118,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 113,
@@ -18588,7 +19688,8 @@
       "id_usuario": 19,
       "id_metodo": 2,
       "id_pedido": 119,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 114,
@@ -18598,7 +19699,8 @@
       "id_usuario": 24,
       "id_metodo": 3,
       "id_pedido": 120,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 115,
@@ -18608,7 +19710,8 @@
       "id_usuario": 12,
       "id_metodo": 1,
       "id_pedido": 121,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 116,
@@ -18618,7 +19721,8 @@
       "id_usuario": 17,
       "id_metodo": 2,
       "id_pedido": 122,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 117,
@@ -18628,7 +19732,8 @@
       "id_usuario": 22,
       "id_metodo": 3,
       "id_pedido": 123,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 118,
@@ -18638,7 +19743,8 @@
       "id_usuario": 15,
       "id_metodo": 2,
       "id_pedido": 125,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 119,
@@ -18648,7 +19754,8 @@
       "id_usuario": 2,
       "id_metodo": 2,
       "id_pedido": null,
-      "id_plan": 2
+      "id_plan": 2,
+      "id_inscripcion": null
     },
     {
       "id_pago": 120,
@@ -18658,7 +19765,8 @@
       "id_usuario": 20,
       "id_metodo": 3,
       "id_pedido": 126,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 121,
@@ -18668,7 +19776,8 @@
       "id_usuario": 30,
       "id_metodo": 5,
       "id_pedido": 128,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 122,
@@ -18678,7 +19787,8 @@
       "id_usuario": 5,
       "id_metodo": 2,
       "id_pedido": null,
-      "id_plan": 2
+      "id_plan": 2,
+      "id_inscripcion": null
     },
     {
       "id_pago": 123,
@@ -18688,7 +19798,8 @@
       "id_usuario": 18,
       "id_metodo": 3,
       "id_pedido": 129,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 124,
@@ -18698,7 +19809,8 @@
       "id_usuario": 28,
       "id_metodo": 5,
       "id_pedido": 131,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 125,
@@ -18708,7 +19820,8 @@
       "id_usuario": 33,
       "id_metodo": 1,
       "id_pedido": 132,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 126,
@@ -18718,7 +19831,8 @@
       "id_usuario": 26,
       "id_metodo": 5,
       "id_pedido": 134,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 127,
@@ -18728,7 +19842,8 @@
       "id_usuario": 31,
       "id_metodo": 1,
       "id_pedido": 135,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 128,
@@ -18738,7 +19853,8 @@
       "id_usuario": 8,
       "id_metodo": 2,
       "id_pedido": 136,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 129,
@@ -18748,7 +19864,8 @@
       "id_usuario": 24,
       "id_metodo": 5,
       "id_pedido": 137,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 130,
@@ -18758,7 +19875,8 @@
       "id_usuario": 29,
       "id_metodo": 1,
       "id_pedido": 138,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 131,
@@ -18768,7 +19886,8 @@
       "id_usuario": 6,
       "id_metodo": 2,
       "id_pedido": 139,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 132,
@@ -18778,7 +19897,8 @@
       "id_usuario": 11,
       "id_metodo": 3,
       "id_pedido": 140,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 133,
@@ -18788,7 +19908,8 @@
       "id_usuario": 27,
       "id_metodo": 1,
       "id_pedido": 141,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 134,
@@ -18798,7 +19919,8 @@
       "id_usuario": 32,
       "id_metodo": 2,
       "id_pedido": 142,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 135,
@@ -18808,7 +19930,8 @@
       "id_usuario": 9,
       "id_metodo": 3,
       "id_pedido": 143,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 136,
@@ -18818,7 +19941,8 @@
       "id_usuario": 14,
       "id_metodo": 4,
       "id_pedido": 144,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 137,
@@ -18828,7 +19952,8 @@
       "id_usuario": 30,
       "id_metodo": 2,
       "id_pedido": 145,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 138,
@@ -18838,7 +19963,8 @@
       "id_usuario": 7,
       "id_metodo": 3,
       "id_pedido": 146,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 139,
@@ -18848,7 +19974,8 @@
       "id_usuario": 12,
       "id_metodo": 4,
       "id_pedido": 147,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 140,
@@ -18858,7 +19985,8 @@
       "id_usuario": 17,
       "id_metodo": 5,
       "id_pedido": 148,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 141,
@@ -18868,7 +19996,8 @@
       "id_usuario": 33,
       "id_metodo": 3,
       "id_pedido": 149,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 142,
@@ -18878,7 +20007,8 @@
       "id_usuario": 10,
       "id_metodo": 4,
       "id_pedido": 150,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 143,
@@ -18888,7 +20018,8 @@
       "id_usuario": 15,
       "id_metodo": 5,
       "id_pedido": 151,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 144,
@@ -18898,7 +20029,8 @@
       "id_usuario": 20,
       "id_metodo": 1,
       "id_pedido": 152,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 145,
@@ -18908,7 +20040,8 @@
       "id_usuario": 8,
       "id_metodo": 4,
       "id_pedido": 153,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 146,
@@ -18918,7 +20051,8 @@
       "id_usuario": 13,
       "id_metodo": 5,
       "id_pedido": 154,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 147,
@@ -18928,7 +20062,8 @@
       "id_usuario": 18,
       "id_metodo": 1,
       "id_pedido": 155,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 148,
@@ -18938,7 +20073,8 @@
       "id_usuario": 23,
       "id_metodo": 2,
       "id_pedido": 156,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 149,
@@ -18948,7 +20084,8 @@
       "id_usuario": 11,
       "id_metodo": 5,
       "id_pedido": 157,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 150,
@@ -18958,7 +20095,8 @@
       "id_usuario": 16,
       "id_metodo": 1,
       "id_pedido": 158,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 151,
@@ -18968,7 +20106,8 @@
       "id_usuario": 21,
       "id_metodo": 2,
       "id_pedido": 159,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 152,
@@ -18978,7 +20117,8 @@
       "id_usuario": 26,
       "id_metodo": 3,
       "id_pedido": 160,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 153,
@@ -18988,7 +20128,8 @@
       "id_usuario": 14,
       "id_metodo": 1,
       "id_pedido": 161,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 154,
@@ -18998,7 +20139,8 @@
       "id_usuario": 19,
       "id_metodo": 2,
       "id_pedido": 162,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 155,
@@ -19008,7 +20150,8 @@
       "id_usuario": 24,
       "id_metodo": 3,
       "id_pedido": 163,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 156,
@@ -19018,7 +20161,8 @@
       "id_usuario": 29,
       "id_metodo": 4,
       "id_pedido": 164,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 157,
@@ -19028,7 +20172,8 @@
       "id_usuario": 17,
       "id_metodo": 2,
       "id_pedido": 165,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 158,
@@ -19038,7 +20183,8 @@
       "id_usuario": 22,
       "id_metodo": 3,
       "id_pedido": 166,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 159,
@@ -19048,7 +20194,8 @@
       "id_usuario": 27,
       "id_metodo": 4,
       "id_pedido": 167,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 160,
@@ -19058,7 +20205,8 @@
       "id_usuario": 20,
       "id_metodo": 3,
       "id_pedido": 169,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 161,
@@ -19068,7 +20216,8 @@
       "id_usuario": 25,
       "id_metodo": 4,
       "id_pedido": 170,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 162,
@@ -19078,7 +20227,8 @@
       "id_usuario": 7,
       "id_metodo": 1,
       "id_pedido": 172,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 163,
@@ -19088,7 +20238,8 @@
       "id_usuario": 23,
       "id_metodo": 4,
       "id_pedido": 173,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 164,
@@ -19098,7 +20249,8 @@
       "id_usuario": 33,
       "id_metodo": 1,
       "id_pedido": 175,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 165,
@@ -19108,7 +20260,8 @@
       "id_usuario": 10,
       "id_metodo": 2,
       "id_pedido": 176,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 166,
@@ -19118,7 +20271,8 @@
       "id_usuario": 31,
       "id_metodo": 1,
       "id_pedido": 178,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 167,
@@ -19128,7 +20282,8 @@
       "id_usuario": 8,
       "id_metodo": 2,
       "id_pedido": 179,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 168,
@@ -19138,7 +20293,8 @@
       "id_usuario": 13,
       "id_metodo": 3,
       "id_pedido": 180,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 169,
@@ -19148,7 +20304,8 @@
       "id_usuario": 29,
       "id_metodo": 1,
       "id_pedido": 181,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 170,
@@ -19158,7 +20315,8 @@
       "id_usuario": 6,
       "id_metodo": 2,
       "id_pedido": 182,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 171,
@@ -19168,7 +20326,8 @@
       "id_usuario": 11,
       "id_metodo": 3,
       "id_pedido": 183,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 172,
@@ -19178,7 +20337,8 @@
       "id_usuario": 16,
       "id_metodo": 4,
       "id_pedido": 184,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 173,
@@ -19188,7 +20348,8 @@
       "id_usuario": 32,
       "id_metodo": 2,
       "id_pedido": 185,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 174,
@@ -19198,7 +20359,8 @@
       "id_usuario": 9,
       "id_metodo": 3,
       "id_pedido": 186,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 175,
@@ -19208,7 +20370,8 @@
       "id_usuario": 14,
       "id_metodo": 4,
       "id_pedido": 187,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 176,
@@ -19218,7 +20381,8 @@
       "id_usuario": 19,
       "id_metodo": 5,
       "id_pedido": 188,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 177,
@@ -19228,7 +20392,8 @@
       "id_usuario": 7,
       "id_metodo": 3,
       "id_pedido": 189,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 178,
@@ -19238,7 +20403,8 @@
       "id_usuario": 12,
       "id_metodo": 4,
       "id_pedido": 190,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 179,
@@ -19248,7 +20414,8 @@
       "id_usuario": 17,
       "id_metodo": 5,
       "id_pedido": 191,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 180,
@@ -19258,7 +20425,8 @@
       "id_usuario": 22,
       "id_metodo": 1,
       "id_pedido": 192,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 181,
@@ -19268,7 +20436,8 @@
       "id_usuario": 10,
       "id_metodo": 4,
       "id_pedido": 193,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 182,
@@ -19278,7 +20447,8 @@
       "id_usuario": 15,
       "id_metodo": 5,
       "id_pedido": 194,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 183,
@@ -19288,7 +20458,8 @@
       "id_usuario": 20,
       "id_metodo": 1,
       "id_pedido": 195,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 184,
@@ -19298,7 +20469,8 @@
       "id_usuario": 25,
       "id_metodo": 2,
       "id_pedido": 196,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 185,
@@ -19308,7 +20480,8 @@
       "id_usuario": 13,
       "id_metodo": 5,
       "id_pedido": 197,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 186,
@@ -19318,7 +20491,8 @@
       "id_usuario": 18,
       "id_metodo": 1,
       "id_pedido": 198,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 187,
@@ -19328,7 +20502,8 @@
       "id_usuario": 23,
       "id_metodo": 2,
       "id_pedido": 199,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 188,
@@ -19338,7 +20513,8 @@
       "id_usuario": 28,
       "id_metodo": 3,
       "id_pedido": 200,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 189,
@@ -19348,7 +20524,8 @@
       "id_usuario": 16,
       "id_metodo": 1,
       "id_pedido": 201,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 190,
@@ -19358,7 +20535,8 @@
       "id_usuario": 21,
       "id_metodo": 2,
       "id_pedido": 202,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 191,
@@ -19368,7 +20546,8 @@
       "id_usuario": 26,
       "id_metodo": 3,
       "id_pedido": 203,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 192,
@@ -19378,7 +20557,8 @@
       "id_usuario": 31,
       "id_metodo": 4,
       "id_pedido": 204,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 193,
@@ -19388,7 +20568,8 @@
       "id_usuario": 19,
       "id_metodo": 2,
       "id_pedido": 205,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 194,
@@ -19398,7 +20579,8 @@
       "id_usuario": 24,
       "id_metodo": 3,
       "id_pedido": 206,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 195,
@@ -19408,7 +20590,8 @@
       "id_usuario": 29,
       "id_metodo": 4,
       "id_pedido": 207,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 196,
@@ -19418,7 +20601,8 @@
       "id_usuario": 6,
       "id_metodo": 5,
       "id_pedido": 208,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 197,
@@ -19428,7 +20612,8 @@
       "id_usuario": 22,
       "id_metodo": 3,
       "id_pedido": 209,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 198,
@@ -19438,7 +20623,8 @@
       "id_usuario": 27,
       "id_metodo": 4,
       "id_pedido": 210,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 199,
@@ -19448,7 +20634,8 @@
       "id_usuario": 32,
       "id_metodo": 5,
       "id_pedido": 211,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 200,
@@ -19458,7 +20645,8 @@
       "id_usuario": 25,
       "id_metodo": 4,
       "id_pedido": 213,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 201,
@@ -19468,7 +20656,8 @@
       "id_usuario": 30,
       "id_metodo": 5,
       "id_pedido": 214,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 202,
@@ -19478,7 +20667,8 @@
       "id_usuario": 12,
       "id_metodo": 2,
       "id_pedido": 216,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 203,
@@ -19488,7 +20678,8 @@
       "id_usuario": 28,
       "id_metodo": 5,
       "id_pedido": 217,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 204,
@@ -19498,7 +20689,8 @@
       "id_usuario": 10,
       "id_metodo": 2,
       "id_pedido": 219,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 205,
@@ -19508,7 +20700,8 @@
       "id_usuario": 15,
       "id_metodo": 3,
       "id_pedido": 220,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 206,
@@ -19518,7 +20711,8 @@
       "id_usuario": 8,
       "id_metodo": 2,
       "id_pedido": 222,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 207,
@@ -19528,7 +20722,8 @@
       "id_usuario": 13,
       "id_metodo": 3,
       "id_pedido": 223,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 208,
@@ -19538,7 +20733,8 @@
       "id_usuario": 18,
       "id_metodo": 4,
       "id_pedido": 224,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 209,
@@ -19548,7 +20744,8 @@
       "id_usuario": 6,
       "id_metodo": 2,
       "id_pedido": 225,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 210,
@@ -19558,7 +20755,8 @@
       "id_usuario": 11,
       "id_metodo": 3,
       "id_pedido": 226,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 211,
@@ -19568,7 +20766,8 @@
       "id_usuario": 16,
       "id_metodo": 4,
       "id_pedido": 227,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 212,
@@ -19578,7 +20777,8 @@
       "id_usuario": 21,
       "id_metodo": 5,
       "id_pedido": 228,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 213,
@@ -19588,7 +20788,8 @@
       "id_usuario": 9,
       "id_metodo": 3,
       "id_pedido": 229,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 214,
@@ -19598,7 +20799,8 @@
       "id_usuario": 14,
       "id_metodo": 4,
       "id_pedido": 230,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 215,
@@ -19608,7 +20810,8 @@
       "id_usuario": 19,
       "id_metodo": 5,
       "id_pedido": 231,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 216,
@@ -19618,7 +20821,8 @@
       "id_usuario": 24,
       "id_metodo": 1,
       "id_pedido": 232,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 217,
@@ -19628,7 +20832,8 @@
       "id_usuario": 12,
       "id_metodo": 4,
       "id_pedido": 233,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 218,
@@ -19638,7 +20843,8 @@
       "id_usuario": 17,
       "id_metodo": 5,
       "id_pedido": 234,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 219,
@@ -19648,7 +20854,8 @@
       "id_usuario": 22,
       "id_metodo": 1,
       "id_pedido": 235,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 220,
@@ -19658,7 +20865,8 @@
       "id_usuario": 27,
       "id_metodo": 2,
       "id_pedido": 236,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 221,
@@ -19668,7 +20876,8 @@
       "id_usuario": 15,
       "id_metodo": 5,
       "id_pedido": 237,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 222,
@@ -19678,7 +20887,8 @@
       "id_usuario": 20,
       "id_metodo": 1,
       "id_pedido": 238,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 223,
@@ -19688,7 +20898,8 @@
       "id_usuario": 25,
       "id_metodo": 2,
       "id_pedido": 239,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 224,
@@ -19698,7 +20909,8 @@
       "id_usuario": 30,
       "id_metodo": 3,
       "id_pedido": 240,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 225,
@@ -19708,7 +20920,8 @@
       "id_usuario": 18,
       "id_metodo": 1,
       "id_pedido": 241,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 226,
@@ -19718,7 +20931,8 @@
       "id_usuario": 23,
       "id_metodo": 2,
       "id_pedido": 242,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 227,
@@ -19728,7 +20942,8 @@
       "id_usuario": 28,
       "id_metodo": 3,
       "id_pedido": 243,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 228,
@@ -19738,7 +20953,8 @@
       "id_usuario": 33,
       "id_metodo": 4,
       "id_pedido": 244,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 229,
@@ -19748,7 +20964,8 @@
       "id_usuario": 21,
       "id_metodo": 2,
       "id_pedido": 245,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 230,
@@ -19758,7 +20975,8 @@
       "id_usuario": 2,
       "id_metodo": 2,
       "id_pedido": null,
-      "id_plan": 2
+      "id_plan": 2,
+      "id_inscripcion": null
     },
     {
       "id_pago": 231,
@@ -19768,7 +20986,8 @@
       "id_usuario": 26,
       "id_metodo": 3,
       "id_pedido": 246,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 232,
@@ -19778,7 +20997,8 @@
       "id_usuario": 31,
       "id_metodo": 4,
       "id_pedido": 247,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 233,
@@ -19788,7 +21008,8 @@
       "id_usuario": 8,
       "id_metodo": 5,
       "id_pedido": 248,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 234,
@@ -19798,7 +21019,8 @@
       "id_usuario": 5,
       "id_metodo": 2,
       "id_pedido": null,
-      "id_plan": 2
+      "id_plan": 2,
+      "id_inscripcion": null
     },
     {
       "id_pago": 235,
@@ -19808,7 +21030,8 @@
       "id_usuario": 24,
       "id_metodo": 3,
       "id_pedido": 249,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 236,
@@ -19818,7 +21041,8 @@
       "id_usuario": 29,
       "id_metodo": 4,
       "id_pedido": 250,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 237,
@@ -19828,7 +21052,8 @@
       "id_usuario": 6,
       "id_metodo": 5,
       "id_pedido": 251,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 238,
@@ -19838,7 +21063,8 @@
       "id_usuario": 11,
       "id_metodo": 1,
       "id_pedido": 252,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 239,
@@ -19848,7 +21074,8 @@
       "id_usuario": 27,
       "id_metodo": 4,
       "id_pedido": 253,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 240,
@@ -19858,7 +21085,8 @@
       "id_usuario": 32,
       "id_metodo": 5,
       "id_pedido": 254,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 241,
@@ -19868,7 +21096,8 @@
       "id_usuario": 9,
       "id_metodo": 1,
       "id_pedido": 255,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 242,
@@ -19878,7 +21107,8 @@
       "id_usuario": 30,
       "id_metodo": 5,
       "id_pedido": 257,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 243,
@@ -19888,7 +21118,8 @@
       "id_usuario": 7,
       "id_metodo": 1,
       "id_pedido": 258,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 244,
@@ -19898,7 +21129,8 @@
       "id_usuario": 17,
       "id_metodo": 3,
       "id_pedido": 260,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 245,
@@ -19908,7 +21140,8 @@
       "id_usuario": 33,
       "id_metodo": 1,
       "id_pedido": 261,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 246,
@@ -19918,7 +21151,8 @@
       "id_usuario": 15,
       "id_metodo": 3,
       "id_pedido": 263,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 247,
@@ -19928,7 +21162,8 @@
       "id_usuario": 20,
       "id_metodo": 4,
       "id_pedido": 264,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 248,
@@ -19938,7 +21173,8 @@
       "id_usuario": 13,
       "id_metodo": 3,
       "id_pedido": 266,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 249,
@@ -19948,7 +21184,8 @@
       "id_usuario": 18,
       "id_metodo": 4,
       "id_pedido": 267,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 250,
@@ -19958,7 +21195,8 @@
       "id_usuario": 23,
       "id_metodo": 5,
       "id_pedido": 268,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 251,
@@ -19968,7 +21206,8 @@
       "id_usuario": 11,
       "id_metodo": 3,
       "id_pedido": 269,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 252,
@@ -19978,7 +21217,8 @@
       "id_usuario": 16,
       "id_metodo": 4,
       "id_pedido": 270,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 253,
@@ -19988,7 +21228,8 @@
       "id_usuario": 21,
       "id_metodo": 5,
       "id_pedido": 271,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 254,
@@ -19998,7 +21239,8 @@
       "id_usuario": 26,
       "id_metodo": 1,
       "id_pedido": 272,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 255,
@@ -20008,7 +21250,8 @@
       "id_usuario": 14,
       "id_metodo": 4,
       "id_pedido": 273,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 256,
@@ -20018,7 +21261,8 @@
       "id_usuario": 19,
       "id_metodo": 5,
       "id_pedido": 274,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 257,
@@ -20028,7 +21272,8 @@
       "id_usuario": 24,
       "id_metodo": 1,
       "id_pedido": 275,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 258,
@@ -20038,7 +21283,8 @@
       "id_usuario": 29,
       "id_metodo": 2,
       "id_pedido": 276,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 259,
@@ -20048,7 +21294,8 @@
       "id_usuario": 17,
       "id_metodo": 5,
       "id_pedido": 277,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 260,
@@ -20058,7 +21305,8 @@
       "id_usuario": 22,
       "id_metodo": 1,
       "id_pedido": 278,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 261,
@@ -20068,7 +21316,8 @@
       "id_usuario": 27,
       "id_metodo": 2,
       "id_pedido": 279,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 262,
@@ -20078,7 +21327,8 @@
       "id_usuario": 32,
       "id_metodo": 3,
       "id_pedido": 280,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 263,
@@ -20088,7 +21338,8 @@
       "id_usuario": 20,
       "id_metodo": 1,
       "id_pedido": 281,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 264,
@@ -20098,7 +21349,8 @@
       "id_usuario": 25,
       "id_metodo": 2,
       "id_pedido": 282,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 265,
@@ -20108,7 +21360,8 @@
       "id_usuario": 30,
       "id_metodo": 3,
       "id_pedido": 283,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 266,
@@ -20118,7 +21371,8 @@
       "id_usuario": 7,
       "id_metodo": 4,
       "id_pedido": 284,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 267,
@@ -20128,7 +21382,8 @@
       "id_usuario": 23,
       "id_metodo": 2,
       "id_pedido": 285,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 268,
@@ -20138,7 +21393,8 @@
       "id_usuario": 28,
       "id_metodo": 3,
       "id_pedido": 286,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 269,
@@ -20148,7 +21404,8 @@
       "id_usuario": 33,
       "id_metodo": 4,
       "id_pedido": 287,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 270,
@@ -20158,7 +21415,8 @@
       "id_usuario": 10,
       "id_metodo": 5,
       "id_pedido": 288,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 271,
@@ -20168,7 +21426,8 @@
       "id_usuario": 26,
       "id_metodo": 3,
       "id_pedido": 289,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 272,
@@ -20178,7 +21437,8 @@
       "id_usuario": 31,
       "id_metodo": 4,
       "id_pedido": 290,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 273,
@@ -20188,7 +21448,8 @@
       "id_usuario": 8,
       "id_metodo": 5,
       "id_pedido": 291,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 274,
@@ -20198,7 +21459,8 @@
       "id_usuario": 13,
       "id_metodo": 1,
       "id_pedido": 292,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 275,
@@ -20208,7 +21470,8 @@
       "id_usuario": 29,
       "id_metodo": 4,
       "id_pedido": 293,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 276,
@@ -20218,7 +21481,8 @@
       "id_usuario": 6,
       "id_metodo": 5,
       "id_pedido": 294,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 277,
@@ -20228,7 +21492,8 @@
       "id_usuario": 11,
       "id_metodo": 1,
       "id_pedido": 295,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 278,
@@ -20238,7 +21503,8 @@
       "id_usuario": 16,
       "id_metodo": 2,
       "id_pedido": 296,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 279,
@@ -20248,7 +21514,8 @@
       "id_usuario": 32,
       "id_metodo": 5,
       "id_pedido": 297,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 280,
@@ -20258,7 +21525,8 @@
       "id_usuario": 9,
       "id_metodo": 1,
       "id_pedido": 298,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 281,
@@ -20268,7 +21536,8 @@
       "id_usuario": 14,
       "id_metodo": 2,
       "id_pedido": 299,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 282,
@@ -20278,7 +21547,8 @@
       "id_usuario": 7,
       "id_metodo": 1,
       "id_pedido": 301,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 283,
@@ -20288,7 +21558,8 @@
       "id_usuario": 12,
       "id_metodo": 2,
       "id_pedido": 302,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 284,
@@ -20298,7 +21569,8 @@
       "id_usuario": 22,
       "id_metodo": 4,
       "id_pedido": 304,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 285,
@@ -20308,7 +21580,8 @@
       "id_usuario": 10,
       "id_metodo": 2,
       "id_pedido": 305,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 286,
@@ -20318,7 +21591,8 @@
       "id_usuario": 20,
       "id_metodo": 4,
       "id_pedido": 307,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 287,
@@ -20328,7 +21602,8 @@
       "id_usuario": 25,
       "id_metodo": 5,
       "id_pedido": 308,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 288,
@@ -20338,7 +21613,8 @@
       "id_usuario": 18,
       "id_metodo": 4,
       "id_pedido": 310,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 289,
@@ -20348,7 +21624,8 @@
       "id_usuario": 23,
       "id_metodo": 5,
       "id_pedido": 311,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 290,
@@ -20358,7 +21635,8 @@
       "id_usuario": 28,
       "id_metodo": 1,
       "id_pedido": 312,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 291,
@@ -20368,7 +21646,8 @@
       "id_usuario": 16,
       "id_metodo": 4,
       "id_pedido": 313,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 292,
@@ -20378,7 +21657,8 @@
       "id_usuario": 21,
       "id_metodo": 5,
       "id_pedido": 314,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 293,
@@ -20388,7 +21668,8 @@
       "id_usuario": 26,
       "id_metodo": 1,
       "id_pedido": 315,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 294,
@@ -20398,7 +21679,8 @@
       "id_usuario": 31,
       "id_metodo": 2,
       "id_pedido": 316,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 295,
@@ -20408,7 +21690,8 @@
       "id_usuario": 19,
       "id_metodo": 5,
       "id_pedido": 317,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 296,
@@ -20418,7 +21701,8 @@
       "id_usuario": 24,
       "id_metodo": 1,
       "id_pedido": 318,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 297,
@@ -20428,7 +21712,8 @@
       "id_usuario": 29,
       "id_metodo": 2,
       "id_pedido": 319,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 298,
@@ -20438,7 +21723,8 @@
       "id_usuario": 6,
       "id_metodo": 3,
       "id_pedido": 320,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 299,
@@ -20448,7 +21734,8 @@
       "id_usuario": 22,
       "id_metodo": 1,
       "id_pedido": 321,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 300,
@@ -20458,7 +21745,8 @@
       "id_usuario": 27,
       "id_metodo": 2,
       "id_pedido": 322,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 301,
@@ -20468,7 +21756,8 @@
       "id_usuario": 32,
       "id_metodo": 3,
       "id_pedido": 323,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 302,
@@ -20478,7 +21767,8 @@
       "id_usuario": 9,
       "id_metodo": 4,
       "id_pedido": 324,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 303,
@@ -20488,7 +21778,8 @@
       "id_usuario": 25,
       "id_metodo": 2,
       "id_pedido": 325,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 304,
@@ -20498,7 +21789,8 @@
       "id_usuario": 30,
       "id_metodo": 3,
       "id_pedido": 326,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 305,
@@ -20508,7 +21800,8 @@
       "id_usuario": 7,
       "id_metodo": 4,
       "id_pedido": 327,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 306,
@@ -20518,7 +21811,8 @@
       "id_usuario": 12,
       "id_metodo": 5,
       "id_pedido": 328,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 307,
@@ -20528,7 +21822,8 @@
       "id_usuario": 28,
       "id_metodo": 3,
       "id_pedido": 329,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 308,
@@ -20538,7 +21833,8 @@
       "id_usuario": 33,
       "id_metodo": 4,
       "id_pedido": 330,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 309,
@@ -20548,7 +21844,8 @@
       "id_usuario": 10,
       "id_metodo": 5,
       "id_pedido": 331,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 310,
@@ -20558,7 +21855,8 @@
       "id_usuario": 15,
       "id_metodo": 1,
       "id_pedido": 332,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 311,
@@ -20568,7 +21866,8 @@
       "id_usuario": 31,
       "id_metodo": 4,
       "id_pedido": 333,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 312,
@@ -20578,7 +21877,8 @@
       "id_usuario": 8,
       "id_metodo": 5,
       "id_pedido": 334,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 313,
@@ -20588,7 +21888,8 @@
       "id_usuario": 13,
       "id_metodo": 1,
       "id_pedido": 335,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 314,
@@ -20598,7 +21899,8 @@
       "id_usuario": 18,
       "id_metodo": 2,
       "id_pedido": 336,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 315,
@@ -20608,7 +21910,8 @@
       "id_usuario": 6,
       "id_metodo": 5,
       "id_pedido": 337,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 316,
@@ -20618,7 +21921,8 @@
       "id_usuario": 11,
       "id_metodo": 1,
       "id_pedido": 338,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 317,
@@ -20628,7 +21932,8 @@
       "id_usuario": 16,
       "id_metodo": 2,
       "id_pedido": 339,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 318,
@@ -20638,7 +21943,8 @@
       "id_usuario": 21,
       "id_metodo": 3,
       "id_pedido": 340,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 319,
@@ -20648,7 +21954,8 @@
       "id_usuario": 9,
       "id_metodo": 1,
       "id_pedido": 341,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 320,
@@ -20658,7 +21965,8 @@
       "id_usuario": 14,
       "id_metodo": 2,
       "id_pedido": 342,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 321,
@@ -20668,7 +21976,8 @@
       "id_usuario": 19,
       "id_metodo": 3,
       "id_pedido": 343,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 322,
@@ -20678,7 +21987,8 @@
       "id_usuario": 12,
       "id_metodo": 2,
       "id_pedido": 345,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 323,
@@ -20688,7 +21998,8 @@
       "id_usuario": 17,
       "id_metodo": 3,
       "id_pedido": 346,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 324,
@@ -20698,7 +22009,8 @@
       "id_usuario": 27,
       "id_metodo": 5,
       "id_pedido": 348,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 325,
@@ -20708,7 +22020,8 @@
       "id_usuario": 15,
       "id_metodo": 3,
       "id_pedido": 349,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 326,
@@ -20718,7 +22031,8 @@
       "id_usuario": 25,
       "id_metodo": 5,
       "id_pedido": 351,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
     },
     {
       "id_pago": 327,
@@ -20728,7 +22042,830 @@
       "id_usuario": 30,
       "id_metodo": 1,
       "id_pedido": 352,
-      "id_plan": null
+      "id_plan": null,
+      "id_inscripcion": null
+    },
+    {
+      "id_pago": 328,
+      "monto": 90000,
+      "fecha_pago": "2026-08-03 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 11,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 2
+    },
+    {
+      "id_pago": 329,
+      "monto": 135000,
+      "fecha_pago": "2026-08-02 11:12:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 16,
+      "id_metodo": 3,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 3
+    },
+    {
+      "id_pago": 330,
+      "monto": 170000,
+      "fecha_pago": "2026-08-18 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 9,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 4
+    },
+    {
+      "id_pago": 331,
+      "monto": 255000,
+      "fecha_pago": "2026-08-17 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 14,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 5
+    },
+    {
+      "id_pago": 332,
+      "monto": 85000,
+      "fecha_pago": "2026-08-16 11:12:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 19,
+      "id_metodo": 3,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 6
+    },
+    {
+      "id_pago": 333,
+      "monto": 170000,
+      "fecha_pago": "2026-08-15 11:13:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 24,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 7
+    },
+    {
+      "id_pago": 334,
+      "monto": 210000,
+      "fecha_pago": "2026-09-01 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 12,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 8
+    },
+    {
+      "id_pago": 335,
+      "monto": 70000,
+      "fecha_pago": "2026-08-31 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 17,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 9
+    },
+    {
+      "id_pago": 336,
+      "monto": 140000,
+      "fecha_pago": "2026-08-30 11:12:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 22,
+      "id_metodo": 3,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 10
+    },
+    {
+      "id_pago": 337,
+      "monto": 55000,
+      "fecha_pago": "2026-09-15 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 15,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 11
+    },
+    {
+      "id_pago": 338,
+      "monto": 110000,
+      "fecha_pago": "2026-09-14 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 20,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 12
+    },
+    {
+      "id_pago": 339,
+      "monto": 165000,
+      "fecha_pago": "2026-09-13 11:12:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 25,
+      "id_metodo": 3,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 13
+    },
+    {
+      "id_pago": 340,
+      "monto": 55000,
+      "fecha_pago": "2026-09-12 11:13:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 30,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 14
+    },
+    {
+      "id_pago": 341,
+      "monto": 76000,
+      "fecha_pago": "2026-10-28 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 18,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 15
+    },
+    {
+      "id_pago": 342,
+      "monto": 114000,
+      "fecha_pago": "2026-10-27 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 23,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 16
+    },
+    {
+      "id_pago": 343,
+      "monto": 135000,
+      "fecha_pago": "2026-11-03 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 21,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 17
+    },
+    {
+      "id_pago": 344,
+      "monto": 45000,
+      "fecha_pago": "2026-11-02 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 26,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 18
+    },
+    {
+      "id_pago": 345,
+      "monto": 87000,
+      "fecha_pago": "2026-08-07 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 13,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 19
+    },
+    {
+      "id_pago": 346,
+      "monto": 174000,
+      "fecha_pago": "2026-08-06 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 18,
+      "id_metodo": 3,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 20
+    },
+    {
+      "id_pago": 347,
+      "monto": 261000,
+      "fecha_pago": "2026-08-05 11:12:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 23,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 21
+    },
+    {
+      "id_pago": 348,
+      "monto": 87000,
+      "fecha_pago": "2026-08-04 11:13:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 28,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 22
+    },
+    {
+      "id_pago": 349,
+      "monto": 144000,
+      "fecha_pago": "2026-08-21 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 16,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 23
+    },
+    {
+      "id_pago": 350,
+      "monto": 216000,
+      "fecha_pago": "2026-08-20 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 21,
+      "id_metodo": 3,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 24
+    },
+    {
+      "id_pago": 351,
+      "monto": 72000,
+      "fecha_pago": "2026-08-19 11:12:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 26,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 25
+    },
+    {
+      "id_pago": 352,
+      "monto": 171000,
+      "fecha_pago": "2026-09-04 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 19,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 26
+    },
+    {
+      "id_pago": 353,
+      "monto": 57000,
+      "fecha_pago": "2026-09-03 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 24,
+      "id_metodo": 3,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 27
+    },
+    {
+      "id_pago": 354,
+      "monto": 114000,
+      "fecha_pago": "2026-09-02 11:12:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 29,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 28
+    },
+    {
+      "id_pago": 355,
+      "monto": 171000,
+      "fecha_pago": "2026-09-01 11:13:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 6,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 29
+    },
+    {
+      "id_pago": 356,
+      "monto": 40000,
+      "fecha_pago": "2026-09-18 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 22,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 30
+    },
+    {
+      "id_pago": 357,
+      "monto": 80000,
+      "fecha_pago": "2026-09-17 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 27,
+      "id_metodo": 3,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 31
+    },
+    {
+      "id_pago": 358,
+      "monto": 120000,
+      "fecha_pago": "2026-09-16 11:12:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 32,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 32
+    },
+    {
+      "id_pago": 359,
+      "monto": 94000,
+      "fecha_pago": "2026-10-30 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 25,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 33
+    },
+    {
+      "id_pago": 360,
+      "monto": 141000,
+      "fecha_pago": "2026-10-29 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 30,
+      "id_metodo": 3,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 34
+    },
+    {
+      "id_pago": 361,
+      "monto": 261000,
+      "fecha_pago": "2026-11-05 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 28,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 35
+    },
+    {
+      "id_pago": 362,
+      "monto": 87000,
+      "fecha_pago": "2026-11-04 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 33,
+      "id_metodo": 3,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 36
+    },
+    {
+      "id_pago": 363,
+      "monto": 74000,
+      "fecha_pago": "2026-08-10 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 20,
+      "id_metodo": 3,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 37
+    },
+    {
+      "id_pago": 364,
+      "monto": 148000,
+      "fecha_pago": "2026-08-09 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 25,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 38
+    },
+    {
+      "id_pago": 365,
+      "monto": 222000,
+      "fecha_pago": "2026-08-08 11:12:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 30,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 39
+    },
+    {
+      "id_pago": 366,
+      "monto": 118000,
+      "fecha_pago": "2026-08-24 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 23,
+      "id_metodo": 3,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 40
+    },
+    {
+      "id_pago": 367,
+      "monto": 177000,
+      "fecha_pago": "2026-08-23 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 28,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 41
+    },
+    {
+      "id_pago": 368,
+      "monto": 59000,
+      "fecha_pago": "2026-08-22 11:12:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 33,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 42
+    },
+    {
+      "id_pago": 369,
+      "monto": 118000,
+      "fecha_pago": "2026-08-21 11:13:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 10,
+      "id_metodo": 3,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 43
+    },
+    {
+      "id_pago": 370,
+      "monto": 126000,
+      "fecha_pago": "2026-09-07 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 26,
+      "id_metodo": 3,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 44
+    },
+    {
+      "id_pago": 371,
+      "monto": 42000,
+      "fecha_pago": "2026-09-06 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 31,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 45
+    },
+    {
+      "id_pago": 372,
+      "monto": 84000,
+      "fecha_pago": "2026-09-05 11:12:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 8,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 46
+    },
+    {
+      "id_pago": 373,
+      "monto": 49000,
+      "fecha_pago": "2026-09-21 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 29,
+      "id_metodo": 3,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 47
+    },
+    {
+      "id_pago": 374,
+      "monto": 98000,
+      "fecha_pago": "2026-09-20 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 6,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 48
+    },
+    {
+      "id_pago": 375,
+      "monto": 49000,
+      "fecha_pago": "2026-09-18 11:13:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 16,
+      "id_metodo": 3,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 50
+    },
+    {
+      "id_pago": 376,
+      "monto": 178000,
+      "fecha_pago": "2026-11-01 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 32,
+      "id_metodo": 3,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 51
+    },
+    {
+      "id_pago": 377,
+      "monto": 267000,
+      "fecha_pago": "2026-10-31 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 9,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 52
+    },
+    {
+      "id_pago": 378,
+      "monto": 222000,
+      "fecha_pago": "2026-11-07 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 7,
+      "id_metodo": 3,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 53
+    },
+    {
+      "id_pago": 379,
+      "monto": 74000,
+      "fecha_pago": "2026-11-06 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 12,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 54
+    },
+    {
+      "id_pago": 380,
+      "monto": 61000,
+      "fecha_pago": "2026-08-13 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 27,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 55
+    },
+    {
+      "id_pago": 381,
+      "monto": 122000,
+      "fecha_pago": "2026-08-12 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 32,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 56
+    },
+    {
+      "id_pago": 382,
+      "monto": 183000,
+      "fecha_pago": "2026-08-11 11:12:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 9,
+      "id_metodo": 3,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 57
+    },
+    {
+      "id_pago": 383,
+      "monto": 61000,
+      "fecha_pago": "2026-08-10 11:13:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 14,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 58
+    },
+    {
+      "id_pago": 384,
+      "monto": 88000,
+      "fecha_pago": "2026-08-27 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 30,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 59
+    },
+    {
+      "id_pago": 385,
+      "monto": 132000,
+      "fecha_pago": "2026-08-26 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 7,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 60
+    },
+    {
+      "id_pago": 386,
+      "monto": 44000,
+      "fecha_pago": "2026-08-25 11:12:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 12,
+      "id_metodo": 3,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 61
+    },
+    {
+      "id_pago": 387,
+      "monto": 153000,
+      "fecha_pago": "2026-09-10 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 33,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 62
+    },
+    {
+      "id_pago": 388,
+      "monto": 51000,
+      "fecha_pago": "2026-09-09 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 10,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 63
+    },
+    {
+      "id_pago": 389,
+      "monto": 153000,
+      "fecha_pago": "2026-09-07 11:13:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 20,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 65
+    },
+    {
+      "id_pago": 390,
+      "monto": 91000,
+      "fecha_pago": "2026-09-24 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 8,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 66
+    },
+    {
+      "id_pago": 391,
+      "monto": 273000,
+      "fecha_pago": "2026-09-22 11:12:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 18,
+      "id_metodo": 3,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 68
+    },
+    {
+      "id_pago": 392,
+      "monto": 152000,
+      "fecha_pago": "2026-11-03 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 11,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 69
+    },
+    {
+      "id_pago": 393,
+      "monto": 228000,
+      "fecha_pago": "2026-11-02 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 16,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 70
+    },
+    {
+      "id_pago": 394,
+      "monto": 183000,
+      "fecha_pago": "2026-11-09 11:10:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 14,
+      "id_metodo": 1,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 71
+    },
+    {
+      "id_pago": 395,
+      "monto": 61000,
+      "fecha_pago": "2026-11-08 11:11:00",
+      "estado_pago": "aprobado",
+      "id_usuario": 19,
+      "id_metodo": 2,
+      "id_pedido": null,
+      "id_plan": null,
+      "id_inscripcion": 72
+    }
+  ],
+  "suscripciones": [
+    {
+      "id_suscripcion": 1,
+      "id_restaurante": 1,
+      "id_plan": 2,
+      "fecha_inicio": "2026-08-01",
+      "fecha_fin": "2026-09-01",
+      "estado_suscripcion": "vencida",
+      "id_pago": 1
+    },
+    {
+      "id_suscripcion": 2,
+      "id_restaurante": 1,
+      "id_plan": 2,
+      "fecha_inicio": "2026-09-01",
+      "fecha_fin": "2026-10-01",
+      "estado_suscripcion": "vencida",
+      "id_pago": 119
+    },
+    {
+      "id_suscripcion": 3,
+      "id_restaurante": 1,
+      "id_plan": 2,
+      "fecha_inicio": "2026-10-01",
+      "fecha_fin": "2026-11-01",
+      "estado_suscripcion": "activa",
+      "id_pago": 230
+    },
+    {
+      "id_suscripcion": 4,
+      "id_restaurante": 2,
+      "id_plan": 3,
+      "fecha_inicio": "2026-08-01",
+      "fecha_fin": "2026-11-01",
+      "estado_suscripcion": "activa",
+      "id_pago": 3
+    },
+    {
+      "id_suscripcion": 5,
+      "id_restaurante": 3,
+      "id_plan": 1,
+      "fecha_inicio": "2026-08-01",
+      "fecha_fin": "2027-08-01",
+      "estado_suscripcion": "activa",
+      "id_pago": null
+    },
+    {
+      "id_suscripcion": 6,
+      "id_restaurante": 4,
+      "id_plan": 2,
+      "fecha_inicio": "2026-08-01",
+      "fecha_fin": "2026-09-01",
+      "estado_suscripcion": "vencida",
+      "id_pago": 6
+    },
+    {
+      "id_suscripcion": 7,
+      "id_restaurante": 4,
+      "id_plan": 2,
+      "fecha_inicio": "2026-09-01",
+      "fecha_fin": "2026-10-01",
+      "estado_suscripcion": "vencida",
+      "id_pago": 122
+    },
+    {
+      "id_suscripcion": 8,
+      "id_restaurante": 4,
+      "id_plan": 2,
+      "fecha_inicio": "2026-10-01",
+      "fecha_fin": "2026-11-01",
+      "estado_suscripcion": "activa",
+      "id_pago": 234
     }
   ],
   "resenas": [
@@ -21937,6 +24074,41 @@
       "fecha_envio": "2026-10-20 15:00:00",
       "leido": true,
       "id_usuario": 9
+    },
+    {
+      "id_notificacion": 45,
+      "mensaje": "Recordatorio: Reserva en Fogón del Guadual. Te esperamos el 2026-10-28 a las 13:00 para 4 personas.",
+      "fecha_envio": "2026-10-27 13:00:00",
+      "leido": true,
+      "id_usuario": 7
+    },
+    {
+      "id_notificacion": 46,
+      "mensaje": "Recordatorio: Renovación del plan Premium. El plan de Fogón del Guadual vence el 2026-11-01.",
+      "fecha_envio": "2026-10-27 08:00:00",
+      "leido": true,
+      "id_usuario": 2
+    },
+    {
+      "id_notificacion": 47,
+      "mensaje": "Recordatorio: Renovación del plan Destacado. El plan de Cocina del Mirador vence el 2026-11-01.",
+      "fecha_envio": "2026-10-27 08:00:00",
+      "leido": true,
+      "id_usuario": 3
+    },
+    {
+      "id_notificacion": 48,
+      "mensaje": "Recordatorio: Renovación del plan Premium. El plan de Sabores del Camino vence el 2026-11-01.",
+      "fecha_envio": "2026-10-27 08:00:00",
+      "leido": true,
+      "id_usuario": 5
+    },
+    {
+      "id_notificacion": 49,
+      "mensaje": "Recordatorio: Confirmar transporte a Salento. Revisar horario del bus desde Armenia para llegar a tiempo al almuerzo.",
+      "fecha_envio": "2026-10-24 07:30:00",
+      "leido": true,
+      "id_usuario": 6
     }
   ],
   "visitas": [
@@ -30399,6 +32571,450 @@
       "fecha_ingreso": "2026-10-27 08:00:00"
     }
   ],
+  "recordatorios": [
+    {
+      "id_recordatorio": 1,
+      "tipo_recordatorio": "reserva",
+      "id_reserva": 353,
+      "id_inscripcion": null,
+      "id_suscripcion": null,
+      "id_usuario": 7,
+      "titulo": "Reserva en Fogón del Guadual",
+      "mensaje": "Te esperamos el 2026-10-28 a las 13:00 para 4 personas.",
+      "fecha_programada": "2026-10-27 13:00:00",
+      "enviado": true,
+      "fecha_envio": "2026-10-27 13:00:00"
+    },
+    {
+      "id_recordatorio": 2,
+      "tipo_recordatorio": "reserva",
+      "id_reserva": 354,
+      "id_inscripcion": null,
+      "id_suscripcion": null,
+      "id_usuario": 8,
+      "titulo": "Reserva en Cocina del Mirador",
+      "mensaje": "Te esperamos el 2026-10-29 a las 13:00 para 4 personas.",
+      "fecha_programada": "2026-10-28 13:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 3,
+      "tipo_recordatorio": "reserva",
+      "id_reserva": 355,
+      "id_inscripcion": null,
+      "id_suscripcion": null,
+      "id_usuario": 9,
+      "titulo": "Reserva en Cocina del Mirador",
+      "mensaje": "Te esperamos el 2026-10-30 a las 13:00 para 4 personas.",
+      "fecha_programada": "2026-10-29 13:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 4,
+      "tipo_recordatorio": "reserva",
+      "id_reserva": 356,
+      "id_inscripcion": null,
+      "id_suscripcion": null,
+      "id_usuario": 10,
+      "titulo": "Reserva en Café La Palma",
+      "mensaje": "Te esperamos el 2026-10-31 a las 13:00 para 4 personas.",
+      "fecha_programada": "2026-10-30 13:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 5,
+      "tipo_recordatorio": "reserva",
+      "id_reserva": 357,
+      "id_inscripcion": null,
+      "id_suscripcion": null,
+      "id_usuario": 11,
+      "titulo": "Reserva en Sabores del Camino",
+      "mensaje": "Te esperamos el 2026-11-01 a las 13:00 para 2 personas.",
+      "fecha_programada": "2026-10-31 13:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 6,
+      "tipo_recordatorio": "reserva",
+      "id_reserva": 358,
+      "id_inscripcion": null,
+      "id_suscripcion": null,
+      "id_usuario": 12,
+      "titulo": "Reserva en Sabores del Camino",
+      "mensaje": "Te esperamos el 2026-11-02 a las 13:00 para 4 personas.",
+      "fecha_programada": "2026-11-01 13:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 7,
+      "tipo_recordatorio": "reserva",
+      "id_reserva": 359,
+      "id_inscripcion": null,
+      "id_suscripcion": null,
+      "id_usuario": 13,
+      "titulo": "Reserva en Fogón del Guadual",
+      "mensaje": "Te esperamos el 2026-11-03 a las 13:00 para 4 personas.",
+      "fecha_programada": "2026-11-02 13:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 8,
+      "tipo_recordatorio": "reserva",
+      "id_reserva": 360,
+      "id_inscripcion": null,
+      "id_suscripcion": null,
+      "id_usuario": 14,
+      "titulo": "Reserva en Fogón del Guadual",
+      "mensaje": "Te esperamos el 2026-11-04 a las 13:00 para 4 personas.",
+      "fecha_programada": "2026-11-03 13:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 9,
+      "tipo_recordatorio": "reserva",
+      "id_reserva": 361,
+      "id_inscripcion": null,
+      "id_suscripcion": null,
+      "id_usuario": 15,
+      "titulo": "Reserva en Cocina del Mirador",
+      "mensaje": "Te esperamos el 2026-11-05 a las 13:00 para 4 personas.",
+      "fecha_programada": "2026-11-04 13:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 10,
+      "tipo_recordatorio": "reserva",
+      "id_reserva": 362,
+      "id_inscripcion": null,
+      "id_suscripcion": null,
+      "id_usuario": 16,
+      "titulo": "Reserva en Café La Palma",
+      "mensaje": "Te esperamos el 2026-11-06 a las 13:00 para 2 personas.",
+      "fecha_programada": "2026-11-05 13:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 11,
+      "tipo_recordatorio": "reserva",
+      "id_reserva": 363,
+      "id_inscripcion": null,
+      "id_suscripcion": null,
+      "id_usuario": 17,
+      "titulo": "Reserva en Café La Palma",
+      "mensaje": "Te esperamos el 2026-11-07 a las 13:00 para 4 personas.",
+      "fecha_programada": "2026-11-06 13:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 12,
+      "tipo_recordatorio": "reserva",
+      "id_reserva": 364,
+      "id_inscripcion": null,
+      "id_suscripcion": null,
+      "id_usuario": 18,
+      "titulo": "Reserva en Sabores del Camino",
+      "mensaje": "Te esperamos el 2026-11-08 a las 13:00 para 4 personas.",
+      "fecha_programada": "2026-11-07 13:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 13,
+      "tipo_recordatorio": "experiencia",
+      "id_reserva": null,
+      "id_inscripcion": 15,
+      "id_suscripcion": null,
+      "id_usuario": 18,
+      "titulo": "Desayuno campesino con vista",
+      "mensaje": "La experiencia inicia el 2026-10-31 a las 07:00.",
+      "fecha_programada": "2026-10-30 09:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 14,
+      "tipo_recordatorio": "experiencia",
+      "id_reserva": null,
+      "id_inscripcion": 16,
+      "id_suscripcion": null,
+      "id_usuario": 23,
+      "titulo": "Desayuno campesino con vista",
+      "mensaje": "La experiencia inicia el 2026-10-31 a las 07:00.",
+      "fecha_programada": "2026-10-30 09:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 15,
+      "tipo_recordatorio": "experiencia",
+      "id_reserva": null,
+      "id_inscripcion": 17,
+      "id_suscripcion": null,
+      "id_usuario": 21,
+      "titulo": "Cata de cafés de origen",
+      "mensaje": "La experiencia inicia el 2026-11-06 a las 15:00.",
+      "fecha_programada": "2026-11-05 09:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 16,
+      "tipo_recordatorio": "experiencia",
+      "id_reserva": null,
+      "id_inscripcion": 18,
+      "id_suscripcion": null,
+      "id_usuario": 26,
+      "titulo": "Cata de cafés de origen",
+      "mensaje": "La experiencia inicia el 2026-11-06 a las 15:00.",
+      "fecha_programada": "2026-11-05 09:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 17,
+      "tipo_recordatorio": "experiencia",
+      "id_reserva": null,
+      "id_inscripcion": 33,
+      "id_suscripcion": null,
+      "id_usuario": 25,
+      "titulo": "Cata de cafés de origen",
+      "mensaje": "La experiencia inicia el 2026-11-02 a las 15:00.",
+      "fecha_programada": "2026-11-01 09:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 18,
+      "tipo_recordatorio": "experiencia",
+      "id_reserva": null,
+      "id_inscripcion": 34,
+      "id_suscripcion": null,
+      "id_usuario": 30,
+      "titulo": "Cata de cafés de origen",
+      "mensaje": "La experiencia inicia el 2026-11-02 a las 15:00.",
+      "fecha_programada": "2026-11-01 09:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 19,
+      "tipo_recordatorio": "experiencia",
+      "id_reserva": null,
+      "id_inscripcion": 35,
+      "id_suscripcion": null,
+      "id_usuario": 28,
+      "titulo": "Clase de cocina cafetera",
+      "mensaje": "La experiencia inicia el 2026-11-08 a las 15:00.",
+      "fecha_programada": "2026-11-07 09:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 20,
+      "tipo_recordatorio": "experiencia",
+      "id_reserva": null,
+      "id_inscripcion": 36,
+      "id_suscripcion": null,
+      "id_usuario": 33,
+      "titulo": "Clase de cocina cafetera",
+      "mensaje": "La experiencia inicia el 2026-11-08 a las 15:00.",
+      "fecha_programada": "2026-11-07 09:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 21,
+      "tipo_recordatorio": "experiencia",
+      "id_reserva": null,
+      "id_inscripcion": 51,
+      "id_suscripcion": null,
+      "id_usuario": 32,
+      "titulo": "Clase de cocina cafetera",
+      "mensaje": "La experiencia inicia el 2026-11-04 a las 15:00.",
+      "fecha_programada": "2026-11-03 09:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 22,
+      "tipo_recordatorio": "experiencia",
+      "id_reserva": null,
+      "id_inscripcion": 52,
+      "id_suscripcion": null,
+      "id_usuario": 9,
+      "titulo": "Clase de cocina cafetera",
+      "mensaje": "La experiencia inicia el 2026-11-04 a las 15:00.",
+      "fecha_programada": "2026-11-03 09:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 23,
+      "tipo_recordatorio": "experiencia",
+      "id_reserva": null,
+      "id_inscripcion": 53,
+      "id_suscripcion": null,
+      "id_usuario": 7,
+      "titulo": "Recorrido gastronómico por el pueblo",
+      "mensaje": "La experiencia inicia el 2026-11-10 a las 15:00.",
+      "fecha_programada": "2026-11-09 09:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 24,
+      "tipo_recordatorio": "experiencia",
+      "id_reserva": null,
+      "id_inscripcion": 54,
+      "id_suscripcion": null,
+      "id_usuario": 12,
+      "titulo": "Recorrido gastronómico por el pueblo",
+      "mensaje": "La experiencia inicia el 2026-11-10 a las 15:00.",
+      "fecha_programada": "2026-11-09 09:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 25,
+      "tipo_recordatorio": "experiencia",
+      "id_reserva": null,
+      "id_inscripcion": 69,
+      "id_suscripcion": null,
+      "id_usuario": 11,
+      "titulo": "Recorrido gastronómico por el pueblo",
+      "mensaje": "La experiencia inicia el 2026-11-06 a las 15:00.",
+      "fecha_programada": "2026-11-05 09:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 26,
+      "tipo_recordatorio": "experiencia",
+      "id_reserva": null,
+      "id_inscripcion": 70,
+      "id_suscripcion": null,
+      "id_usuario": 16,
+      "titulo": "Recorrido gastronómico por el pueblo",
+      "mensaje": "La experiencia inicia el 2026-11-06 a las 15:00.",
+      "fecha_programada": "2026-11-05 09:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 27,
+      "tipo_recordatorio": "experiencia",
+      "id_reserva": null,
+      "id_inscripcion": 71,
+      "id_suscripcion": null,
+      "id_usuario": 14,
+      "titulo": "Maridaje de postres y café",
+      "mensaje": "La experiencia inicia el 2026-11-12 a las 15:00.",
+      "fecha_programada": "2026-11-11 09:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 28,
+      "tipo_recordatorio": "experiencia",
+      "id_reserva": null,
+      "id_inscripcion": 72,
+      "id_suscripcion": null,
+      "id_usuario": 19,
+      "titulo": "Maridaje de postres y café",
+      "mensaje": "La experiencia inicia el 2026-11-12 a las 15:00.",
+      "fecha_programada": "2026-11-11 09:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 29,
+      "tipo_recordatorio": "plan",
+      "id_reserva": null,
+      "id_inscripcion": null,
+      "id_suscripcion": 3,
+      "id_usuario": 2,
+      "titulo": "Renovación del plan Premium",
+      "mensaje": "El plan de Fogón del Guadual vence el 2026-11-01.",
+      "fecha_programada": "2026-10-27 08:00:00",
+      "enviado": true,
+      "fecha_envio": "2026-10-27 08:00:00"
+    },
+    {
+      "id_recordatorio": 30,
+      "tipo_recordatorio": "plan",
+      "id_reserva": null,
+      "id_inscripcion": null,
+      "id_suscripcion": 4,
+      "id_usuario": 3,
+      "titulo": "Renovación del plan Destacado",
+      "mensaje": "El plan de Cocina del Mirador vence el 2026-11-01.",
+      "fecha_programada": "2026-10-27 08:00:00",
+      "enviado": true,
+      "fecha_envio": "2026-10-27 08:00:00"
+    },
+    {
+      "id_recordatorio": 31,
+      "tipo_recordatorio": "plan",
+      "id_reserva": null,
+      "id_inscripcion": null,
+      "id_suscripcion": 5,
+      "id_usuario": 4,
+      "titulo": "Renovación del plan Básico",
+      "mensaje": "El plan de Café La Palma vence el 2027-08-01.",
+      "fecha_programada": "2027-07-27 08:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 32,
+      "tipo_recordatorio": "plan",
+      "id_reserva": null,
+      "id_inscripcion": null,
+      "id_suscripcion": 8,
+      "id_usuario": 5,
+      "titulo": "Renovación del plan Premium",
+      "mensaje": "El plan de Sabores del Camino vence el 2026-11-01.",
+      "fecha_programada": "2026-10-27 08:00:00",
+      "enviado": true,
+      "fecha_envio": "2026-10-27 08:00:00"
+    },
+    {
+      "id_recordatorio": 33,
+      "tipo_recordatorio": "personal",
+      "id_reserva": null,
+      "id_inscripcion": null,
+      "id_suscripcion": null,
+      "id_usuario": 6,
+      "titulo": "Probar el café de Buenavista",
+      "mensaje": "Reservar un espacio para la cata de cafés antes de regresar a casa.",
+      "fecha_programada": "2026-10-29 18:00:00",
+      "enviado": false,
+      "fecha_envio": null
+    },
+    {
+      "id_recordatorio": 34,
+      "tipo_recordatorio": "personal",
+      "id_reserva": null,
+      "id_inscripcion": null,
+      "id_suscripcion": null,
+      "id_usuario": 6,
+      "titulo": "Confirmar transporte a Salento",
+      "mensaje": "Revisar horario del bus desde Armenia para llegar a tiempo al almuerzo.",
+      "fecha_programada": "2026-10-24 07:30:00",
+      "enviado": true,
+      "fecha_envio": "2026-10-24 07:30:00"
+    }
+  ],
   "meta": {
     "version": "gastroturismo-2026-v2",
     "fecha_corte": "2026-10-27",
@@ -30418,11 +33034,15 @@
       "reservas": 364,
       "pedidos": 352,
       "detalle_pedidos": 704,
-      "pagos": 327,
+      "experiencias": 24,
+      "inscripciones_experiencia": 72,
+      "pagos": 395,
+      "suscripciones": 8,
       "resenas": 112,
-      "notificaciones": 44,
+      "notificaciones": 49,
       "visitas": 672,
-      "accesos_sistema": 616
+      "accesos_sistema": 616,
+      "recordatorios": 34
     }
   }
 }

@@ -17,7 +17,7 @@ El comando produce `public/demo-data.json`, `database/seed.sql` y `database/demo
 
 ## Base MySQL separada
 
-`schema.sql` define una base nueva llamada **gastronomia_turistica_academica**, con 16 tablas. `database/demo-inicial.sql` contiene esa estructura más la semilla. Puede ejecutarse desde MySQL Workbench o el cliente MySQL, sin usar ni borrar `gastronomia_turistica_db`.
+`schema.sql` define una base nueva llamada **gastronomia_turistica_academica**, con 20 tablas (versión 3: experiencias, inscripciones_experiencia, suscripciones y recordatorios). `database/demo-inicial.sql` contiene esa estructura más la semilla. Puede ejecutarse desde MySQL Workbench o el cliente MySQL, sin usar ni borrar `gastronomia_turistica_db`.
 
 En la configuración local, usar `DB_NAME=gastronomia_turistica_academica`. La conexión MySQL requiere un servidor iniciado y permisos para crear esa base. La carga no se ha de confundir con la vista de demostración del navegador.
 
@@ -49,3 +49,10 @@ El esquema inicial tenía 14 tablas. Los nuevos requisitos necesitan **Visita** 
 6. Cada Pedido debe contener detalle del mismo Restaurante y su total debe coincidir con la suma de cantidad por precio. La semilla lo verifica; la aplicación debe validarlo en sus transacciones.
 
 Las horas `DATETIME` de las dos tablas de medición se almacenan como hora local de Colombia. La semilla establece `time_zone='-05:00'` al importar sus columnas `TIMESTAMP` existentes.
+
+## Versión 3: cuatro tablas nuevas
+
+7. `Experiencia` pertenece a un Restaurante; `Inscripcion` une Usuario (cliente) y Experiencia, una por pareja. La suma de personas no canceladas no supera `cupo_maximo` (se valida con bloqueo en transacción).
+8. `Pago` corresponde exactamente a uno de: Pedido, Plan o Inscripción (`CHECK` con suma de condiciones). Las FK de concepto usan `ON UPDATE RESTRICT` porque MySQL 8 no admite `CHECK` sobre columnas con acciones en cascada.
+9. `Suscripcion` registra el plan contratado por un Restaurante con `fecha_inicio`/`fecha_fin` y el pago que la respalda (nulo para el plan Básico gratuito). `restaurantes.id_plan` guarda el plan vigente y vuelve a Básico al vencer.
+10. `Recordatorio` pertenece a un Usuario y opcionalmente a una Reserva, Inscripción o Suscripción. Al llegar `fecha_programada` se crea una Notificación y queda `enviado = TRUE`.

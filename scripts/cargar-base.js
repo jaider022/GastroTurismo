@@ -15,6 +15,11 @@ async function load() {
     multipleStatements: true, charset: 'utf8mb4', connectTimeout: 3000
   });
   try {
+    // --recrear borra únicamente la base académica para cargar estructura y datos desde cero.
+    if (process.argv.includes('--recrear')) {
+      await connection.query('DROP DATABASE IF EXISTS gastronomia_turistica_academica');
+      console.log('Base académica anterior eliminada; se crea de nuevo con las 20 tablas.');
+    }
     const sql = fs.readFileSync(path.join(__dirname, '..', 'database', 'demo-inicial.sql'), 'utf8');
     await connection.query(sql);
     const [rows] = await connection.query('SELECT COUNT(*) AS visitas, COALESCE(SUM(cantidad_personas),0) AS personas FROM gastronomia_turistica_academica.visitas');

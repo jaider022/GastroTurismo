@@ -11,7 +11,7 @@ CREATE DATABASE IF NOT EXISTS gastronomia_turistica_academica CHARACTER SET utf8
 USE gastronomia_turistica_academica;
 
 -- --------------------------------------------------------------------
--- 2. DDL - 14 TABLAS DEL MODELO Y 2 TABLAS DE MEDICIÓN (16 EN TOTAL)
+-- 2. DDL - 18 TABLAS DE NEGOCIO Y 2 TABLAS DE MEDICIÓN (20 EN TOTAL)
 -- --------------------------------------------------------------------
 
 -- E1: Zonas o Destinos Turísticos
@@ -136,6 +136,38 @@ CREATE TABLE IF NOT EXISTS detalle_pedidos (
     FOREIGN KEY (id_plato) REFERENCES platos(id_plato) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
+-- E13: Experiencias gastronómicas ofrecidas a turistas (catas, clases, tours)
+CREATE TABLE IF NOT EXISTS experiencias (
+    id_experiencia INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(150) NOT NULL,
+    descripcion TEXT,
+    tipo_experiencia ENUM('cata', 'clase_cocina', 'tour', 'maridaje', 'desayuno') NOT NULL,
+    fecha_experiencia DATE NOT NULL,
+    hora_inicio TIME NOT NULL,
+    duracion_minutos INT NOT NULL CHECK (duracion_minutos BETWEEN 30 AND 600),
+    cupo_maximo INT NOT NULL CHECK (cupo_maximo > 0),
+    precio_persona DECIMAL(10, 2) NOT NULL CHECK (precio_persona >= 0),
+    idioma VARCHAR(50) NOT NULL DEFAULT 'Español',
+    estado_experiencia ENUM('programada', 'cancelada', 'realizada') NOT NULL DEFAULT 'programada',
+    id_restaurante INT NOT NULL,
+    INDEX ix_experiencias_fecha (fecha_experiencia),
+    FOREIGN KEY (id_restaurante) REFERENCES restaurantes(id_restaurante) ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
+-- E14: Inscripciones de turistas a experiencias gastronómicas
+CREATE TABLE IF NOT EXISTS inscripciones_experiencia (
+    id_inscripcion INT AUTO_INCREMENT PRIMARY KEY,
+    id_experiencia INT NOT NULL,
+    id_usuario INT NOT NULL,
+    cantidad_personas INT NOT NULL CHECK (cantidad_personas > 0),
+    total DECIMAL(12, 2) NOT NULL CHECK (total >= 0),
+    fecha_inscripcion DATETIME NOT NULL,
+    estado_inscripcion ENUM('confirmada', 'cancelada', 'asistio') NOT NULL DEFAULT 'confirmada',
+    UNIQUE (id_experiencia, id_usuario),
+    FOREIGN KEY (id_experiencia) REFERENCES experiencias(id_experiencia) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON UPDATE CASCADE ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
 -- E11: Pagos
 CREATE TABLE IF NOT EXISTS pagos (
     id_pago INT AUTO_INCREMENT PRIMARY KEY,
@@ -146,11 +178,32 @@ CREATE TABLE IF NOT EXISTS pagos (
     id_metodo INT NOT NULL,
     id_pedido INT DEFAULT NULL,
     id_plan INT DEFAULT NULL,
-    CONSTRAINT chk_pago_concepto CHECK ((id_pedido IS NOT NULL AND id_plan IS NULL) OR (id_pedido IS NULL AND id_plan IS NOT NULL)),
+    id_inscripcion INT DEFAULT NULL,
+    -- Cada pago corresponde exactamente a un concepto: pedido, plan o experiencia.
+    -- Las FK del concepto usan RESTRICT: MySQL 8 no admite CHECK sobre columnas con CASCADE.
+    CONSTRAINT chk_pago_concepto CHECK ((id_pedido IS NOT NULL) + (id_plan IS NOT NULL) + (id_inscripcion IS NOT NULL) = 1),
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON UPDATE CASCADE ON DELETE RESTRICT,
     FOREIGN KEY (id_metodo) REFERENCES metodos_pago(id_metodo) ON UPDATE CASCADE ON DELETE RESTRICT,
-    FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido) ON UPDATE CASCADE ON DELETE RESTRICT,
-    FOREIGN KEY (id_plan) REFERENCES planes_suscripcion(id_plan) ON UPDATE CASCADE ON DELETE RESTRICT
+    FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido) ON UPDATE RESTRICT ON DELETE RESTRICT,
+    FOREIGN KEY (id_plan) REFERENCES planes_suscripcion(id_plan) ON UPDATE RESTRICT ON DELETE RESTRICT,
+    FOREIGN KEY (id_inscripcion) REFERENCES inscripciones_experiencia(id_inscripcion) ON UPDATE RESTRICT ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
+-- E15: Suscripciones (plan contratado por un restaurante con vigencia)
+-- restaurantes.id_plan conserva el plan vigente; al vencer vuelve al plan Básico (1).
+CREATE TABLE IF NOT EXISTS suscripciones (
+    id_suscripcion INT AUTO_INCREMENT PRIMARY KEY,
+    id_restaurante INT NOT NULL,
+    id_plan INT NOT NULL,
+    fecha_inicio DATE NOT NULL,
+    fecha_fin DATE NOT NULL,
+    estado_suscripcion ENUM('activa', 'vencida', 'cancelada') NOT NULL DEFAULT 'activa',
+    id_pago INT NULL UNIQUE,
+    CONSTRAINT chk_suscripcion_fechas CHECK (fecha_fin > fecha_inicio),
+    INDEX ix_suscripciones_vigencia (estado_suscripcion, fecha_fin),
+    FOREIGN KEY (id_restaurante) REFERENCES restaurantes(id_restaurante) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (id_plan) REFERENCES planes_suscripcion(id_plan) ON UPDATE CASCADE ON DELETE RESTRICT,
+    FOREIGN KEY (id_pago) REFERENCES pagos(id_pago) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
 -- E12: Reseñas / Opiniones
@@ -200,4 +253,23 @@ CREATE TABLE IF NOT EXISTS accesos_sistema (
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
-
+-- E16: Recordatorios personalizados. Al llegar fecha_programada el servidor
+-- genera la notificación correspondiente y marca el recordatorio como enviado.
+CREATE TABLE IF NOT EXISTS recordatorios (
+    id_recordatorio INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    tipo_recordatorio ENUM('reserva', 'experiencia', 'plan', 'personal') NOT NULL DEFAULT 'personal',
+    titulo VARCHAR(150) NOT NULL,
+    mensaje TEXT NOT NULL,
+    fecha_programada DATETIME NOT NULL,
+    enviado BOOLEAN NOT NULL DEFAULT FALSE,
+    fecha_envio DATETIME NULL,
+    id_reserva INT NULL,
+    id_inscripcion INT NULL,
+    id_suscripcion INT NULL,
+    INDEX ix_recordatorios_pendientes (enviado, fecha_programada),
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (id_reserva) REFERENCES reservas(id_reserva) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (id_inscripcion) REFERENCES inscripciones_experiencia(id_inscripcion) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (id_suscripcion) REFERENCES suscripciones(id_suscripcion) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB;

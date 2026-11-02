@@ -13,7 +13,8 @@ const DEMO_TABLE_KEYS = {
   categorias: 'gt_categorias', usuarios: 'gt_usuarios', restaurantes: 'gt_restaurantes',
   mesas: 'gt_mesas', platos: 'gt_platos', reservas: 'gt_reservas', pedidos: 'gt_pedidos',
   detalle_pedidos: 'gt_detalle_pedidos', pagos: 'gt_pagos', resenas: 'gt_resenas',
-  notificaciones: 'gt_notificaciones', visitas: 'gt_visitas', accesos_sistema: 'gt_accesos_sistema'
+  notificaciones: 'gt_notificaciones', visitas: 'gt_visitas', accesos_sistema: 'gt_accesos_sistema',
+  experiencias: 'gt_experiencias', inscripciones_experiencia: 'gt_inscripciones', suscripciones: 'gt_suscripciones', recordatorios: 'gt_recordatorios'
 };
 const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 function bogotaToday() {
@@ -171,6 +172,12 @@ function simulateLocalStorageAPI(endpoint, options = {}) {
 
     case 'mesas':
       let mesas = getLS('gt_mesas');
+      if (method === 'GET' && param === 'disponibilidad') {
+        const exclude = Number(params.get('excluir_reserva')) || 0;
+        const active = getLS('gt_reservas').filter(r => r.fecha_reserva === params.get('fecha') && ['pendiente', 'confirmada'].includes(r.estado_reserva) && Number(r.id_reserva) !== exclude);
+        return mesas.filter(m => m.id_restaurante == params.get('id_restaurante'))
+          .map(m => ({ ...m, ocupada: m.estado === 'mantenimiento' || active.some(r => r.id_mesa == m.id_mesa) }));
+      }
       if (method === 'GET') {
         const rests = getLS('gt_restaurantes');
         return mesas.map(m => {
@@ -249,6 +256,7 @@ function simulateLocalStorageAPI(endpoint, options = {}) {
         }).sort((a,b) => b.fecha_reserva.localeCompare(a.fecha_reserva));
       }
       if (method === 'POST') {
+        if (typeof demoValidateReservation === 'function') demoValidateReservation(body);
         const newRes = { id_reserva: Date.now(), ...body, estado_reserva: body.estado_reserva || 'pendiente' };
         reservas.push(newRes);
         setLS('gt_reservas', reservas);
@@ -433,6 +441,9 @@ function simulateLocalStorageAPI(endpoint, options = {}) {
     case 'reportes':
       if ([11, 12].includes(Number(param))) return calculateMonthlyReport(Number(param), params);
       return calculateMockReport(param);
+    default:
+      // Experiencias, inscripciones, suscripciones y recordatorios (public/modulos-extra.js).
+      if (typeof simulateExtraAPI === 'function') return simulateExtraAPI(base, parts, method, body, params);
   }
 }
 
@@ -649,6 +660,7 @@ function setupEventHandlers() {
       if (target === 'section-reportes') loadReportesSection();
       if (target === 'section-asistencia') loadAsistenciaSection();
       if (target === 'section-documentos') loadDocumentosSection();
+      window.sectionLoaders?.[target]?.();
     });
   });
 
@@ -1079,6 +1091,7 @@ function showDashboard() {
   document.getElementById('btn-add-mesa').style.display = (isAdmin || isRestOwner) ? 'inline-flex' : 'none';
 
   // Renderizar
+  window.onDashboardShown?.();
   renderDashboardStats();
   loadNotifications();
 }
@@ -1815,7 +1828,7 @@ function renderReservasPage() {
         } else if (r.estado_reserva === 'confirmada' && currentUser.tipo_usuario !== 'cliente') {
           actionButtons += `<button class="btn btn-sm btn-secondary" onclick="updateReservaStatus(${r.id_reserva}, 'finalizada', ${r.id_mesa})" title="Finalizar"><i data-lucide="check-square"></i></button>`;
         }
-      } else {
+      } else if (currentUser.tipo_usuario !== 'cliente') {
         actionButtons += `<button class="btn btn-sm btn-danger" onclick="deleteReserva(${r.id_reserva})" title="Eliminar"><i data-lucide="trash-2"></i></button>`;
       }
 
@@ -1873,29 +1886,21 @@ async function openReservaModal(preSelectedRestId = null, idReserva = null) {
 
   let currentMesaId = null;
 
-  // Función para calcular aforo restante del restaurante para la fecha seleccionada
-  const updateRestaurantAvailability = async () => {
+  let mesasDisponibilidad = [];
+  // El servidor informa qué mesas están ocupadas ese día sin exponer reservas de otros clientes.
+  const fetchAvailability = async () => {
     const rId = selectRest.value;
     const selectedDate = dateInput.value;
-    
-    if (rId && selectedDate) {
-      const todasLasMesas = await requestAPI('mesas');
-      const mesasRestaurante = todasLasMesas.filter(m => m.id_restaurante == rId);
-      
-      const todasLasReservas = await requestAPI('reservas');
-      // Contar reservas activas en esa fecha en este local, ignorando la que estamos editando
-      const reservasFecha = todasLasReservas.filter(res => 
-        res.fecha_reserva === selectedDate && 
-        res.id_restaurante == rId && 
-        res.estado_reserva !== 'cancelada' &&
-        res.id_reserva != document.getElementById('mres-id').value
-      );
-      
-      const mesasReservadasIds = reservasFecha.map(res => res.id_mesa);
-      const mesasLibres = mesasRestaurante.filter(m => !mesasReservadasIds.includes(m.id_mesa));
-      const aforoLibre = mesasLibres.reduce((acc, curr) => acc + curr.capacidad, 0);
+    if (!rId || !selectedDate) return [];
+    const exclude = document.getElementById('mres-id').value || 0;
+    return requestAPI(`mesas/disponibilidad?id_restaurante=${encodeURIComponent(rId)}&fecha=${encodeURIComponent(selectedDate)}&excluir_reserva=${encodeURIComponent(exclude)}`);
+  };
 
-      restSummary.textContent = `Quedan ${mesasLibres.length} de ${mesasRestaurante.length} mesas disponibles (Aforo libre: ${aforoLibre} personas para esta fecha).`;
+  const updateRestaurantAvailability = () => {
+    if (selectRest.value && dateInput.value) {
+      const libres = mesasDisponibilidad.filter(m => !m.ocupada);
+      const aforoLibre = libres.reduce((acc, curr) => acc + Number(curr.capacidad), 0);
+      restSummary.textContent = `Quedan ${libres.length} de ${mesasDisponibilidad.length} mesas disponibles (Aforo libre: ${aforoLibre} personas para esta fecha).`;
       restSummary.style.display = 'block';
     } else {
       restSummary.style.display = 'none';
@@ -1904,25 +1909,16 @@ async function openReservaModal(preSelectedRestId = null, idReserva = null) {
 
   // Listener para cambiar mesas cuando cambia restaurante o fecha
   const loadAvailableMesas = async () => {
-    const rId = selectRest.value;
-    const selectedDate = dateInput.value;
     selectMesa.innerHTML = '<option value="">Cargando mesas...</option>';
-    
-    if (rId && selectedDate) {
-      const mesas = await requestAPI('mesas');
-      const mesasRestaurante = mesas.filter(m => m.id_restaurante == rId);
-
-      const todasLasReservas = await requestAPI('reservas');
-      const reservasFecha = todasLasReservas.filter(res => 
-        res.fecha_reserva === selectedDate && 
-        res.estado_reserva !== 'cancelada' && 
-        res.id_reserva != document.getElementById('mres-id').value
-      );
-      const mesasReservadasIds = reservasFecha.map(res => res.id_mesa);
-
-      // Mostrar mesas que no estén reservadas esa fecha, o incluir la mesa actual que ya tiene asignada si estamos editando
-      const filtered = mesasRestaurante.filter(m => !mesasReservadasIds.includes(m.id_mesa) || m.id_mesa == currentMesaId);
-      
+    try {
+      mesasDisponibilidad = await fetchAvailability();
+    } catch (error) {
+      mesasDisponibilidad = [];
+      showToast(error.message, 'danger');
+    }
+    if (selectRest.value && dateInput.value) {
+      // Mesas libres ese día, o la mesa que ya tiene asignada la reserva en edición.
+      const filtered = mesasDisponibilidad.filter(m => !m.ocupada || m.id_mesa == currentMesaId);
       selectMesa.innerHTML = '';
       if (filtered.length === 0) {
         selectMesa.innerHTML = '<option value="">No hay mesas disponibles en esta fecha</option>';
@@ -1932,36 +1928,29 @@ async function openReservaModal(preSelectedRestId = null, idReserva = null) {
           const opt = document.createElement('option');
           opt.value = m.id_mesa;
           opt.textContent = `${m.numero_mesa} (Capacidad: ${m.capacidad} personas - ${m.ubicacion})`;
-          if (m.id_mesa == currentMesaId) {
-            opt.selected = true;
-          }
+          if (m.id_mesa == currentMesaId) opt.selected = true;
           selectMesa.appendChild(opt);
         });
-        selectMesa.onchange(); // Disparar cambio de mesa para calcular límites
+        selectMesa.onchange();
       }
     } else {
       selectMesa.innerHTML = '<option value="">Primero selecciona el restaurante y fecha...</option>';
       mesaSummary.style.display = 'none';
     }
-    await updateRestaurantAvailability();
+    updateRestaurantAvailability();
   };
 
   // Listener al seleccionar mesa (Aplica límites de capacidad por mesa)
   selectMesa.onchange = () => {
     const selectedMesaId = selectMesa.value;
-    if (selectedMesaId) {
-      const mesasGlobal = getLS('gt_mesas');
-      const mObj = mesasGlobal.find(x => x.id_mesa == selectedMesaId);
-      if (mObj) {
-        numPersonas.max = mObj.capacidad;
-        mesaSummary.textContent = `La ${mObj.numero_mesa} admite un límite máximo de ${mObj.capacidad} comensales.`;
-        mesaSummary.style.display = 'block';
-        
-        // Si el valor del input supera el límite de la mesa seleccionada, reajustarlo
-        if (parseInt(numPersonas.value) > mObj.capacidad) {
-          numPersonas.value = mObj.capacidad;
-          showToast(`Límite ajustado a la capacidad máxima de la mesa (${mObj.capacidad} personas).`, 'warning');
-        }
+    const mObj = selectedMesaId ? mesasDisponibilidad.find(x => x.id_mesa == selectedMesaId) : null;
+    if (mObj) {
+      numPersonas.max = mObj.capacidad;
+      mesaSummary.textContent = `La ${mObj.numero_mesa} admite un límite máximo de ${mObj.capacidad} comensales.`;
+      mesaSummary.style.display = 'block';
+      if (parseInt(numPersonas.value) > mObj.capacidad) {
+        numPersonas.value = mObj.capacidad;
+        showToast(`Límite ajustado a la capacidad máxima de la mesa (${mObj.capacidad} personas).`, 'warning');
       }
     } else {
       mesaSummary.style.display = 'none';
@@ -1972,11 +1961,13 @@ async function openReservaModal(preSelectedRestId = null, idReserva = null) {
   selectRest.onchange = loadAvailableMesas;
   dateInput.onchange = loadAvailableMesas;
 
-  // Poner fecha mínima hoy por defecto
-  const today = new Date().toISOString().split('T')[0];
+  // Poner fecha mínima hoy (hora de Colombia) por defecto
+  const today = bogotaToday();
   dateInput.min = today;
   dateInput.value = today;
 
+  const reminderGroup = document.getElementById('mres-recordatorio-group');
+  if (reminderGroup) reminderGroup.style.display = idReserva ? 'none' : 'block';
   if (idReserva) {
     title.textContent = 'Editar Reserva';
     const list = await requestAPI('reservas');
@@ -2051,7 +2042,8 @@ async function saveReserva(e) {
           cantidad_personas,
           estado_reserva: 'pendiente',
           id_usuario: currentUser.id_usuario,
-          id_mesa
+          id_mesa,
+          recordatorio_horas: Number(document.getElementById('mres-recordatorio')?.value ?? 24)
         })
       });
       showToast('Reserva realizada con éxito. Queda en estado pendiente de aprobación.', 'success');
@@ -2410,7 +2402,13 @@ function renderPedidosPage() {
 
       let actionButtons = '';
       if (currentUser.tipo_usuario !== 'cliente' && p.estado_pedido === 'en preparacion') {
-        actionButtons += `<button class="btn btn-sm btn-success" onclick="updatePedidoStatus(${p.id_pedido}, 'en camino')">Despachar</button>`;
+        // Solo los domicilios pasan por "en camino"; en comedor se entrega directamente.
+        actionButtons += p.tipo_servicio === 'delivery'
+          ? `<button class="btn btn-sm btn-success" onclick="updatePedidoStatus(${p.id_pedido}, 'en camino')">Despachar</button>`
+          : `<button class="btn btn-sm btn-secondary" onclick="updatePedidoStatus(${p.id_pedido}, 'entregado')">Entregar</button>`;
+        actionButtons += ` <button class="btn btn-sm btn-danger" onclick="updatePedidoStatus(${p.id_pedido}, 'cancelado')">Cancelar</button>`;
+      } else if (currentUser.tipo_usuario === 'cliente' && p.estado_pedido === 'en preparacion') {
+        actionButtons += `<button class="btn btn-sm btn-danger" onclick="updatePedidoStatus(${p.id_pedido}, 'cancelado')">Cancelar pedido</button>`;
       } else if (currentUser.tipo_usuario !== 'cliente' && p.estado_pedido === 'en camino') {
         actionButtons += `<button class="btn btn-sm btn-secondary" onclick="updatePedidoStatus(${p.id_pedido}, 'entregado')">Entregar</button>`;
       } else {
@@ -2577,12 +2575,11 @@ INNER JOIN categorias c ON p.id_categoria = c.id_categoria
 INNER JOIN detalle_pedidos dp ON p.id_plato = dp.id_plato
 GROUP BY p.id_plato, p.nombre, p.id_categoria, c.nombre_categoria
 HAVING SUM(dp.cantidad) >= (
-    SELECT AVG(cantidad_plato) FROM (
-        SELECT p2.id_categoria, SUM(dp2.cantidad) AS cantidad_plato
-        FROM platos p2
-        INNER JOIN detalle_pedidos dp2 ON p2.id_plato = dp2.id_plato
-        GROUP BY p2.id_plato, p2.id_categoria
-    ) AS sub2 WHERE sub2.id_categoria = p.id_categoria
+    -- Media de unidades por plato con ventas en la misma categoría
+    SELECT SUM(dp2.cantidad) * 1.0 / COUNT(DISTINCT p2.id_plato)
+    FROM platos p2
+    INNER JOIN detalle_pedidos dp2 ON p2.id_plato = dp2.id_plato
+    WHERE p2.id_categoria = p.id_categoria
 )
 ORDER BY \`Vendidos\` DESC;`
 };
