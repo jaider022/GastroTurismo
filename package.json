@@ -12,6 +12,7 @@
     "db:sin-planes": "node scripts/migrar-sin-planes.js",
     "db:asesoria": "node scripts/migrar-asesoria.js",
     "db:experiencias": "node scripts/migrar-experiencias.js",
+    "db:sorrento": "node scripts/incorporar-sorrento.js",
     "start:local": "node scripts/iniciar-local.js"
   },
   "dependencies": {

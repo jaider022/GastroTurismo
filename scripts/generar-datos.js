@@ -2,6 +2,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { normalizeDataset } = require('../lib/catalogos');
+const { addSorrentoDataset } = require('../lib/cafe-sorrento');
 
 const TABLES = ['municipios', 'tipos_servicio', 'estados_pedido', 'estados_reserva', 'zonas', 'usuarios', 'categorias', 'metodos_pago', 'restaurantes', 'mesas', 'platos', 'reservas', 'reserva_mesas', 'pedidos', 'detalle_pedidos', 'pagos', 'resenas', 'notificaciones', 'visitas', 'accesos_sistema', 'experiencias', 'reservas_experiencias'];
 const DEMO_PASSWORD = 'Gastro2026!';
@@ -74,6 +75,8 @@ function generateDataset(cutoff = todayBogota()) {
     data.reservas.push({ id_reserva: data.reservas.length + 1, fecha_reserva: dateText(addDays(end, i)), hora_reserva: '13:00:00', cantidad_personas: Math.min(4, mesa.capacidad), estado_reserva: i % 3 === 0 ? 'pendiente' : 'confirmada', id_usuario: 6 + i, id_mesa: mesa.id_mesa });
   }
   addExperienceExamples(data, cutoff);
+  // Se incorpora después del historial ficticio: no inventa ventas, clientes o visitas del café real.
+  addSorrentoDataset(data, DEMO_PASSWORD);
   normalizeDataset(data);
   data.meta.filas = Object.fromEntries(TABLES.map(t => [t, data[t].length]));
   return data;

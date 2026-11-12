@@ -294,6 +294,26 @@ test('carruseles se detienen al leer detalles o interactuar y respetan movimient
   assert.equal(reduced.node('public-restaurants').children[0].inert, true);
 });
 
+test('el catálogo gira completo y Sorrento pasa por derecha, centro e izquierda sin devolverse', async () => {
+  const restaurants = ['A', 'B', 'C', 'D'].map((nombre, i) => ({ id_restaurante: i + 1, nombre, ciudad: 'Armenia' }));
+  const view = catalog({ restaurants });
+  await view.context.showPublicRestaurants();
+  const visible = () => view.node('public-restaurants').children.filter(card => !card.inert);
+  const names = () => visible().map(card => card.innerHTML.match(/<h3><button[^>]*>(.*?)<\/button>/)[1]);
+  const expected = [['A','B','C'], ['B','C','D'], ['C','D','Café Sorrento'], ['D','Café Sorrento','A'], ['Café Sorrento','A','B'], ['A','B','C']];
+  for (const window of expected) {
+    assert.deepEqual(names(), window);
+    view.context.advancePublicCatalog(1, false);
+    view.context.finishPublicCatalogLoop();
+  }
+  view.context.renderPublicCatalogPosition(4);
+  const clone = visible()[1];
+  assert.equal(clone['data-catalog-clone'], 'true');
+  await clone.querySelector('[data-public-reserve]').click();
+  assert.equal(view.context.getPendingReservation(), 1);
+  assert.equal(view.writes.length, 0);
+});
+
 test('el menú público incluye solo platos disponibles del restaurante elegido', async () => {
   const view = catalog();
   await view.context.showPublicRestaurants();
@@ -304,6 +324,40 @@ test('el menú público incluye solo platos disponibles del restaurante elegido'
   assert.ok(!html.includes('Plato agotado'));
   assert.ok(!html.includes('Otro restaurante'));
   assert.equal(view.node('modal-public-menu').classList.contains('active'), true);
+  assert.equal(view.writes.length, 0);
+});
+
+test('horas de reserva tienen intervalos de quince minutos y distinguen café de cocina cafetera', () => {
+  const view = catalog();
+  const cafe = view.context.reservationTimeOptions({ nombre: 'Café La Palma', especialidad: 'Desayunos y café' });
+  const restaurant = view.context.reservationTimeOptions({ nombre: 'Fogón del Guadual', especialidad: 'Cocina tradicional cafetera' });
+  assert.equal(cafe.length, 57);
+  assert.equal(cafe[0].value, '08:00');
+  assert.equal(cafe.at(-1).value, '22:00');
+  assert.equal(restaurant.length, 47);
+  assert.equal(restaurant[0].value, '11:30');
+  assert.equal(restaurant.at(-1).value, '23:00');
+  for (const option of [...cafe, ...restaurant]) assert.match(option.value, /^\d{2}:(00|15|30|45)$/);
+  assert.equal(cafe.find(option => option.value === '13:15').label, '1:15 p. m.');
+  assert.equal(view.context.reservationTimeOptions(null).length, 0);
+});
+
+test('Sorrento respeta apertura 08:30 y fin de ocupación a las 22:30, conservando galería y reserva reales', async () => {
+  const view = catalog({ restaurants: [{ id_restaurante: 80, nombre: 'Café Sorrento', ciudad: 'Armenia', direccion: 'Mall Privilegio' }], dishes: [] });
+  const options = view.context.reservationTimeOptions(view.rests[0]);
+  assert.equal(options.length, 49);
+  assert.equal(options[0].value, '08:30');
+  assert.equal(options.at(-1).value, '20:30');
+  assert.ok(options.every(option => /:(00|15|30|45)$/.test(option.value)));
+  await view.context.showPublicRestaurants();
+  await view.context.openPublicMenu(80);
+  assert.match(view.node('public-menu-contact').innerHTML, /Mall Privilegio/);
+  assert.match(view.node('public-menu-contact').innerHTML, /10:30 p. m./);
+  assert.match(view.node('public-menu-items').innerHTML, /Precios por confirmar/);
+  assert.match(view.node('public-menu-items').innerHTML, /Rollitos/);
+  assert.equal(view.node('btn-public-reserve').textContent, 'Reservar en este restaurante');
+  await view.node('public-menu-contact').children[0].click();
+  assert.equal(view.node('sorrento-gallery').open, true);
   assert.equal(view.writes.length, 0);
 });
 

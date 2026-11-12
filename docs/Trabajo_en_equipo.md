@@ -6,16 +6,16 @@ La carpeta principal del proyecto es `Bases de datos`. GitHub guardará el códi
 
 ## Preparar el equipo de una integrante nueva
 
-**Versión que se debe abrir:** rama `avance-2026-11-12`. Contiene el avance de Jaider hasta el 12 de noviembre, incluida la portada y los cambios de modelos y experiencias. `main` conserva el commit `14bd06d` de Luisa. Se comparte esta rama separada para no sobrescribir su trabajo ni reintroducir planes sin revisión.
+**Versión que se debe abrir:** rama `main`. Por decisión expresa de Jaider del 12 de noviembre, esta es la base de trabajo del equipo y contiene su avance actual, incluido carrusel continuo, horarios, Café Sorrento, modelos y experiencias. El contenido anterior de Luisa (`14bd06d`) se conserva en el historial, pero no se reintroduce en los archivos vigentes. La rama `avance-2026-11-12` apunta al mismo cierre de este guardado.
 
 1. Acceder al repositorio desde su cuenta de GitHub; aceptar la invitación si el acceso privado la requiere.
 2. Clonar el repositorio en Antigravity, en una carpeta nueva. No descargarlo encima de una carpeta que ya tenga trabajo sin guardar.
 3. Instalar las dependencias con `npm ci`.
 4. Copiar `.env.example` como `.env` y configurar su instalación local de MySQL o MariaDB. Jaider usa la copia recuperada en el puerto 3318. En cada equipo se indica el puerto de su propia instancia, por ejemplo 3306.
-5. Ejecutar `npm run db:cargar` para crear la base de ejemplo `gastronomia_turistica_academica`. Este procedimiento está limitado a esa base y conserva los registros que ya existan.
+5. En una instalación nueva, con la base académica vacía, ejecutar `npm run db:cargar` para crear `gastronomia_turistica_academica`. Si la base ya tiene información, no recargar la semilla: revisar primero su esquema y las migraciones pendientes con respaldo. Para agregar únicamente Sorrento a una base ya actualizada, usar [la incorporación incremental](Cafe_Sorrento.md).
 6. Iniciar el proyecto con `npm start` y abrir el puerto configurado en `.env`.
 
-Al clonar, seleccionar **`avance-2026-11-12`** como rama. Si ya se tiene una copia, guardar primero el trabajo propio, obtener los cambios remotos y cambiar a esa rama. No copiar archivos encima de una carpeta con cambios pendientes. Desde esta versión, crear una rama de tarea como `luisa/menu` para conservar separados los avances de ambas personas.
+Al clonar, seleccionar **`main`**. Si ya se tiene una copia con trabajo propio, guardarlo primero en una rama separada; después obtener `origin/main` y partir de la versión principal actual. No copiar archivos encima de una carpeta con cambios pendientes ni volver a unir la versión antigua de planes. Desde esta base, crear una rama de tarea como `luisa/menu` para revisar cada cambio antes de incorporarlo a `main`.
 
 GitHub comparte el código, esquema y datos ficticios de ejemplo; no copia automáticamente la base local, sus credenciales ni el servidor que está encendido en el equipo de Jaider.
 
@@ -37,6 +37,6 @@ Los nombres y cuentas del conjunto de ejemplo son ficticios. No agregar teléfon
 
 ## Versiones de este guardado
 
-`avance-2026-11-12` refleja la carpeta principal que se venía utilizando. El avance distinto de `main` permanece conservado con su historia original. La integración entre ramas sigue pendiente de revisión; no se forzó una publicación ni se descartó el trabajo de ninguna integrante.
+`main` contiene la carpeta principal que se venía utilizando, según la decisión del usuario. La unión conserva ambos historiales y adopta íntegramente los archivos de la versión actual de Jaider. El contenido anterior puede recuperarse consultando `14bd06d`; no se reescribe ni elimina su historia. No se necesita publicar con fuerza.
 
 Los diagramas exportados del semestre se incluyen como referencias. Los editables de Oracle y EERCASE deben incorporarse después de identificar las copias que se reorganizaron más recientemente.

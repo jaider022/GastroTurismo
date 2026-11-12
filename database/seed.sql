@@ -33,7 +33,8 @@ INSERT IGNORE INTO `zonas` (`id_zona`, `nombre_zona`, `descripcion_turistica`, `
 (2, 'Calle Real', 'Casas de colores, artesanías y gastronomía local.', 3),
 (3, 'Centro de Armenia', 'Oferta cultural y comercial de la capital del Quindío.', 1),
 (4, 'Miradores de Buenavista', 'Paisaje cafetero y cafés de origen.', 2),
-(5, 'Corredor del café', 'Fincas cafeteras y turismo rural.', 4);
+(5, 'Corredor del café', 'Fincas cafeteras y turismo rural.', 4),
+(6, 'Mall Privilegio', 'Mall en Armenia; ubicación indicada por el equipo para Café Sorrento.', 1);
 
 INSERT IGNORE INTO `usuarios` (`id_usuario`, `nombre`, `correo`, `contrasena`, `telefono`, `tipo_usuario`, `fecha_registro`) VALUES
 (1, 'Santiago Restrepo', 'admin@gastroturismo.example', 'Gastro2026!', '3005550100', 'administrador', '2026-06-17 09:00:00'),
@@ -68,7 +69,8 @@ INSERT IGNORE INTO `usuarios` (`id_usuario`, `nombre`, `correo`, `contrasena`, `
 (30, 'Miguel Castro', 'usuario30@gastroturismo.example', 'Gastro2026!', '3005550129', 'cliente', '2026-07-16 09:00:00'),
 (31, 'Ana María Ruiz', 'usuario31@gastroturismo.example', 'Gastro2026!', '3005550130', 'cliente', '2026-07-17 09:00:00'),
 (32, 'Esteban Osorio', 'usuario32@gastroturismo.example', 'Gastro2026!', '3005550131', 'cliente', '2026-07-18 09:00:00'),
-(33, 'Verónica Molina', 'usuario33@gastroturismo.example', 'Gastro2026!', '3005550132', 'cliente', '2026-07-19 09:00:00');
+(33, 'Verónica Molina', 'usuario33@gastroturismo.example', 'Gastro2026!', '3005550132', 'cliente', '2026-07-19 09:00:00'),
+(34, 'Gestión Café Sorrento (por asignar)', 'gestion.sorrento@gastroturismo.example', 'Gastro2026!', NULL, 'restaurante', '2026-10-27 09:00:00');
 
 INSERT IGNORE INTO `categorias` (`id_categoria`, `nombre_categoria`, `descripcion`) VALUES
 (1, 'Entradas', 'Selección de entradas de la región.'),
@@ -88,7 +90,8 @@ INSERT IGNORE INTO `restaurantes` (`id_restaurante`, `nombre`, `direccion`, `tel
 (1, 'Fogón del Guadual', 'Carrera 5 # 7-18, Salento', '3105550200', 'reservas1@gastroturismo.example', 30, 'Cocina tradicional cafetera', 1, 2),
 (2, 'Cocina del Mirador', 'Carrera 7 # 6-21, Filandia', '3105550201', 'reservas2@gastroturismo.example', 30, 'Trucha y productos de la huerta', 2, 3),
 (3, 'Café La Palma', 'Calle 12 # 14-30, Armenia', '3105550202', 'reservas3@gastroturismo.example', 30, 'Café de origen y repostería', 3, 4),
-(4, 'Sabores del Camino', 'Vía al mirador, km 2, Buenavista', '3105550203', 'reservas4@gastroturismo.example', 30, 'Platos regionales y cocina de temporada', 4, 5);
+(4, 'Sabores del Camino', 'Vía al mirador, km 2, Buenavista', '3105550203', 'reservas4@gastroturismo.example', 30, 'Platos regionales y cocina de temporada', 4, 5),
+(5, 'Café Sorrento', 'Mall Privilegio, Armenia · dirección exacta por confirmar', NULL, NULL, 30, 'Café, desayunos, hamburguesas, pizza, rollitos, maicitos y chocolate artesanal', 6, 34);
 
 INSERT IGNORE INTO `mesas` (`id_mesa`, `numero_mesa`, `capacidad`, `ubicacion`, `estado`, `id_restaurante`) VALUES
 (1, 'Mesa 1', 2, 'Salón principal', 'disponible', 1),
@@ -110,7 +113,17 @@ INSERT IGNORE INTO `mesas` (`id_mesa`, `numero_mesa`, `capacidad`, `ubicacion`, 
 (17, 'Mesa 2', 4, 'Salón principal', 'disponible', 4),
 (18, 'Mesa 3', 6, 'Salón principal', 'disponible', 4),
 (19, 'Mesa 4', 8, 'Terraza', 'disponible', 4),
-(20, 'Mesa 5', 10, 'Terraza', 'disponible', 4);
+(20, 'Mesa 5', 10, 'Terraza', 'disponible', 4),
+(21, 'Mesa 1', 2, 'Salón · distribución por confirmar', 'disponible', 5),
+(22, 'Mesa 2', 2, 'Salón · distribución por confirmar', 'disponible', 5),
+(23, 'Mesa 3', 2, 'Salón · distribución por confirmar', 'disponible', 5),
+(24, 'Mesa 4', 2, 'Salón · distribución por confirmar', 'disponible', 5),
+(25, 'Mesa 5', 2, 'Salón · distribución por confirmar', 'disponible', 5),
+(26, 'Mesa 6', 4, 'Salón · distribución por confirmar', 'disponible', 5),
+(27, 'Mesa 7', 4, 'Salón · distribución por confirmar', 'disponible', 5),
+(28, 'Mesa 8', 4, 'Salón · distribución por confirmar', 'disponible', 5),
+(29, 'Mesa 9', 4, 'Salón · distribución por confirmar', 'disponible', 5),
+(30, 'Mesa 10', 4, 'Salón · distribución por confirmar', 'disponible', 5);
 
 INSERT IGNORE INTO `platos` (`id_plato`, `nombre`, `descripcion`, `precio`, `disponibilidad`, `id_categoria`, `id_restaurante`) VALUES
 (1, 'Patacones con hogao', 'Patacones con hogao, preparado con ingredientes de la región.', 14000, 1, 1, 1),

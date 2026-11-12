@@ -2,6 +2,8 @@
 
 La aplicación incorpora datos **ficticios y coherentes** para pruebas académicas: nombres completos, teléfonos de diez dígitos, restaurantes de ejemplo del Quindío, reservas, pedidos y pagos. Los correos usan el dominio reservado `.example`. No son registros de clientes reales.
 
+Excepción de procedencia: Café Sorrento es un negocio real incorporado con el nombre, Mall Privilegio (Armenia), oferta y horario comunicados por Jaider. Las diez mesas y los 30 cupos son una configuración provisional autorizada para el proyecto, no un aforo verificado. Dirección exacta, teléfono, correo y precios siguen por confirmar. La cuenta de gestión es técnica, no identifica al propietario real. La semilla conserva los registros anteriores y agrega únicamente el café, su zona, su cuenta técnica y sus diez mesas; no inventa sus ventas o visitas. Detalle y carga incremental: [Café Sorrento](Cafe_Sorrento.md).
+
 ## Generación reproducible
 
 Desde la carpeta del proyecto:

@@ -4,7 +4,7 @@ Proyecto final de Bases de Datos I, únicamente caso de restaurantes.
 
 El listado vigente de tareas terminadas, parciales y pendientes está en [Seguimiento del proyecto](docs/Seguimiento_proyecto.md). Se actualiza al cerrar cada mejora.
 
-El avance del **12 de noviembre de 2026** se comparte en la rama **`avance-2026-11-12`**. Selecciona esa rama en GitHub o Antigravity para trabajar con la versión actual. `main` conserva el avance anterior de Luisa; las dos versiones se mantienen separadas hasta revisar su integración. Instrucciones: [Trabajo en equipo](docs/Trabajo_en_equipo.md).
+La versión principal del **12 de noviembre de 2026** está en **`main`**. Incluye el avance actual de Jaider, el carrusel continuo, los horarios de reserva y Café Sorrento. Selecciona `main` en GitHub o Antigravity para continuar desde esta versión. El estado anterior de Luisa se conserva en el historial. Instrucciones: [Trabajo en equipo](docs/Trabajo_en_equipo.md).
 
 La clasificación de los diez reportes exigidos y sus criterios de cálculo están en [Reportes académicos](docs/Reportes_academicos.md).
 
@@ -23,7 +23,7 @@ En el equipo de Jaider, `.env` conecta a la copia recuperada de `gastronomia_tur
 
 - Datos coherentes de agosto a octubre2026: nombres, teléfonos, fechas e importes.
 - Veintidós tablas principales, con Municipio, catálogos, varias mesas por reserva, experiencias, visitas (asistencia real) y accesos_sistema (ingresos exitosos). Sin membresías ni planes de suscripción.
-- Portada de una pantalla con cinco lugares, fotografías completas con fondo desenfocado, navegación por puntos, exploración sin cuenta y acceso al intentar reservar. Café Sorrento conserva fotos y sabores; sus datos para habilitar reservas están pendientes.
+- Portada de una pantalla con cinco lugares, fotografías completas con fondo desenfocado, navegación por puntos, exploración sin cuenta y acceso al intentar reservar. Café Sorrento está en la base y en reservas: diez mesas combinables y 30 cupos provisionales, conservando fotos y sabores. Ver [incorporación y datos por confirmar](docs/Cafe_Sorrento.md).
 - Registro de asistencia con o sin reserva, validación de restaurante, fecha, capacidad y duplicados.
 - Diez reportes originales y dos nuevos: comensales por mes e ingresos/usuarios distintos de la aplicación.
 - Corte, comparación de mismos días o mes anterior completo, y filtro de restaurante para comensales.

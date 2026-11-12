@@ -29,6 +29,12 @@
       "nombre_zona": "Corredor del café",
       "descripcion_turistica": "Fincas cafeteras y turismo rural.",
       "id_municipio": 4
+    },
+    {
+      "id_zona": 6,
+      "nombre_zona": "Mall Privilegio",
+      "id_municipio": 1,
+      "descripcion_turistica": "Mall en Armenia; ubicación indicada por el equipo para Café Sorrento."
     }
   ],
   "usuarios": [
@@ -328,6 +334,15 @@
       "telefono": "3005550132",
       "tipo_usuario": "cliente",
       "fecha_registro": "2026-07-19 09:00:00"
+    },
+    {
+      "id_usuario": 34,
+      "nombre": "Gestión Café Sorrento (por asignar)",
+      "correo": "gestion.sorrento@gastroturismo.example",
+      "contrasena": "Gastro2026!",
+      "telefono": null,
+      "tipo_usuario": "restaurante",
+      "fecha_registro": "2026-10-27 09:00:00"
     }
   ],
   "categorias": [
@@ -428,6 +443,17 @@
       "especialidad": "Platos regionales y cocina de temporada",
       "id_zona": 4,
       "id_propietario": 5
+    },
+    {
+      "id_restaurante": 5,
+      "nombre": "Café Sorrento",
+      "direccion": "Mall Privilegio, Armenia · dirección exacta por confirmar",
+      "telefono": null,
+      "email": null,
+      "capacidad_total": 30,
+      "especialidad": "Café, desayunos, hamburguesas, pizza, rollitos, maicitos y chocolate artesanal",
+      "id_zona": 6,
+      "id_propietario": 34
     }
   ],
   "mesas": [
@@ -590,6 +616,86 @@
       "ubicacion": "Terraza",
       "estado": "disponible",
       "id_restaurante": 4
+    },
+    {
+      "id_mesa": 21,
+      "numero_mesa": "Mesa 1",
+      "capacidad": 2,
+      "ubicacion": "Salón · distribución por confirmar",
+      "estado": "disponible",
+      "id_restaurante": 5
+    },
+    {
+      "id_mesa": 22,
+      "numero_mesa": "Mesa 2",
+      "capacidad": 2,
+      "ubicacion": "Salón · distribución por confirmar",
+      "estado": "disponible",
+      "id_restaurante": 5
+    },
+    {
+      "id_mesa": 23,
+      "numero_mesa": "Mesa 3",
+      "capacidad": 2,
+      "ubicacion": "Salón · distribución por confirmar",
+      "estado": "disponible",
+      "id_restaurante": 5
+    },
+    {
+      "id_mesa": 24,
+      "numero_mesa": "Mesa 4",
+      "capacidad": 2,
+      "ubicacion": "Salón · distribución por confirmar",
+      "estado": "disponible",
+      "id_restaurante": 5
+    },
+    {
+      "id_mesa": 25,
+      "numero_mesa": "Mesa 5",
+      "capacidad": 2,
+      "ubicacion": "Salón · distribución por confirmar",
+      "estado": "disponible",
+      "id_restaurante": 5
+    },
+    {
+      "id_mesa": 26,
+      "numero_mesa": "Mesa 6",
+      "capacidad": 4,
+      "ubicacion": "Salón · distribución por confirmar",
+      "estado": "disponible",
+      "id_restaurante": 5
+    },
+    {
+      "id_mesa": 27,
+      "numero_mesa": "Mesa 7",
+      "capacidad": 4,
+      "ubicacion": "Salón · distribución por confirmar",
+      "estado": "disponible",
+      "id_restaurante": 5
+    },
+    {
+      "id_mesa": 28,
+      "numero_mesa": "Mesa 8",
+      "capacidad": 4,
+      "ubicacion": "Salón · distribución por confirmar",
+      "estado": "disponible",
+      "id_restaurante": 5
+    },
+    {
+      "id_mesa": 29,
+      "numero_mesa": "Mesa 9",
+      "capacidad": 4,
+      "ubicacion": "Salón · distribución por confirmar",
+      "estado": "disponible",
+      "id_restaurante": 5
+    },
+    {
+      "id_mesa": 30,
+      "numero_mesa": "Mesa 10",
+      "capacidad": 4,
+      "ubicacion": "Salón · distribución por confirmar",
+      "estado": "disponible",
+      "id_restaurante": 5
     }
   ],
   "platos": [
@@ -29630,12 +29736,12 @@
       "tipos_servicio": 2,
       "estados_pedido": 4,
       "estados_reserva": 4,
-      "zonas": 5,
-      "usuarios": 33,
+      "zonas": 6,
+      "usuarios": 34,
       "categorias": 5,
       "metodos_pago": 5,
-      "restaurantes": 4,
-      "mesas": 20,
+      "restaurantes": 5,
+      "mesas": 30,
       "platos": 20,
       "reservas": 364,
       "reserva_mesas": 364,
@@ -29649,7 +29755,12 @@
       "experiencias": 6,
       "reservas_experiencias": 1
     },
-    "experiencias_desde": "2026-11-10"
+    "experiencias_desde": "2026-11-10",
+    "sorrento": {
+      "fuente": "Datos comunicados por Jaider; mesas y aforo provisionales",
+      "horario": "Lunes a domingo, 08:30–22:30",
+      "precios_confirmados": false
+    }
   },
   "municipios": [
     {

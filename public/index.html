@@ -146,7 +146,7 @@
       <button type="submit" class="btn btn-primary" aria-label="Buscar restaurantes"><i data-lucide="search" aria-hidden="true"></i><span>Buscar restaurantes</span></button>
     </form>
     <section id="public-catalog" class="public-catalog" aria-labelledby="public-catalog-title">
-      <div class="public-section-heading"><h2 id="public-catalog-title">Restaurantes para descubrir</h2><span class="public-region">Eje Cafetero</span></div>
+      <div class="public-section-heading"><h2 id="public-catalog-title">Restaurantes para descubrir</h2></div>
       <p id="public-rest-count" class="public-rest-count" role="status" aria-live="polite"></p>
       <div id="public-catalog-viewport" class="public-catalog-viewport" aria-roledescription="carrusel" aria-label="Restaurantes y cafés"><div id="public-restaurants" class="restaurantes-list-grid"><p class="info-text">Cargando restaurantes…</p></div></div>
       <div class="public-catalog-footer"><p class="public-image-note">Café Sorrento: fotos aportadas al proyecto. Otros establecimientos: imágenes ilustrativas.</p><div id="catalog-dots" class="public-dots" role="group" aria-label="Elegir restaurantes"></div></div>
@@ -892,24 +892,26 @@
           <p id="mres-restaurante-summary" style="font-size: 0.8rem; color: var(--primary); margin-top: 6px; display: none;"></p>
         </div>
         <div class="form-group">
-          <label for="mres-mesa">Mesas disponibles</label>
-          <select id="mres-mesa" required multiple size="5" aria-describedby="mres-mesa-summary mres-mesa-help" class="form-control">
-            <option value="">Primero selecciona el restaurante...</option>
-          </select>
-          <small id="mres-mesa-help">En computador, usa Ctrl o Cmd para seleccionar varias mesas.</small>
-          <p id="mres-mesa-summary" style="font-size: 0.8rem; color: var(--secondary); margin-top: 6px; display: none;"></p>
-        </div>
-        <div class="form-group">
           <label for="mres-fecha">Fecha:</label>
           <input type="date" id="mres-fecha" required class="form-control">
         </div>
-        <div class="form-group">
-          <label for="mres-hora">Hora:</label>
-          <input type="time" id="mres-hora" required class="form-control">
-        </div>
+        <fieldset class="form-group reserva-horas" aria-describedby="mres-hora-help">
+          <legend>Hora:</legend>
+          <input type="hidden" id="mres-hora">
+          <p id="mres-hora-help" class="reserva-hora-help">Selecciona un restaurante para ver sus horas.</p>
+          <div id="mres-hora-slots" class="reserva-hora-slots"></div>
+        </fieldset>
         <div class="form-group">
           <label for="mres-personas">Cantidad de Personas:</label>
           <input type="number" id="mres-personas" min="1" value="2" required class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="mres-mesa">Mesas disponibles</label>
+          <select id="mres-mesa" required multiple size="5" aria-describedby="mres-mesa-summary mres-mesa-help" class="form-control">
+            <option value="">Primero elige restaurante, fecha, hora y personas...</option>
+          </select>
+          <small id="mres-mesa-help">En computador, usa Ctrl o Cmd para seleccionar varias mesas.</small>
+          <p id="mres-mesa-summary" style="font-size: 0.8rem; color: var(--secondary); margin-top: 6px; display: none;"></p>
         </div>
         <div class="modal-actions">
           <button type="button" class="btn btn-secondary" onclick="closeModal('modal-reserva')">Cancelar</button>

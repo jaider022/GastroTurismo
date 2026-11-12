@@ -696,12 +696,20 @@ function setupEventHandlers() {
     region.addEventListener('mouseenter', () => { state.hovered = true; });
     region.addEventListener('mouseleave', () => { state.hovered = false; });
     region.addEventListener('focusin', () => { state.focused = true; });
-    region.addEventListener('focusout', event => { state.focused = region.contains(event.relatedTarget); });
+    region.addEventListener('focusout', event => {
+      state.focused = region.contains(event.relatedTarget);
+      if (kind === 'catalog' && !state.focused) finishPublicCatalogLoop();
+    });
   }
+  const catalogTrack = document.getElementById('public-restaurants');
+  catalogTrack.addEventListener('transitionend', event => {
+    if (event.target === catalogTrack && event.propertyName === 'transform') finishPublicCatalogLoop();
+  });
   document.getElementById('public-hero-open').addEventListener('click', openPublicHeroRestaurant);
   document.getElementById('btn-public-how').addEventListener('click', () => document.getElementById('public-how').showModal());
   document.getElementById('public-how-close').addEventListener('click', () => document.getElementById('public-how').close());
   if (typeof window.addEventListener === 'function') window.addEventListener('resize', () => {
+    refreshPublicCatalogClones();
     renderPublicCatalogPosition(publicCatalogState.index);
     startPublicCarousel('catalog');
   });
@@ -1085,12 +1093,12 @@ const sorrentoPhotos = [
 let sorrentoPhotoIndex = 0;
 
 const sorrentoListing = {
-  public_key: 'cafe-sorrento', nombre: 'Café Sorrento', ciudad: 'Armenia', nombre_zona: 'Quindío',
+  public_key: 'cafe-sorrento', nombre: 'Café Sorrento', ciudad: 'Armenia', nombre_zona: 'Mall Privilegio',
   especialidad: 'Café, chocolate artesanal, desayunos, hamburguesas, maicitos y pizza'
 };
 const publicReducedMotion = Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches);
 const publicHeroState = { index: 0, paused: publicReducedMotion, timer: null, hovered: false, focused: false };
-const publicCatalogState = { index: 0, direction: 1, paused: publicReducedMotion, timer: null, hovered: false, focused: false };
+const publicCatalogState = { index: 0, items: [], cloneCount: 0, paused: publicReducedMotion, timer: null, hovered: false, focused: false };
 const publicHeroPhotos = [
   { file: 'cocora-restaurante.jpg', caption: 'Bosques de Cocora · Quindío', alt: 'Restaurante entre jardines y montañas del Valle de Cocora', position: 'center 54%' },
   { file: 'cafe-finca.jpg', caption: 'Café La Palma · Imagen ilustrativa', alt: 'Café de origen y repostería junto a un paisaje cafetero', restaurant: 'Café La Palma' },
@@ -1129,7 +1137,7 @@ function startPublicCarousel(kind) {
   state.timer = null;
   if (state.paused || typeof window.setInterval !== 'function' ||
     document.getElementById('public-container').style.display === 'none' ||
-    (kind === 'catalog' && document.getElementById('public-restaurants').children.length <= publicVisibleCards())) return;
+    (kind === 'catalog' && publicCatalogState.items.length <= publicVisibleCards())) return;
   state.timer = window.setInterval(() => {
     if (publicCarouselBlocked(state)) return;
     if (kind === 'hero') advancePublicHero(1, false); else advancePublicCatalog(1, false);
@@ -1197,37 +1205,66 @@ function publicVisibleCards() {
 function renderPublicCatalogPosition(index) {
   const track = document.getElementById('public-restaurants');
   const visible = publicVisibleCards();
-  const maximum = Math.max(0, track.children.length - visible);
-  publicCatalogState.index = Math.min(Math.max(0, index), maximum);
+  const count = publicCatalogState.items.length;
+  publicCatalogState.index = count > visible ? Math.min(Math.max(0, index), count) : 0;
   track.style.transform = `translateX(calc(-${publicCatalogState.index} * (100% + var(--catalog-gap)) / var(--cards-visible)))`;
   [...track.children].forEach((card, i) => {
     const hidden = i < publicCatalogState.index || i >= publicCatalogState.index + visible;
     card.inert = hidden;
     card.setAttribute('aria-hidden', String(hidden));
   });
-  syncPublicCarouselDots('catalog', maximum + 1, publicCatalogState.index);
+  syncPublicCarouselDots('catalog', count > visible ? count : Math.min(count, 1), count ? publicCatalogState.index % count : 0);
+}
+
+function finishPublicCatalogLoop(force = false) {
+  const count = publicCatalogState.items.length;
+  if (!count || publicCatalogState.index < count) return;
+  const track = document.getElementById('public-restaurants');
+  if (!force && track.contains(document.activeElement)) return;
+  track.style.transition = 'none';
+  renderPublicCatalogPosition(0);
+  void track.offsetWidth;
+  track.style.transition = '';
+}
+
+function refreshPublicCatalogClones() {
+  const count = publicCatalogState.items.length;
+  const needed = count > publicVisibleCards() ? publicVisibleCards() : 0;
+  if (needed === publicCatalogState.cloneCount) return;
+  finishPublicCatalogLoop(true);
+  const track = document.getElementById('public-restaurants');
+  track.querySelectorAll('[data-catalog-clone]').forEach(card => card.remove());
+  for (const restaurant of publicCatalogState.items.slice(0, needed)) {
+    const card = createPublicRestaurantCard(restaurant);
+    card.setAttribute('data-catalog-clone', 'true');
+    track.appendChild(card);
+  }
+  publicCatalogState.cloneCount = needed;
+  if (window.lucide) lucide.createIcons();
 }
 
 function advancePublicCatalog(step, manual = true) {
-  const maximum = Math.max(0, document.getElementById('public-restaurants').children.length - publicVisibleCards());
-  if (!maximum) return;
-  let next;
-  if (manual) next = (publicCatalogState.index + step + maximum + 1) % (maximum + 1);
-  else {
-    next = publicCatalogState.index + publicCatalogState.direction;
-    if (next > maximum || next < 0) { publicCatalogState.direction *= -1; next = publicCatalogState.index + publicCatalogState.direction; }
-  }
+  const count = publicCatalogState.items.length;
+  if (count <= publicVisibleCards()) return;
+  finishPublicCatalogLoop(true);
+  const next = step < 0 ? (publicCatalogState.index - 1 + count) % count : publicCatalogState.index + 1;
   renderPublicCatalogPosition(next);
+  if (publicReducedMotion) finishPublicCatalogLoop(true);
   if (manual) startPublicCarousel('catalog');
 }
 
 
+function sorrentoFoodInfo() {
+  return '<p class="info-text">Oferta del café. Precios por confirmar con el establecimiento.</p>' +
+    ['Café, espresso, capuchino y latte', 'Chocolate artesanal', 'Desayunos', 'Hamburguesas', 'Maicitos', 'Pizza', 'Rollitos', 'Cerveza']
+      .map(name => `<div class="menu-item-row"><h4>${name}</h4></div>`).join('');
+}
+
 function openSorrentoMenu() {
   ++publicMenuRequest;
   document.getElementById('public-menu-title').textContent = 'Sabores · Café Sorrento';
-  document.getElementById('public-menu-contact').textContent = 'Armenia · Quindío';
-  document.getElementById('public-menu-items').innerHTML = ['Café', 'Chocolate artesanal', 'Desayunos', 'Hamburguesas', 'Maicitos', 'Pizza']
-    .map(name => `<div class="menu-item-row"><h4>${name}</h4></div>`).join('');
+  document.getElementById('public-menu-contact').textContent = 'Mall Privilegio · Armenia. Lunes a domingo, 8:30 a. m. a 10:30 p. m.';
+  document.getElementById('public-menu-items').innerHTML = sorrentoFoodInfo();
   const action = document.getElementById('btn-public-reserve');
   action.textContent = 'Ver las fotografías';
   action.onclick = () => { closeModal('modal-public-menu'); openSorrentoGallery(0); };
@@ -1274,6 +1311,26 @@ function publicRestaurantImage(restaurant) {
   return { file: 'sancocho-regional.jpg', alt: 'Sancocho campesino servido con arroz y aguacate' };
 }
 
+function createPublicRestaurantCard(restaurant) {
+  const reservable = Boolean(positiveRecordId(restaurant.id_restaurante));
+  const photo = publicRestaurantImage(restaurant);
+  const card = document.createElement('article');
+  card.className = 'restaurant-card public-restaurant-card glass';
+  card.innerHTML = `<button type="button" class="public-restaurant-photo" data-public-open aria-label="Conocer ${escapeHTML(restaurant.nombre)}"><img src="images/${photo.file}" alt="${photo.alt}" width="1536" height="1024" loading="lazy" decoding="async"></button>
+    <div class="restaurant-card-body">
+      <p class="public-restaurant-location"><i data-lucide="map-pin" aria-hidden="true"></i><span>${escapeHTML(restaurant.ciudad || restaurant.nombre_zona || 'Eje Cafetero')}</span></p>
+      <h3><button type="button" data-public-open>${escapeHTML(restaurant.nombre)}</button></h3>
+      <p class="public-restaurant-specialty">${escapeHTML(restaurant.especialidad || 'Cocina de la región')}</p>
+    </div><div class="restaurant-card-footer">
+      <button type="button" class="btn btn-secondary" data-public-menu>${reservable ? 'Ver menú' : 'Ver sabores'}</button>
+      <button type="button" class="btn btn-primary" data-public-reserve>${reservable ? 'Reservar' : 'Ver fotos'}</button>
+    </div>`;
+  card.querySelector('[data-public-menu]').addEventListener('click', () => reservable ? openPublicMenu(restaurant.id_restaurante) : openSorrentoMenu());
+  card.querySelector('[data-public-reserve]').addEventListener('click', () => reservable ? beginGuestReservation(restaurant.id_restaurante) : openSorrentoGallery(0));
+  card.querySelectorAll('[data-public-open]').forEach(button => button.addEventListener('click', () => reservable ? openPublicMenu(restaurant.id_restaurante) : openSorrentoMenu()));
+  return card;
+}
+
 function renderPublicRestaurants() {
   const query = normalizePublicSearch(document.getElementById('public-rest-search').value);
   const city = document.getElementById('public-rest-city').value;
@@ -1284,26 +1341,11 @@ function renderPublicRestaurants() {
   container.innerHTML = '';
   document.getElementById('public-rest-count').textContent = `${filtered.length} restaurante${filtered.length === 1 ? '' : 's'} encontrado${filtered.length === 1 ? '' : 's'}`;
   if (!filtered.length) container.innerHTML = '<p class="info-text">No se encontraron restaurantes. Prueba con otro nombre, especialidad o municipio.</p>';
-  for (const restaurant of filtered) {
-    const reservable = Boolean(positiveRecordId(restaurant.id_restaurante));
-    const photo = publicRestaurantImage(restaurant);
-    const card = document.createElement('article');
-    card.className = 'restaurant-card public-restaurant-card glass';
-    card.innerHTML = `<button type="button" class="public-restaurant-photo" data-public-open aria-label="Conocer ${escapeHTML(restaurant.nombre)}"><img src="images/${photo.file}" alt="${photo.alt}" width="1536" height="1024" loading="lazy" decoding="async"></button>
-      <div class="restaurant-card-body">
-        <p class="public-restaurant-location"><i data-lucide="map-pin" aria-hidden="true"></i><span>${escapeHTML(restaurant.ciudad || restaurant.nombre_zona || 'Eje Cafetero')}</span></p>
-        <h3><button type="button" data-public-open>${escapeHTML(restaurant.nombre)}</button></h3>
-        <p class="public-restaurant-specialty">${escapeHTML(restaurant.especialidad || 'Cocina de la región')}</p>
-      </div><div class="restaurant-card-footer">
-        <button type="button" class="btn btn-secondary" data-public-menu>${reservable ? 'Ver menú' : 'Ver sabores'}</button>
-        <button type="button" class="btn btn-primary" data-public-reserve>${reservable ? 'Reservar' : 'Ver fotos'}</button>
-      </div>`;
-    card.querySelector('[data-public-menu]').addEventListener('click', () => reservable ? openPublicMenu(restaurant.id_restaurante) : openSorrentoMenu());
-    card.querySelector('[data-public-reserve]').addEventListener('click', () => reservable ? beginGuestReservation(restaurant.id_restaurante) : openSorrentoGallery(0));
-    card.querySelectorAll('[data-public-open]').forEach(button => button.addEventListener('click', () => reservable ? openPublicMenu(restaurant.id_restaurante) : openSorrentoMenu()));
-    container.appendChild(card);
-  }
-  publicCatalogState.direction = 1;
+  for (const restaurant of filtered) container.appendChild(createPublicRestaurantCard(restaurant));
+  publicCatalogState.items = filtered;
+  publicCatalogState.index = 0;
+  publicCatalogState.cloneCount = 0;
+  refreshPublicCatalogClones();
   renderPublicCatalogPosition(0);
   startPublicCarousel('catalog');
   if (window.lucide) lucide.createIcons();
@@ -1318,7 +1360,17 @@ async function openPublicMenu(value) {
   const container = document.getElementById('public-menu-items');
   document.getElementById('public-menu-title').textContent = `Menú · ${restaurant.nombre}`;
   document.getElementById('btn-public-reserve').textContent = 'Reservar en este restaurante';
-  document.getElementById('public-menu-contact').innerHTML = `<p><strong>Dirección:</strong> ${escapeHTML(restaurant.direccion || 'Consulta al restaurante')}${restaurant.nombre_zona ? ' · ' + escapeHTML(restaurant.nombre_zona) : ''}</p><p><strong>Teléfono:</strong> ${escapeHTML(restaurant.telefono || 'Consulta al restaurante')}</p>`;
+  document.getElementById('public-menu-contact').innerHTML = `<p><strong>Dirección:</strong> ${escapeHTML(restaurant.direccion || 'Consulta al restaurante')}${restaurant.nombre_zona && !isSorrentoListing(restaurant) ? ' · ' + escapeHTML(restaurant.nombre_zona) : ''}</p><p><strong>Teléfono:</strong> ${escapeHTML(restaurant.telefono || 'Consulta al restaurante')}</p>`;
+  if (isSorrentoListing(restaurant)) {
+    const contact = document.getElementById('public-menu-contact');
+    contact.innerHTML += '<p><strong>Horario:</strong> lunes a domingo, 8:30 a. m. a 10:30 p. m.</p>';
+    const gallery = document.createElement('button');
+    gallery.type = 'button';
+    gallery.className = 'btn btn-secondary btn-sm';
+    gallery.textContent = 'Ver fotografías del café';
+    gallery.addEventListener('click', () => { closeModal('modal-public-menu'); openSorrentoGallery(0); });
+    contact.appendChild(gallery);
+  }
   document.getElementById('btn-public-reserve').onclick = () => beginGuestReservation(id);
   container.innerHTML = '<p class="info-text">Cargando menú…</p>';
   modal.classList.add('active');
@@ -1327,7 +1379,7 @@ async function openPublicMenu(value) {
     if (request !== publicMenuRequest || !modal.classList.contains('active')) return;
     const available = dishes.filter(dish => Number(dish.id_restaurante) === id && Number(dish.disponibilidad) === 1);
     container.innerHTML = '';
-    if (!available.length) container.innerHTML = '<p class="info-text">Este restaurante todavía no tiene platos disponibles en su menú.</p>';
+    if (!available.length) container.innerHTML = isSorrentoListing(restaurant) ? sorrentoFoodInfo() : '<p class="info-text">Este restaurante todavía no tiene platos disponibles en su menú.</p>';
     for (const dish of available) {
       const item = document.createElement('div');
       item.className = 'menu-item-row';
@@ -2199,6 +2251,22 @@ async function legacyAvailableTables(restaurant, date, time, exclude) {
   return tables.filter(m => m.id_restaurante == restaurant && m.estado !== 'mantenimiento' && !occupied.has(Number(m.id_mesa)));
 }
 
+function reservationTimeOptions(restaurant) {
+  if (!restaurant) return [];
+  const description = normalizePublicSearch([restaurant.nombre, restaurant.especialidad].join(' '));
+  const cafe = /\bcafe(?:s|teria)?\b|reposteria|desayunos?/.test(description);
+  const sorrento = isSorrentoListing(restaurant);
+  const first = sorrento ? 8 * 60 + 30 : cafe ? 8 * 60 : 11 * 60 + 30;
+  // La ocupación vigente dura dos horas: en Sorrento debe terminar antes del cierre de las 22:30.
+  const last = sorrento ? 20 * 60 + 30 : cafe ? 22 * 60 : 23 * 60;
+  const options = [];
+  for (let minute = first; minute <= last; minute += 15) {
+    const hour = Math.floor(minute / 60), part = String(minute % 60).padStart(2, '0');
+    options.push({ value: `${String(hour).padStart(2, '0')}:${part}`, label: `${hour % 12 || 12}:${part} ${hour < 12 ? 'a. m.' : 'p. m.'}` });
+  }
+  return options;
+}
+
 async function openReservaModal(preSelectedRestId = null, idReserva = null) {
   const modal = document.getElementById('modal-reserva');
   const selectRest = document.getElementById('mres-restaurante');
@@ -2246,13 +2314,57 @@ async function openReservaModal(preSelectedRestId = null, idReserva = null) {
     people.value = reservation.cantidad_personas;
   }
 
+  const renderHours = (preferred = time.value) => {
+    const restaurant = allowed.find(r => r.id_restaurante == selectRest.value);
+    const slots = document.getElementById('mres-hora-slots');
+    const help = document.getElementById('mres-hora-help');
+    slots.innerHTML = '';
+    const options = reservationTimeOptions(restaurant);
+    if (!options.length) {
+      time.value = '';
+      help.textContent = 'Selecciona un restaurante para ver sus horas.';
+      return;
+    }
+    help.textContent = `De ${options[0].label} a ${options.at(-1).label}, cada 15 minutos.`;
+    if (isSorrentoListing(restaurant)) help.textContent += ' Atención hasta las 10:30 p. m.; la reserva ocupa dos horas.';
+    const originalHour = reservation?.hora_reserva?.slice(0, 5);
+    const sameOriginal = reservation && String(reservation.id_restaurante) === String(selectRest.value) &&
+      String(reservation.fecha_reserva).slice(0, 10) === date.value;
+    if (sameOriginal && preferred === originalHour && !options.some(option => option.value === originalHour)) {
+      options.unshift({ value: originalHour, label: `${originalHour} · hora guardada` });
+    }
+    let selected = false;
+    for (const option of options) {
+      const label = document.createElement('label');
+      label.className = 'reserva-time-option';
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = 'mres-horario';
+      input.value = option.value;
+      input.required = true;
+      const original = sameOriginal && option.value === originalHour;
+      input.disabled = !date.value || (!original && Date.parse(`${date.value}T${option.value}:00-05:00`) <= Date.now());
+      input.checked = !input.disabled && option.value === preferred;
+      if (input.checked) selected = true;
+      const text = document.createElement('span');
+      text.textContent = option.label;
+      input.addEventListener('change', () => {
+        if (input.checked) { time.value = input.value; load(); }
+      });
+      label.append(input, text);
+      slots.appendChild(label);
+    }
+    time.value = selected ? preferred : '';
+  };
+
   let requestNumber = 0;
   let capacities = new Map();
   const updateCapacity = () => {
     const total = Array.from(selectMesa.selectedOptions || []).reduce((sum, o) => sum + (capacities.get(Number(o.value)) || 0), 0);
     const restaurant = allowed.find(r => r.id_restaurante == selectRest.value);
     const capacity = Math.min(total, Number(restaurant?.capacidad_total) || total);
-    summary.textContent = capacity ? `Capacidad seleccionada: ${capacity} personas.` : legacy ? 'Selecciona una mesa para este horario.' : 'Selecciona una o varias mesas para este horario.';
+    const required = Number(people.value);
+    summary.textContent = capacity ? `Capacidad seleccionada: ${capacity} personas.${capacity < required ? ` Necesitas ${required}; elige otra mesa o combina varias.` : ''}` : legacy ? 'Selecciona una mesa para este horario.' : 'Selecciona una o varias mesas para este horario.';
     if (capacity) people.max = capacity;
     else people.removeAttribute('max');
   };
@@ -2262,8 +2374,8 @@ async function openReservaModal(preSelectedRestId = null, idReserva = null) {
     selectMesa.disabled = true;
     people.removeAttribute('max');
     summary.style.display = '';
-    if (!selectRest.value || !date.value || !time.value) {
-      summary.textContent = 'Elige restaurante, fecha y hora para consultar las mesas.';
+    if (!selectRest.value || !date.value || !time.value || !Number.isInteger(Number(people.value)) || Number(people.value) < 1) {
+      summary.textContent = 'Elige restaurante, fecha y hora e indica la cantidad de personas para consultar las mesas.';
       return;
     }
     summary.textContent = 'Consultando mesas disponibles…';
@@ -2277,7 +2389,8 @@ async function openReservaModal(preSelectedRestId = null, idReserva = null) {
       for (const m of tables) {
         const option = document.createElement('option');
         option.value = m.id_mesa;
-        option.textContent = `Mesa ${m.numero_mesa} · ${m.capacidad} personas · ${m.ubicacion}`;
+        const name = /^mesa\b/i.test(String(m.numero_mesa)) ? m.numero_mesa : `Mesa ${m.numero_mesa}`;
+        option.textContent = `${name} · ${m.capacidad} personas · ${m.ubicacion}`;
         option.selected = preselected.includes(Number(m.id_mesa));
         selectMesa.appendChild(option);
       }
@@ -2288,14 +2401,25 @@ async function openReservaModal(preSelectedRestId = null, idReserva = null) {
       if (request === requestNumber) summary.textContent = error.message;
     }
   };
-  selectRest.onchange = date.onchange = time.onchange = () => load();
+  selectRest.onchange = () => { renderHours(''); return load(); };
+  date.onchange = () => { renderHours(); return load(); };
+  time.onchange = () => load();
+  people.oninput = () => {
+    if (!Number.isInteger(Number(people.value)) || Number(people.value) < 1 || selectMesa.disabled) return load();
+    updateCapacity();
+  };
   selectMesa.onchange = updateCapacity;
+  renderHours();
   modal.classList.add('active');
   await load((reservation?.id_mesas ?? (reservation?.id_mesa ? [reservation.id_mesa] : [])).map(Number));
 }
 
 async function saveReserva(e) {
   e.preventDefault();
+  if (!document.getElementById('mres-hora').value) {
+    showToast('Selecciona una de las horas disponibles.', 'warning');
+    return;
+  }
   const id = document.getElementById('mres-id').value;
   const id_mesas = Array.from(document.getElementById('mres-mesa').selectedOptions).map(o => Number(o.value));
   if (!id_mesas.length) {

@@ -21,7 +21,7 @@ test('identificadores, correos y teléfonos coherentes sin claves huérfanas', (
     assert.equal(new Set(data[table].map(row => row[key])).size, data[table].length, table);
   }
   assert.equal(new Set(data.usuarios.map(u => u.correo)).size, data.usuarios.length);
-  data.usuarios.forEach(u => { assert.match(u.telefono, /^3\d{9}$/); assert.match(u.correo, /@gastroturismo\.example$/); });
+  data.usuarios.forEach(u => { if (u.telefono !== null) assert.match(u.telefono, /^3\d{9}$/); assert.match(u.correo, /@gastroturismo\.example$/); });
   data.restaurantes.forEach(r => { assert.ok(by('zonas', 'id_zona', r.id_zona)); assert.equal(by('usuarios', 'id_usuario', r.id_propietario).tipo_usuario, 'restaurante'); assert.equal(Object.hasOwn(r, 'id_plan'), false); });
   data.platos.forEach(p => { assert.ok(by('categorias', 'id_categoria', p.id_categoria)); assert.ok(by('restaurantes', 'id_restaurante', p.id_restaurante)); });
   assert.equal(new Set(data.mesas.map(m => `${m.id_restaurante}/${m.numero_mesa}`)).size, data.mesas.length);
@@ -93,6 +93,24 @@ test('SQL de semilla conserva datos existentes y no contiene borrados', () => {
   assert.doesNotMatch(sql, /`detalles`/);
   assert.match(sql, /COMMIT;/);
   assert.doesNotMatch(sql, /planes_suscripcion|id_plan/);
+});
+
+test('Sorrento tiene diez mesas combinables, datos pendientes explícitos e historial sin inventar', () => {
+  const restaurant = data.restaurantes.find(r => r.nombre === 'Café Sorrento');
+  const tables = data.mesas.filter(m => m.id_restaurante === restaurant.id_restaurante);
+  assert.equal(data.restaurantes.length, 5);
+  assert.equal(tables.length, 10);
+  assert.equal(tables.filter(m => m.capacidad === 2).length, 5);
+  assert.equal(tables.filter(m => m.capacidad === 4).length, 5);
+  assert.equal(tables.reduce((sum, m) => sum + m.capacidad, 0), restaurant.capacidad_total);
+  assert.equal(restaurant.capacidad_total, 30);
+  assert.equal(restaurant.telefono, null);
+  assert.equal(restaurant.email, null);
+  assert.match(restaurant.direccion, /Mall Privilegio.*por confirmar/);
+  for (const table of ['platos', 'pedidos', 'visitas', 'resenas', 'experiencias']) {
+    assert.equal(data[table].filter(row => row.id_restaurante === restaurant.id_restaurante).length, 0, table);
+  }
+  assert.equal(data.reserva_mesas.some(a => tables.some(m => m.id_mesa === a.id_mesa)), false);
 });
 
 test('experiencias mantienen cupos, fechas y precio de reserva sin cobro online', () => {
