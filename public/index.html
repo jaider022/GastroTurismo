@@ -18,7 +18,7 @@
   <!-- ==========================================
        PANTALLA DE LOGIN / REGISTRO
        ========================================== -->
-  <div id="login-container" class="login-wrapper">
+  <div id="login-container" class="login-wrapper" style="display: none;">
     <div class="login-card glass">
       <div class="login-header">
         <div class="logo-area">
@@ -106,7 +106,7 @@
         </form>
       </div>
       
-      <div class="login-explore"><button id="btn-explorar-restaurantes" type="button" class="btn btn-secondary btn-block">Explorar restaurantes sin cuenta</button></div>
+      <div class="login-explore"><button id="btn-explorar-restaurantes" type="button" class="btn btn-secondary btn-block">Volver a explorar restaurantes</button></div>
       <!-- Indicador de conexión rápida para demo -->
       <div class="demo-badge-container">
         <span class="db-status-badge offline" id="login-db-status">
@@ -121,14 +121,46 @@
   <!-- ==========================================
        CONTENEDOR PRINCIPAL DE LA APLICACIÓN (DASHBOARD)
        ========================================== -->
-  <main id="public-container" class="public-layout" style="display: none;">
-    <header class="public-header"><div class="public-brand"><i data-lucide="chef-hat"></i><strong>GastroTurismo</strong></div><button id="btn-public-login" type="button" class="btn btn-primary">Iniciar sesión</button></header>
-    <section class="public-hero"><h1>Encuentra tu próxima experiencia gastronómica</h1><p>Explora los restaurantes y sus menús. Te pediremos iniciar sesión o crear tu cuenta cuando vayas a reservar.</p><a href="https://www.valledelcocora.com.co/w/producto/restaurante-bosques-de-cocora-donde-juanb/" target="_blank" rel="noopener noreferrer">Fotografía: Bosques de Cocora · Quindío</a></section>
-    <section aria-label="Explorar restaurantes">
-      <div class="action-header public-search"><h2>Restaurantes del Eje Cafetero</h2><div><label for="public-rest-search">Buscar restaurante</label><input id="public-rest-search" type="search" class="form-control" placeholder="Nombre, especialidad o zona…"></div></div>
-      <p id="public-rest-count" class="reservas-subtitle" role="status"></p>
-      <div id="public-restaurants" class="restaurantes-list-grid"></div>
+  <main id="public-container" class="public-layout">
+    <header class="public-header">
+      <a class="public-brand" href="#public-container" aria-label="GastroTurismo, inicio"><i data-lucide="chef-hat" aria-hidden="true"></i><strong>GastroTurismo</strong></a>
+      <nav class="public-nav" aria-label="Explorar el sitio"><a href="#public-catalog">Restaurantes</a><button id="btn-public-how" type="button">Cómo reservar</button></nav>
+      <nav class="public-auth-actions" aria-label="Acceso a tu cuenta"><button id="btn-public-login" type="button" class="btn btn-secondary">Iniciar sesión</button><button id="btn-public-register" type="button" class="btn btn-primary">Crear cuenta</button></nav>
+    </header>
+    <section class="public-hero" aria-labelledby="public-hero-title">
+      <div class="public-hero-copy">
+        <p class="public-eyebrow">Sabores del Eje Cafetero</p>
+        <h1 id="public-hero-title">Descubre a qué sabe <span>el Eje Cafetero</span></h1>
+        <p class="public-hero-description">Explora restaurantes, conoce sus menús y encuentra tu próxima experiencia gastronómica.</p>
+        <p class="public-hero-note"><i data-lucide="leaf" aria-hidden="true"></i><span>Explora libremente. Regístrate cuando decidas reservar.</span></p>
+      </div>
+      <figure id="public-hero-carousel" class="public-hero-photo" aria-roledescription="carrusel" aria-label="Paisajes y sabores del Eje Cafetero">
+        <img id="public-hero-backdrop" class="public-hero-backdrop" src="images/cocora-restaurante.jpg" alt="" aria-hidden="true">
+        <button id="public-hero-open" class="public-hero-photo-button" type="button" disabled><img id="public-hero-image" src="images/cocora-restaurante.jpg" width="800" height="600" fetchpriority="high" alt="Restaurante entre jardines y montañas verdes del Valle de Cocora"></button>
+        <div id="hero-dots" class="public-dots public-hero-dots" role="group" aria-label="Elegir una fotografía"></div>
+      </figure>
     </section>
+    <form id="public-search-form" class="public-search" role="search" aria-label="Buscar restaurantes">
+      <div class="public-search-field"><i data-lucide="search" aria-hidden="true"></i><div><label for="public-rest-search">¿Qué quieres probar?</label><input id="public-rest-search" type="search" placeholder="Restaurante o especialidad" autocomplete="off"></div></div>
+      <div class="public-search-field"><i data-lucide="map-pin" aria-hidden="true"></i><div><label for="public-rest-city">¿Dónde?</label><select id="public-rest-city"><option value="">Todos los municipios</option></select></div></div>
+      <button type="submit" class="btn btn-primary" aria-label="Buscar restaurantes"><i data-lucide="search" aria-hidden="true"></i><span>Buscar restaurantes</span></button>
+    </form>
+    <section id="public-catalog" class="public-catalog" aria-labelledby="public-catalog-title">
+      <div class="public-section-heading"><h2 id="public-catalog-title">Restaurantes para descubrir</h2><span class="public-region">Eje Cafetero</span></div>
+      <p id="public-rest-count" class="public-rest-count" role="status" aria-live="polite"></p>
+      <div id="public-catalog-viewport" class="public-catalog-viewport" aria-roledescription="carrusel" aria-label="Restaurantes y cafés"><div id="public-restaurants" class="restaurantes-list-grid"><p class="info-text">Cargando restaurantes…</p></div></div>
+      <div class="public-catalog-footer"><p class="public-image-note">Café Sorrento: fotos aportadas al proyecto. Otros establecimientos: imágenes ilustrativas.</p><div id="catalog-dots" class="public-dots" role="group" aria-label="Elegir restaurantes"></div></div>
+    </section>
+    <dialog id="public-how" class="public-gallery public-help" aria-labelledby="public-how-title">
+      <div class="public-gallery-header"><h2 id="public-how-title">De la curiosidad a la reserva</h2><button id="public-how-close" type="button" aria-label="Cerrar guía de reservas" autofocus><i data-lucide="x" aria-hidden="true"></i></button></div>
+      <ol><li><span>01</span><div><h3>Encuentra tu lugar</h3><p>Explora restaurantes y consulta sus menús sin crear una cuenta.</p></div></li><li><span>02</span><div><h3>Elige y regístrate</h3><p>Al pulsar Reservar, ingresa o crea tu cuenta para continuar.</p></div></li><li><span>03</span><div><h3>Organiza tu visita</h3><p>Selecciona la fecha, la hora y las personas; revisa y confirma tu reserva.</p></div></li></ol>
+      <p class="public-photo-source">Fotografía del Valle de Cocora: <a href="https://www.valledelcocora.com.co/w/producto/restaurante-bosques-de-cocora-donde-juanb/" target="_blank" rel="noopener noreferrer">Bosques de Cocora</a>.</p>
+    </dialog>
+    <dialog id="sorrento-gallery" class="public-gallery" aria-labelledby="sorrento-gallery-title">
+      <div class="public-gallery-header"><div><h2 id="sorrento-gallery-title">Café Sorrento</h2><p>Armenia · Quindío</p></div><button id="sorrento-gallery-close" type="button" aria-label="Cerrar galería" autofocus><i data-lucide="x" aria-hidden="true"></i></button></div>
+      <figure><img id="sorrento-gallery-image" alt=""><figcaption id="sorrento-gallery-caption" aria-live="polite"></figcaption></figure>
+      <div class="public-gallery-controls"><button id="sorrento-gallery-prev" type="button" class="btn btn-secondary"><i data-lucide="arrow-left" aria-hidden="true"></i>Anterior</button><span id="sorrento-gallery-count"></span><button id="sorrento-gallery-next" type="button" class="btn btn-secondary">Siguiente<i data-lucide="arrow-right" aria-hidden="true"></i></button></div>
+    </dialog>
   </main>
 
   <div id="app-container" class="app-layout" style="display: none;">
@@ -163,6 +195,7 @@
         <a href="#" class="menu-item" data-target="section-reservas">
           <i data-lucide="calendar-check"></i> Reservas
         </a>
+        <a href="#" class="menu-item" data-target="section-experiencias"><i data-lucide="coffee"></i> Experiencias</a>
         <a href="#" class="menu-item" data-target="section-pedidos">
           <i data-lucide="shopping-bag"></i> Pedidos / Delivery
         </a>
@@ -172,7 +205,7 @@
         <a href="#" class="menu-item" data-target="section-asistencia">
           <i data-lucide="users"></i> Asistencia real
         </a>
-        <a href="#" class="menu-item" data-target="section-reportes">
+        <a href="#" class="menu-item" id="menu-reportes" data-target="section-reportes">
           <i data-lucide="bar-chart-3"></i> Reportes del Sistema
         </a>
         <a href="#" class="menu-item" data-target="section-documentos">
@@ -416,6 +449,24 @@
       </section>
 
       <!-- SECCIÓN: PEDIDOS -->
+      <section id="section-experiencias" class="content-section">
+        <div class="section-header"><div><h3>Experiencias gastronómicas</h3><p class="reservas-subtitle">Catas y talleres con sabor al Quindío. Reserva el cupo y paga al llegar al restaurante.</p></div><button id="btn-add-experiencia" type="button" class="btn btn-primary" hidden>Publicar experiencia</button></div>
+        <div class="reservas-filters glass">
+          <div><label for="exp-busqueda">Buscar actividad</label><input id="exp-busqueda" type="search" class="form-control" placeholder="Cata, taller o restaurante…"></div>
+          <div><label for="exp-restaurante-filtro">Restaurante</label><select id="exp-restaurante-filtro" class="form-control"><option value="">Todos</option></select></div>
+          <div><label for="exp-fecha-filtro">Fecha</label><input id="exp-fecha-filtro" type="date" class="form-control"></div>
+          <div><label for="exp-vista">Actividades</label><select id="exp-vista" class="form-control"><option value="proximas">Próximas</option><option value="todas">Historial completo</option></select></div>
+          <button id="exp-actualizar" type="button" class="btn btn-secondary">Actualizar cupos</button>
+        </div>
+        <p id="exp-status" role="status" aria-live="polite"></p>
+        <div id="exp-catalogo" class="experiencias-grid"></div>
+        <div class="reservas-pagination"><span id="exp-resumen"></span><nav class="reservas-page-buttons" aria-label="Páginas de experiencias"><button id="exp-prev" type="button" class="btn btn-secondary">Anterior</button><span id="exp-pagina"></span><button id="exp-next" type="button" class="btn btn-secondary">Siguiente</button></nav></div>
+        <div class="section-header"><div><h3 id="exp-reservas-titulo">Mis cupos reservados</h3><p>El total corresponde al precio confirmado al reservar. Este cupo no asigna una mesa ni registra asistencia automáticamente.</p></div></div>
+        <div class="form-group"><label for="exp-reservas-estado">Reservas de experiencias</label><select id="exp-reservas-estado" class="form-control"><option value="">Todos los estados</option><option value="confirmada">Confirmadas</option><option value="cancelada">Canceladas</option><option value="pendiente">Pendientes de pago</option><option value="pagado">Pago registrado</option></select></div>
+        <div class="table-container glass"><table class="data-table"><thead><tr><th>Reserva / cliente</th><th>Experiencia y restaurante</th><th>Fecha</th><th>Personas</th><th>Total</th><th>Estado y pago</th><th>Acciones</th></tr></thead><tbody id="exp-reservas-body"></tbody></table></div>
+        <div class="reservas-pagination"><span id="exp-reservas-resumen"></span><nav class="reservas-page-buttons" aria-label="Páginas de reservas de experiencias"><button id="exp-reservas-prev" type="button" class="btn btn-secondary">Anterior</button><span id="exp-reservas-pagina"></span><button id="exp-reservas-next" type="button" class="btn btn-secondary">Siguiente</button></nav></div>
+      </section>
+
       <section id="section-pedidos" class="content-section">
         <div class="pedidos-split-layout">
           <!-- Panel de Compra (Izquierda) -->
@@ -833,7 +884,6 @@
       </div>
       <form id="form-modal-reserva">
         <input type="hidden" id="mres-id">
-        <input type="hidden" id="mres-mesa-anterior">
         <div class="form-group">
           <label for="mres-restaurante">Selecciona el Restaurante:</label>
           <select id="mres-restaurante" required class="form-control">
@@ -842,10 +892,11 @@
           <p id="mres-restaurante-summary" style="font-size: 0.8rem; color: var(--primary); margin-top: 6px; display: none;"></p>
         </div>
         <div class="form-group">
-          <label for="mres-mesa">Selecciona la Mesa Disponible:</label>
-          <select id="mres-mesa" required class="form-control">
+          <label for="mres-mesa">Mesas disponibles</label>
+          <select id="mres-mesa" required multiple size="5" aria-describedby="mres-mesa-summary mres-mesa-help" class="form-control">
             <option value="">Primero selecciona el restaurante...</option>
           </select>
+          <small id="mres-mesa-help">En computador, usa Ctrl o Cmd para seleccionar varias mesas.</small>
           <p id="mres-mesa-summary" style="font-size: 0.8rem; color: var(--secondary); margin-top: 6px; display: none;"></p>
         </div>
         <div class="form-group">
@@ -858,7 +909,7 @@
         </div>
         <div class="form-group">
           <label for="mres-personas">Cantidad de Personas:</label>
-          <input type="number" id="mres-personas" min="1" max="10" value="2" required class="form-control">
+          <input type="number" id="mres-personas" min="1" value="2" required class="form-control">
         </div>
         <div class="modal-actions">
           <button type="button" class="btn btn-secondary" onclick="closeModal('modal-reserva')">Cancelar</button>
@@ -895,7 +946,7 @@
         </div>
         <div class="form-group">
           <label for="mrest-capacidad">Capacidad Total</label>
-          <input type="number" id="mrest-capacidad" required min="10" class="form-control">
+          <input type="number" id="mrest-capacidad" required min="1" class="form-control">
         </div>
         <div class="form-group">
           <label for="mrest-especialidad">Especialidad Gastronómica</label>
@@ -968,10 +1019,33 @@
   <div class="modal-backdrop" id="modal-public-menu">
     <div class="modal-card glass modal-plato-card">
       <div class="modal-header"><h3 id="public-menu-title">Menú del restaurante</h3><button class="close-btn" type="button" onclick="closeModal('modal-public-menu')" aria-label="Cerrar menú público">&times;</button></div>
+      <div id="public-menu-contact" class="public-menu-contact"></div>
       <div id="public-menu-items"></div>
       <div class="modal-actions"><button id="btn-public-reserve" type="button" class="btn btn-primary">Reservar en este restaurante</button></div>
     </div>
   </div>
+
+  <div class="modal-backdrop" id="modal-experiencia"><div class="modal-card glass modal-plato-card">
+    <div class="modal-header"><h3 id="exp-form-title">Publicar experiencia</h3><button class="close-btn" type="button" onclick="closeModal('modal-experiencia')" aria-label="Cerrar">&times;</button></div>
+    <form id="exp-form"><input id="exp-id" type="hidden">
+      <div class="form-group"><label for="exp-restaurante">Restaurante</label><select id="exp-restaurante" class="form-control" required></select></div>
+      <div class="form-group"><label for="exp-nombre">Nombre de la actividad</label><input id="exp-nombre" class="form-control" maxlength="150" required placeholder="Ej. Cata de cafés del Quindío"></div>
+      <div class="form-group"><label for="exp-descripcion">Descripción</label><textarea id="exp-descripcion" class="form-control" maxlength="4000" rows="3"></textarea></div>
+      <div class="form-group"><label for="exp-fecha">Fecha y hora</label><input id="exp-fecha" class="form-control" type="datetime-local" required></div>
+      <div class="plato-form-grid"><div class="form-group"><label for="exp-duracion">Duración (minutos)</label><input id="exp-duracion" class="form-control" type="number" min="1" max="1440" step="1" required></div><div class="form-group"><label for="exp-cupos">Cupos totales</label><input id="exp-cupos" class="form-control" type="number" min="1" max="100000" step="1" required></div></div>
+      <div class="form-group"><label for="exp-precio">Precio por persona (COP)</label><input id="exp-precio" class="form-control" type="number" min="0" max="99999999.99" step="0.01" required></div>
+      <p class="info-text">Los clientes reservan sin cobro online. Si ya hay cupos reservados, se conservan la fecha y la duración; cambiar el precio solo afecta reservas nuevas.</p>
+      <div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="closeModal('modal-experiencia')">Volver</button><button id="exp-guardar" class="btn btn-success" type="submit">Guardar actividad</button></div>
+    </form>
+  </div></div>
+  <div class="modal-backdrop" id="modal-exp-reserva"><div class="modal-card glass modal-plato-card">
+    <div class="modal-header"><h3>Reservar cupos</h3><button class="close-btn" type="button" onclick="closeModal('modal-exp-reserva')" aria-label="Cerrar">&times;</button></div>
+    <p id="exp-reserva-detalle"></p><form id="exp-reserva-form"><div class="form-group"><label for="exp-personas">Cantidad de personas</label><input id="exp-personas" class="form-control" type="number" min="1" step="1" required></div><p id="exp-total" class="info-text"></p><p>El pago se realiza directamente en el restaurante. No se solicita tarjeta para reservar.</p><div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="closeModal('modal-exp-reserva')">Volver</button><button id="exp-confirmar" class="btn btn-primary" type="submit">Confirmar cupos</button></div></form>
+  </div></div>
+  <div class="modal-backdrop" id="modal-exp-cobro"><div class="modal-card glass modal-plato-card">
+    <div class="modal-header"><h3>Registrar pago recibido</h3><button class="close-btn" type="button" onclick="closeModal('modal-exp-cobro')" aria-label="Cerrar">&times;</button></div>
+    <p id="exp-cobro-detalle"></p><form id="exp-cobro-form"><div class="form-group"><label for="exp-metodo">Medio de pago presencial</label><select id="exp-metodo" class="form-control" required></select></div><p>Confirma únicamente después de recibir el pago en el restaurante. Se registra el total de esta reserva.</p><div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="closeModal('modal-exp-cobro')">Volver</button><button id="exp-cobrar" class="btn btn-success" type="submit">Confirmar pago recibido</button></div></form>
+  </div></div>
 
   <!-- Notificaciones Toast -->
   <div class="toast-container" id="toast-container"></div>
@@ -984,5 +1058,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
   <!-- Aplicación Principal JS -->
   <script src="app.js"></script>
+  <script src="experiencias.js"></script>
 </body>
 </html>

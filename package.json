@@ -9,6 +9,9 @@
     "test": "node --test tests/*.test.js",
     "datos:generar": "node scripts/generar-datos.js",
     "db:cargar": "node scripts/cargar-base.js",
+    "db:sin-planes": "node scripts/migrar-sin-planes.js",
+    "db:asesoria": "node scripts/migrar-asesoria.js",
+    "db:experiencias": "node scripts/migrar-experiencias.js",
     "start:local": "node scripts/iniciar-local.js"
   },
   "dependencies": {

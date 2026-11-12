@@ -1,8 +1,10 @@
 # Seguimiento del proyecto final — GastroTurismo
 
-**Versión 9 — 29 de octubre de 2026.** Este es el listado vigente para continuar y marcar avances. Sustituye como seguimiento al checklist del 27 de octubre, que se conserva como revisión histórica.
+**Versión 31 — 12 de noviembre de 2026.** Este es el listado de trabajo. De los 25 puntos, hay **22 comprobados, 2 parciales y 1 pendiente**, en el alcance descrito en cada fila. Estas marcas no son un porcentaje de cumplimiento académico. El checklist del 27 de octubre queda como referencia histórica.
 
-**Autorización del usuario:** el 29 de octubre indicó «ya puedes guardar en git», autorizando el guardado y publicación de los avances actuales. Se mantiene un respaldo local separado y se excluyen credenciales, configuración privada y archivos personales.
+**Trazabilidad vigente:** [Requisitos de la profesora, evidencia y pendientes](Trazabilidad_requisitos.md). Se contrastó el PDF completo con el código, los modelos y la base habitual. La matriz distingue funciones implementadas, pruebas pendientes y decisiones que requieren aclaración académica.
+
+**Estado del guardado:** se prepara la publicación del avance completo del 12 de noviembre en la rama `avance-2026-11-12`. `main` conserva el commit `14bd06d` de Luisa, con una implementación diferente que aún incluye planes; su integración se revisará aparte. Se excluyen credenciales, configuración privada y archivos personales.
 
 Proyecto revisado: la carpeta **Bases de datos** del escritorio, abierta en Antigravity. Los avances de la copia separada de Documents no se cuentan como terminados en este proyecto.
 
@@ -16,50 +18,119 @@ Fuente académica: `Proyecto final BD1 - 2026-2.pdf`, revisión de 7 páginas en
 - 🟡 Existe una parte; falta completar, corregir o validar lo indicado.
 - ☐ Pendiente: todavía no está hecho o no está verificado.
 
-La conexión con MySQL se deja **para después por indicación del usuario**. El servidor de la aplicación volvió a responder y se comprobó la edición de mesas en **modo demo**; esto no constituye una prueba de MySQL.
+La aplicación habitual está actualizada en `http://localhost:3001` y conectada a `gastronomia_turistica_academica` en MariaDB, puerto 3318. La migración de experiencias se ensayó y se aplicó después de un respaldo. Se comprobó la conservación de las filas anteriores de las 23 tablas. Ahora hay 22 tablas principales y una auxiliar anterior de recordatorios; el total físico sigue siendo 23. Se añadieron tres próximas actividades de ejemplo, sin crear reservas ni cobros ficticios en esta base.
 
 ## Listado vigente
 
 | ID | Estado | Trabajo | Qué está y qué queda |
 |---|---|---|---|
-| 01 | ✅ | Apariencia e inicio de sesión | Tema marfil, menú verde, fotografía del Cocora y tarjeta renovada comprobados en navegador. Se conserva visible la información de demostración, por indicación del usuario. |
+| 01 | ✅ | Apariencia e inicio de sesión | Portada de una pantalla, foto principal completa y nítida con fondo de la misma imagen desenfocado en los laterales. El fondo se sincroniza en las trece fotos. Buscador, tres tarjetas, cafetos en esquinas, hoja rellena verde y puntos inferiores conservados, sin rótulos blancos ni controles visibles de pausa/flechas. Fotos a cinco segundos y tarjetas a dos, con protección al interactuar y movimiento reducido. En celular se muestra una tarjeta. |
 | 02 | ✅ | Listado de reservas | Diez filas por página, búsqueda, filtros de estado/fecha, contador y orden reciente. Probado con 364 reservas de demostración. |
 | 03 | ✅ | Listado de pedidos | Paginación, filtro por restaurante y fechas, contador y orden reciente. Probado con 352 pedidos de demostración. |
 | 04 | ✅ | Listado de asistencia real | Paginación, filtro por restaurante/fechas y suma de personas de todos los resultados. Probado con 672 visitas y 2.387 personas de demostración. |
-| 05 | ✅ | Datos de ejemplo coherentes | Semilla de 16 tablas con nombres, teléfonos, fechas, relaciones e importes coherentes. Las pruebas aisladas de datos pasan. |
-| 06 | 🟡 | Acceso, registro y perfil básico | Existen registro, contraseña protegida, sesión y cierre; pruebas aisladas del acceso aprobadas. Falta repetir el recorrido con la base real. El perfil muestra nombre/rol; su edición no se exige expresamente en el enunciado. |
-| 07 | 🟡 | Administrar restaurantes | Las cuatro operaciones existen en pantalla y servidor. Falta comprobar permisos por propietario y el ciclo completo con relaciones existentes. |
-| 08 | ✅ | Administrar mesas desde pantalla | Añadidos botón Editar, carga de datos y guardado por PUT. Se editan número, capacidad y ubicación conservando identificador, restaurante y estado. Se comprueban duplicados y reducciones de capacidad incompatibles con reservas activas desde la interfaz. Cinco pruebas aisladas aprobadas y guardado visual en demo comprobado. Permisos de servidor y prueba MySQL siguen separados en 15, 21 y 25. |
-| 09 | ✅ | Administrar platos desde pantalla | Añadida sección Platos y menú para administrador/propietarios, con crear, consultar, editar, disponibilidad, búsqueda y paginación. Al editar conserva identificador/restaurante. Eliminar se permite en platos sin pedidos; los platos con historial se conservan y pueden desactivarse. Pasaron 13 pruebas aisladas con la API demo real. Formulario, edición, filtros, protección del historial y continuidad del menú/carrito comprobados en navegador. Permisos de servidor y MySQL siguen en 15/21/25. |
-| 10 | 🟡 | Reglas de las reservas | Crear, consultar, editar y cancelar existen. Falta validar en servidor aforo, fechas y solapamientos, y mantener coherentes los estados de las mesas. Las validaciones de asistencia no sustituyen estas reglas. |
-| 11 | 🟡 | Pedidos y delivery | Existe selección de platos, carrito, dirección de entrega y cálculo del total en servidor. Falta completar permisos de cambios de estado y pruebas integradas. |
-| 12 | 🟡 | Reportes y gráficas | Verificada la clasificación de 3 simples (1–3), 4 intermedios (4–7) y 3 con subconsultas (8–10), además de los comparativos 11/12 y gráficas 6/9/10. Corregidas diferencias de cálculo entre demo y SQL, precios exportables, promedio de vendidos y población VIP. El SQL mostrado coincide con el servidor. Pasaron 16 pruebas nuevas, comparando los diez reportes contra SQL en memoria. Falta la ejecución final en MySQL; clasificación y criterios documentados en Reportes_academicos.md. |
-| 13 | ✅ | Exportación básica de reportes | La exportación de tabla y criterios está implementada; un PDF de reporte se generó y revisó en el avance anterior. La revisión final de todos los reportes con datos reales queda en el punto 25. Incluir gráficas dentro del PDF no se identificó como requisito expreso. |
-| 14 | ✅ | Comprobantes y factura | Vista previa y descarga comparten una copia del mismo registro consultado. Una selección vacía, error o respuesta antigua no permite descargar el documento anterior. Se normalizan importes numéricos de la API y se conserva el total registrado, sin añadir un desglose de impuestos ausente en los datos. Pasaron 12 pruebas aisladas y se descargaron/revisaron visualmente un comprobante y una factura en demo. Integración MySQL pendiente en 21/25. |
-| 15 | 🟡 | Permisos de clientes y propietarios | Notificaciones ya exige sesión y limita lectura/marcado al destinatario, también para administradores; comprobado en pruebas aisladas. Falta aplicar rol y propiedad en consultas y cambios de los demás módulos antiguos; ocultar botones no completa esta protección. |
-| 16 | 🟡 | Coherencia de los dos modelos | Existen entidad-relación y relacional. Falta cerrar la comparación con las 16 tablas, representar accesos al sistema y revisar la obligatoriedad/exclusividad de pedido o plan en pagos. |
-| 17 | ✅ | Explorar antes de registrarse | Añadida entrada desde el inicio para explorar restaurantes, buscar sin tildes y consultar sus platos disponibles. Reservar solicita acceso/registro y conserva el restaurante; después abre el formulario existente sin guardar una reserva automáticamente. La selección sobrevive a una recarga o un acceso fallido; se informa si el restaurante dejó de existir. Pasaron 15 pruebas aisladas, incluida la apertura del formulario original. Falta revisión visual e integración MySQL en 25. |
-| 18 | ☐ | Experiencias gastronómicas | No se encontró un flujo explícito de experiencias en el proyecto principal. Falta acordar el alcance del caso con la profesora e implementarlo. |
-| 19 | 🟡 | Planes y pagos | Existen catálogos y medios de pago; el pago es simulado. Falta contratar un plan para un restaurante concreto, controlar su vigencia y verificar importes/pertenencia de pagos. Confirmar con la profesora si exige una pasarela real. |
-| 20 | 🟡 | Notificaciones y recordatorios | Avisos organizados con cinco por página, filtros Pendientes/Todas/Leídas, orden reciente y contador. Botón explícito de marcado, errores controlados y limpieza al salir/cambiar de sesión. Servidor y demo limitan consulta y marcado a las notificaciones propias. Existe aviso al crear una reserva; faltan los recordatorios programados y comprobar este recorrido con MySQL. |
-| 21 | 🟡 | Servidor local y MySQL | La aplicación responde en localhost:3001 en modo demo. Falta comprobar conexión MySQL y ejecutar pruebas con la base académica. No se arrancó MySQL en esta revisión. |
-| 22 | ☐ | Documento final | No se encontró un informe completo en la plantilla exigida entre los archivos revisados. Falta desarrollar y revisar el documento con integrantes, profesora, modelos, requisitos y evidencias. |
-| 23 | ✅ | Guardar los últimos avances en GitHub | Con autorización del usuario se incorporan a main los puntos 09 y 17, los avances de 12/20, sus pruebas y el seguimiento actualizado. Repositorio: jaider022/GastroTurismo. El respaldo local separado se conserva; credenciales, configuración privada y archivos personales siguen excluidos. |
-| 24 | ☐ | Aprobación y sustentación | Falta dejar constancia de aprobación de requisitos por la profesora y preparar/practicar la explicación de ambos integrantes. La asesoría y las preguntas preparadas son avances, no una sustentación realizada. |
-| 25 | 🟡 | Pruebas finales | Pasaron 24 pruebas base, 5 de mesas, 12 de documentos, 13 de platos, 15 de exploración, 21 de notificaciones y **16 nuevas de reportes académicos**, en sus revisiones respectivas. En esta revisión también pasaron las 8 pruebas existentes de comparativos/demo. Las consultas 1–10 se ejecutaron contra un motor SQL independiente en memoria con equivalentes de funciones MySQL; no es validación del motor MySQL real. Faltan las revisiones visuales nuevas y las pruebas completas por rol y módulos contra MySQL. |
+| 05 | ✅ | Datos de ejemplo coherentes | Semilla de 22 tablas, con experiencias y reserva de cupos de demostración. Se conservaron los identificadores y registros anteriores. La base habitual mantiene 364 reservas de mesas, 352 pedidos, 320 pagos y 672 visitas; tiene seis actividades, tres de ellas próximas, y cero reservas de experiencias nuevas. |
+| 06 | ✅ | Acceso, registro y perfil básico | Registro, inicio y cierre de sesión comprobados con la base académica. Se verificaron la contraseña protegida, el rol y la consulta del perfil de la sesión. |
+| 07 | ✅ | Administrar restaurantes | Se probaron alta, consulta, edición y eliminación con MySQL. El propietario gestiona sus establecimientos, el cliente tiene bloqueados los cambios y el administrador conserva el propietario original al editar. Alta y edición también comprobadas desde el formulario. |
+| 08 | ✅ | Administrar mesas desde pantalla | Alta, consulta, edición y eliminación implementadas en pantalla; API real y permisos comprobados. Se adaptó la edición de capacidad a grupos con varias mesas y el servidor comprueba el propietario. Las cuatro operaciones desde pantalla se comprobaron en el punto 25 con cuenta administradora. |
+| 09 | ✅ | Administrar platos desde pantalla | Creación, consulta, edición, disponibilidad, búsqueda y paginación implementadas. Las cuatro operaciones se comprobaron en API real: se elimina un plato sin historial, se bloquea al propietario ajeno y se conserva el detalle del pedido al desactivar un plato usado. Formulario y filtros tienen comprobaciones de interfaz/demo. |
+| 10 | ✅ | Reglas de las reservas | Varias mesas del mismo restaurante, capacidad, cruces y aforo simultáneo comprobados. La edición real conserva las dos asignaciones y el identificador; la eliminación autorizada retira las filas del puente. Se rechazan cambios de estado no autorizados. La duración de dos horas sigue pendiente de confirmación académica. |
+| 11 | ✅ | Pedidos de comedor y domicilio | Recorrido real desde la interfaz con los tres perfiles. Comedor pasa a Servir y domicilio pasa por Despachar y Entregar. Se exige dirección para domicilio y los importes se calculan con el menú. Se probaron cambios de estado y el rechazo de transiciones incompatibles. |
+| 12 | ✅ | Reportes y gráficas | Los 12 reportes ejecutaron en MySQL sobre el esquema actualizado. Reservas por zona cuenta cada reserva una sola vez aunque use varias mesas. Ingresos por restaurante usa el catálogo de estados. |
+| 13 | ✅ | Exportación de reportes | Se descargaron los doce reportes desde la interfaz con MySQL y se revisaron visualmente sus 14 páginas: títulos, datos, criterios y continuación de tablas. Las gráficas de 6, 9 y 10 están en la aplicación; incluirlas dentro del PDF no se identificó como requisito expreso. |
+| 14 | ✅ | Comprobantes y factura | Descarga desde la interfaz con MySQL y revisión visual de los PDF. El comprobante muestra las dos mesas y seis comensales. La factura conserva los importes del pedido. Se mantiene la protección contra vistas previas vacías o antiguas. |
+| 15 | ✅ | Permisos de clientes y propietarios | Se probaron perfiles de cliente, propietario y administrador. Reservas y pedidos del propietario consultan sus restaurantes reales en MySQL. Los reportes del propietario quedan limitados a sus establecimientos. Los reportes generales de clientes, VIP y accesos se reservan al administrador. |
+| 16 | ✅ | Coherencia de los dos modelos | Blanco: 20 entidades con identificador propio y 3 subtipos de Usuario (23 rectángulos), 88 atributos, 29 relaciones de negocio y una jerarquía total/disjunta. Cliente, PropietarioRestaurante y Administrador se almacenan en usuarios mediante tipo_usuario; no añaden tablas. Se contrastaron las 22 tablas y 31 FK de Oracle/schema.sql con la metadata de la base. Reglas originales de EERCASE: cero incumplimientos. Se conservaron exactamente las posiciones de las figuras organizadas por el usuario, se retiraron los cinco puentes equivocados y se añadieron las conexiones nativas de herencia. Imagen exportada desde EERCASE y copia de entrega actualizadas en sus mismas rutas. Explicación en Herencia_usuarios.md. Integrar el documento queda en 22. |
+| 17 | ✅ | Explorar antes de registrarse | Clic en imagen o nombre de la tarjeta abre la información del café sin registro. Las fotos principales asociadas a un café también abren su información. Solo Reservar exige acceso/registro y conserva el restaurante. Filtros y galería de Sorrento conservados; Sorrento sigue sin un ID de reserva inventado. Los cuatro restaurantes de la base mantienen sus reservas. Pasaron 45 pruebas dirigidas y catorce comprobaciones de navegador con MySQL, sin escrituras a la API. |
+| 18 | ✅ | Experiencias gastronómicas | Publicar/editar actividades, consultar y filtrar, reservar/cancelar cupos y registrar pago recibido en restaurante. Probados concurrencia del último cupo, precio histórico, reintentos, cancelaciones y permisos. Recorrido de cliente, propietario y administrador comprobado en pantalla. Migración aplicada conservando los datos. Guía en Experiencias_gastronomicas.md. |
+| 19 | ✅ | Pagos de pedidos | MySQL rechazó un abono superior al saldo y devolvió el mismo pago al reintentar con la misma referencia. Se conserva ABONA directo a Pedido. El cobro sigue siendo simulado. |
+| 20 | ✅ | Notificaciones y recordatorios | Avisos privados, cambios de reserva y recordatorios de próximas 24 horas comprobados, sin duplicados ni avisos de reservas canceladas. El servidor revisa cada minuto mientras está activo. El plazo es fijo; confirmar con la profesora si exige preferencias de anticipación/canal para el requisito de personalización. |
+| 21 | ✅ | Servidor local y MySQL | La migración se aplicó en la base habitual después de respaldarla. Se compararon todas las filas de las 18 tablas anteriores. La aplicación funciona en localhost:3001 con Municipio, catálogos, varias mesas por reserva y recordatorios. |
+| 22 | 🟡 | Documento final | Borrador previo con Municipio, varias mesas, catálogos y ABONA. Falta incorporar experiencias, integrar los modelos nuevos y adaptar la entrega a la plantilla oficial. Esta etapa sigue aplazada por indicación del usuario. |
+| 23 | 🟡 | Guardar los últimos avances en GitHub | Publicación en preparación de `avance-2026-11-12`, con la carpeta principal completa hasta el último ajuste de portada. El avance de Luisa se conserva en main; no se fuerza su sustitución. Se revisaron 74 archivos y 53 textos sin hallazgos de claves/tokens; credenciales, configuración local y respaldos quedan excluidos. Las 136 pruebas generales pasaron; dos pruebas MySQL opcionales no se activaron para este guardado. |
+| 24 | ☐ | Aprobación y sustentación | Falta constancia de aprobación de las cuatro tablas y preparar/practicar la explicación de ambos integrantes. Aclarar retiro de planes, alcance del pago simulado, personalización de avisos, turnos de dos horas y criterios de reportes. La asesoría no acredita aprobación final ni sustentación. |
+| 25 | ✅ | Pruebas finales | Cerrado el alcance pendiente: 16 operaciones desde las pantallas (crear, consultar, editar y eliminar restaurantes, mesas, platos y reservas) con cuenta administradora y conexión MySQL en la copia de revisión. Reserva editada conservando dos mesas y eliminación sin filas huérfanas. Cero errores JavaScript observados. Registros temporales retirados; filas anteriores de las 23 tablas idénticas por conteos y hashes. Blanco recargado y validado en EERCASE: panel con 0 problemas. Se conserva la evidencia anterior de 151 pruebas, doce PDF y recorridos de los tres perfiles; no se volvió a ejecutar esa suite sin cambios de código. La práctica de ambos integrantes queda en 24. |
 
-## Orden de trabajo propuesto
+## Recomendaciones de la asesoría del 3 de noviembre
 
-1. **08 y 09 completados en pantalla:** edición de mesas y administración de platos. Las cuatro tablas principales propuestas siguen siendo restaurantes, mesas, platos y reservas; la revisión de sus reglas y permisos en servidor permanece pendiente.
-2. **14: comprobantes y factura completados**, compartiendo los datos entre vista previa y descarga. Se adelantó esta corrección por su alcance acotado mientras se espera la revisión de la profesora.
-3. **17 completado en código y pruebas aisladas:** explorar antes del registro y continuar con el restaurante elegido. Se adelantó por su alcance acotado, siguiendo la indicación de hacer primero los puntos más sencillos.
-4. **15 y 10: permisos y reglas de reservas**, pendientes para una revisión de mayor alcance, con comprobaciones aisladas antes de la integración.
-5. **20 adelantado en su parte sencilla:** listado de notificaciones y permisos de destinatario. Los recordatorios programados siguen pendientes. **18 y 19: experiencias y planes/pagos**, según el alcance académico acordado.
-6. **16 y 22: modelos y documento**, ajustados a lo que quede realmente implementado.
-7. **21 y 25: conexión y prueba integral**, en la jornada que se acuerde; después revisión de reportes y cierre de entrega.
-8. **23 completado con autorización del usuario:** guardado y publicación de los avances actuales en GitHub. Mantener **24: preparación de la sustentación**, actualizando evidencias durante el trabajo.
+Las marcas son aproximadas y corresponden al video `asesoria.mp4`. La profesora revisó primero el modelo blanco y luego el relacional anterior, que todavía mostraba planes.
 
-## Verificación de esta revisión
+| Minuto | Lo que se habló | Qué hacer en GastroTurismo |
+|---|---|---|
+| 1:37–2:45 | La especialidad puede ser única o admitir varias, según la regla que el equipo quiera modelar. | La decisión del equipo fue registrar una especialidad principal por restaurante. El campo actual permite esa regla. |
+| 4:15–4:28 | En el modelo blanco se lee ubicación entre los atributos de Mesa. | Usar ese dato para identificar el sector dentro del restaurante, como terraza o salón. |
+| 7:50–8:40 | Una reserva puede incluir varias mesas y una mesa puede participar en distintas reservas. Se acordó una relación muchos a muchos. | Pasar de `reservas.id_mesa` a `reserva_mesas(id_reserva, id_mesa)` y migrar cada asignación existente. Permitir seleccionar varias mesas del mismo restaurante y validar capacidad conjunta y disponibilidad. Adaptar la asistencia, los reportes y el comprobante. |
+| 13:30–14:30 | La profesora sugirió quitar los subtipos de pago sin atributos si el caso prescinde de ellos y conectar ABONA directamente con Pago. También revisó cómo identificar el medio utilizado. | ABONA ya está conectada a Pago y Pedido. El medio ya se identifica con `pagos.id_metodo` y `metodos_pago`. Confirmar el alcance final de planes y pago en línea, porque la guía general los menciona y el equipo decidió retirar los planes. |
+| 14:30–15:10 | Pidió organizar el diagrama para que se pueda leer en el documento. | Aplicar la letra ya uniformada del EERCASE al exportar, revisar la legibilidad del plano completo y sustituir las exportaciones previas. |
+| 15:30–16:40 | Pidió separar ciudad en una tabla y, al hablar del alcance local, usar Municipio. Departamento aparece en la explicación de un alcance nacional. | Crear `municipios` y enlazar `zonas.id_municipio` con ese catálogo. En la base anterior `zonas.ciudad` guardaba el nombre como texto. La dirección exacta sigue en Restaurante y la ubicación interna de una mesa sigue en Mesa. Ejemplo del propio conjunto de datos: Salento → Valle de Cocora → restaurante → mesa. |
+| 22:30–22:51 | En el cierre enumera tipo de servicio, estado del pedido, estado de la reserva y ciudad o departamento entre los grupos que quiere separar. | Crear `tipos_servicio`, `estados_pedido` y `estados_reserva`, con claves foráneas desde las tablas que los usan. Partir de los valores actuales. El tipo de servicio del pedido describe comedor o domicilio. Los estados siguen describiendo el avance de su pedido o reserva. |
+
+## Correcciones en el cuadro blanco y el amarillo
+
+Los archivos de trabajo son `GastroTurismo_revisado.eer` en EERCASE y `GastroTurismo_Oracle_revisado` en Oracle Data Modeler. Se comprueba cada regla del cuadro blanco contra las claves, las relaciones y las restricciones del amarillo. La aplicación se verifica con esa misma regla.
+
+| Estado | Corrección | Blanco · EERCASE | Amarillo · Oracle | Base y aplicación |
+|---|---|---|---|---|
+| ✅ | Pago de pedido y ajuste sin planes | ABONA une Pago y Pedido. | `pagos.id_pedido` obligatorio y `pagos.id_metodo` identifica el medio. | Se comprobaron saldo y reintento con la misma referencia. |
+| ✅ | Ubicación de la mesa | Ubicación es un atributo de Mesa. | `mesas.ubicacion` guarda el sector dentro del restaurante. | La pantalla de mesas registra valores como salón o terraza. |
+| ✅ | Municipio | Municipio 1:N Zona turística. | `zonas.id_municipio` referencia a `municipios`. | Se conservaron los cinco municipios y el reporte por zona usa el catálogo. |
+| ✅ | Reserva de varias mesas | Reserva–Mesa N:M. La reserva requiere al menos una mesa. | `reserva_mesas` tiene clave compuesta de reserva y mesa. | La migración mantuvo las 364 asignaciones. Se probó la reserva de dos mesas y el rechazo de un cruce. |
+| ✅ | Tipo de servicio | TipoServicio 1:N Pedido. | `pedidos.id_tipo_servicio` referencia al catálogo. | Se conservaron comedor y domicilio. Domicilio exige dirección. |
+| ✅ | Estado del pedido | EstadoPedido 1:N Pedido. | `pedidos.id_estado_pedido` referencia al catálogo. | Se conservaron los cuatro estados. Las transiciones dependen del servicio. |
+| ✅ | Estado de la reserva | EstadoReserva 1:N Reserva. | `reservas.id_estado_reserva` referencia al catálogo. | Pendiente y confirmada bloquean las mesas en el horario. Se conservaron los cuatro estados. |
+| ✅ | Experiencias y pago presencial | Experiencia y ReservaExperiencia, con relaciones a Restaurante, Usuario, MetodoPago y usuario cobrador. | Dos tablas incorporadas al diseño principal; precio confirmado y campos de pago presencial. | Cupos, permisos y cobro comprobados; coincidencia de las 31 FK principales con la base. |
+| 🟡 | Presentación para entregar | Imagen vigente con 20 entidades independientes y 3 subtipos de Usuario; archivo validado con las reglas originales de EERCASE. | PDF vigente de 22 tablas y 31 claves foráneas; diseño abierto y guardado por Oracle. | Exportaciones revisadas, EERCASE recargado con 0 problemas y copias de Proy final actualizadas. Falta integrar en el documento final. |
+
+## Plan de trabajo
+
+### 1. Preparar el proyecto y recuperar la base · 21, 23 y 25
+
+- [x] Guardar el punto de partida del código y los modelos vigentes. Se verificó el archivo de respaldo de 130 archivos y se registró el estado local de Git frente al avance de Luisa.
+- [x] Restaurar en una instancia separada el respaldo verificado del 3 de noviembre. La copia incorpora la migración sin planes y coincide con la comprobación del 5 de noviembre, incluidas las 364 reservas, los 352 pedidos y los 320 pagos de pedidos.
+- [x] Conectar GastroTurismo a la copia y repetir las pruebas de integración. Pasaron 130 pruebas y el iniciador habitual confirmó conexión activa. El respaldo del proyecto, los ajustes locales anteriores y los resultados se guardaron en `work/mysql-recuperacion-20261110` del espacio de trabajo.
+
+### 2. Incorporar las correcciones de los modelos · 16 y 10
+
+- [x] Municipio incorporado en los dos modelos y en la base de ensayo. Se conservaron Armenia, Buenavista, Filandia, Montenegro y Salento.
+- [x] Catálogos de servicio y estados incorporados en los dos modelos, la base y la aplicación.
+- [x] Relación Reserva–Mesa N:M incorporada en ambos modelos y comprobada con una reserva de dos mesas.
+- [x] Datos de demostración, base y reportes comprobados con las nuevas relaciones.
+- [x] Atributos, identificadores y participación contrastados. Reserva–Visita elige la referencia en Visita; 11 campos de experiencias se marcan obligatorios como en el esquema. Validación original de EERCASE: cero incumplimientos.
+
+### 3. Cerrar las cuatro tablas principales · 07–10 y 15
+
+- [x] **Restaurantes.** Ciclo y permisos probados con MySQL. Alta y edición comprobadas en la interfaz.
+- [x] **Mesas.** Ciclo probado y validación del efecto de capacidad y mantenimiento sobre reservas activas.
+- [x] **Platos: creación, consulta y edición.** Comprobadas con MySQL; formulario y disponibilidad también tienen pruebas de interfaz/demo.
+- [x] **Platos: cierre de eliminación en API real.** Eliminación autorizada sin historial, rechazo por pedidos vinculados y conservación del detalle al desactivar comprobados con MySQL. La demostración completa desde botones queda en el ensayo final.
+- [x] **Reservas: alta, consulta y reglas de disponibilidad.** Varias mesas, capacidad, aforo simultáneo, fechas y cruce de horarios comprobados con MySQL.
+- [x] **Reservas: modificación y eliminación.** Edición y eliminación autorizadas, conservación de las dos mesas al editar y limpieza del puente al eliminar comprobadas con MySQL. Confirmar académicamente el turno de dos horas en el punto 24.
+- [x] **Permisos.** Probados cliente, propietario y administrador, consultas privadas, restaurantes del propietario, cambios de estado y reportes limitados por servidor. Las operaciones restantes se completan en el punto 25.
+
+### 4. Definir y completar los flujos pendientes · 11, 18–20 y 24
+
+- [ ] Dejar por escrito los requerimientos de las cuatro tablas principales y confirmar con la profesora el alcance de experiencias, recordatorios y pago en línea. Registrar la decisión del equipo sobre los planes junto con la respuesta de la profesora.
+- [x] **Pedidos y domicilio.** Recorrido de cliente y propietario comprobado, dirección obligatoria y transiciones de estado autorizadas.
+- [x] **Abonos simulados.** Saldo máximo y reintento con referencia comprobados. El alcance de pago online y la exclusión de planes siguen pendientes de aclaración académica.
+- [x] **Recordatorios.** Avisos privados de próximas 24 horas y cambios de reserva probados, con lectura y protección frente a duplicados. Personalización de plazo/canal pendiente de aclaración.
+- [x] **Experiencias.** Publicación, consulta, reserva/cancelación de cupos y pago presencial integrados; permisos y recorrido comprobados sin incorporar planes ni mezclar cambios remotos.
+
+### 5. Completar la entrega y la demostración · 16, 22 y 25
+
+- [x] Exportar el blanco y el amarillo vigentes a docs/modelos y revisar sus exportaciones.
+- [x] Comprobar la vista en los editores y sustituir las copias de entrega. Oracle revisado y EERCASE recargado/validado con 0 problemas. La legibilidad dentro del Word se comprueba al integrar el documento en 22.
+- [ ] Actualizar el Word en la plantilla de entrega con el caso de estudio, los requerimientos acordados, los modelos, los datos de ejemplo y las evidencias. El borrador ya describe el alcance sin planes y ABONA directo.
+- [x] Conservar los resultados del conjunto de pruebas y los recorridos de interfaz. Reparto 3/4/3 de reportes y tres gráficas comprobados.
+- [x] Completar las operaciones pendientes en API real y revisar los doce PDF, incluidas sus continuaciones de página.
+- [ ] Vista de los modelos dentro de los editores y ensayo completo de las cuatro operaciones desde las pantallas; repetir la regresión si hay cambios nuevos.
+
+### 6. Reunir el trabajo del equipo y sustentar · 23 y 24
+
+- [ ] Guardar los avances locales, comparar el commit de Luisa e incorporar los cambios acordados. Probar la versión reunida y publicar el código, el esquema, las semillas de ejemplo y la documentación que corresponda.
+- [ ] Ensayar con ambos integrantes el recorrido desde el problema y el modelo hasta las cuatro tablas y los reportes. Preparar la base de demostración y guardar las evidencias de la entrega.
+
+## Comprobaciones anteriores
+
+### Primera revisión · versión 1
 
 - Lectura del proyecto principal, de los requisitos vigentes y del checklist anterior.
 - Pruebas ejecutadas: `node --test --test-reporter=spec tests/backend.test.js tests/dataset.test.js tests/frontend-reportes.test.js`.
@@ -133,6 +204,17 @@ La conexión con MySQL se deja **para después por indicación del usuario**. El
 
 ## Registro de avances
 
+### Revisión del 3 de noviembre — versión 10
+
+- Se retiran planes del catálogo, formularios, API, generador y semilla. Los pagos exigen pedido, cliente correspondiente y medio válido. Se mantienen reservas, pedidos, mesas, platos, asistencia e ingresos.
+- Se compararon las tablas y todas las relaciones del esquema con el archivo nativo de Oracle actualizado: **15 tablas y 21 FK coincidentes**.
+- Se verificaron los datos contra el respaldo anterior: las otras tablas permanecen idénticas; se conservan IDs de restaurantes y pagos de pedidos. La semilla mantiene 364 reservas, 352 pedidos y 320 pagos de pedidos; siete pagos de planes quedan en el respaldo previo.
+- El navegador adapta los datos antiguos con respaldo previo, sin reiniciar reservas/pedidos. La migración de MySQL tiene inspección predeterminada sin escrituras, respaldo verificado y aplicación explícita; no se ejecutó en la base real.
+- Suite final: `node --test --test-reporter=spec tests/*.test.js`, con prueba real MySQL desactivada: **118 aprobadas, 0 fallidas, 1 omitida (MySQL)**. Se probaron errores de pagos, conservación de almacenamiento, falta de espacio para respaldo, migración simulada para MySQL/MariaDB y regresiones existentes.
+- Respaldo del proyecto previo: `work/app-sin-planes-20261103/proyecto-antes.zip`, en el espacio de esta conversación, fuera del proyecto principal. Evidencia de coherencia y pruebas guardada en esa misma carpeta.
+- Los nuevos cambios permanecen locales. No se abrió la web, no se inició MySQL, no se integraron cambios remotos ni se hicieron commit o push.
+- Paso pendiente: aplicar el cambio sobre una copia respaldada de MySQL y comprobar el recorrido completo. Instrucciones en [Cambio sin planes](Cambio_sin_planes.md).
+
 | Versión | Fecha | Cambio |
 |---|---|---|
 | 1 | 29/10/2026 | Listado inicial actualizado, pendientes diferenciados y 24 pruebas aisladas aprobadas. |
@@ -144,5 +226,129 @@ La conexión con MySQL se deja **para después por indicación del usuario**. El
 | 7 | 29/10/2026 | Avance de punto 20: notificaciones paginadas y filtradas, marcado controlado y permisos de destinatario. 21 pruebas nuevas aprobadas; recordatorios programados pendientes. Avance local, sin navegador ni Git. |
 | 8 | 29/10/2026 | Avance de punto 12: clasificación académica validada, SQL mostrado alineado y cálculos demo corregidos. 16 pruebas nuevas aprobadas, más 8 de comparativos. MySQL pendiente; avance local, sin navegador ni Git. |
 | 9 | 29/10/2026 | Punto 23: guardado de avances actuales en Git/GitHub autorizado por el usuario, con respaldo local verificado y archivos privados excluidos. |
+| 10 | 03/11/2026 | Se adapta la aplicación al alcance sin planes, conservando pedidos/reservas y haciendo obligatoria la relación Pago-Pedido. Esquema alineado con Oracle: 15 tablas y 21 FK. 118 pruebas aisladas aprobadas; aplicación del cambio en MySQL y publicación pendientes. |
+| 11 | 05/11/2026 | Se verifican los modelos abiertos y el ajuste aplicado en la base principal. 130 pruebas aprobadas. La base conserva las 15 tablas principales y tres tablas anteriores de experiencias y recordatorios. |
+| 12 | 10/11/2026 | Auditoría de los modelos, código y guía. Se incorpora la asesoría con Municipio, Reserva–Mesa y catálogos pendientes. Pasaron 118 pruebas aisladas y se verificó la integridad del respaldo. El arranque de MariaDB quedó pendiente por errores de InnoDB. |
+| 13 | 10/11/2026 | Matriz de correspondencia entre EERCASE, Oracle, la base y la aplicación. Se organizan los 13 puntos abiertos en etapas con comprobaciones para cerrar cada una. |
+| 14 | 10/11/2026 | Copia de MariaDB restaurada y conectada a GastroTurismo. Se verifican los registros y las 130 pruebas pasan. Se cierra el punto 21 y queda lista la base para Municipio. |
+| 17 | 10/11/2026 | Trazabilidad contra las siete páginas de la guía, consulta de la base habitual y revisión de evidencia. Se identifican copias antiguas de modelos, decisiones académicas pendientes y operaciones concretas por comprobar. Se actualizan las casillas antiguas del plan sin declarar el proyecto completo. |
+| 18 | 11/11/2026 | Experiencias con cupos y pago presencial integradas y migradas conservando las 23 tablas anteriores. Ambos modelos ampliados y contrastados: 20 entidades, 22 tablas y 31 FK. Copias de entrega actualizadas en las mismas rutas. Operaciones pendientes de API, recorrido público y doce PDF comprobados. |
+| 19 | 11/11/2026 | Recuperación del mismo diseño de Oracle y comprobación visual de sus 22 tablas y 31 FK. Se corrigieron 15 columnas con referencias de tipo incompletas, se guardó desde Oracle y se renovó el PDF. EERCASE continúa pendiente de revisión visual por la ventana minimizada que el control no puede restaurar. |
+| 21 | 11/11/2026 | Punto 25 cerrado: 16 operaciones CRUD desde pantalla con MySQL en copia de revisión, cero errores JavaScript, limpieza de registros temporales y filas anteriores de las 23 tablas conservadas. EERCASE recargado y validado en la interfaz con 0 problemas. Sin modificaciones del código ni publicación en Git. |
+| 20 | 11/11/2026 | Cierre de coherencia del punto 16. Blanco contrastado a nivel de atributos, claves, nulabilidad y relaciones. Corregidos RG11 en Reserva–Visita y 11 campos obligatorios de experiencias. Las reglas originales de EERCASE pasan sin incumplimientos. Misma copia de entrega sincronizada; recarga de la vista pendiente en 25 por fallo de activación de ventana. Sin cambios en la aplicación, datos o Git. |
 
 Al terminar una tarea se conserva su ID, se actualiza su estado con la comprobación realizada y se vuelve a mostrar el listado vigente al usuario. No se marca terminado lo que solo esté propuesto o exista en otra copia del proyecto.
+
+## Comprobación del 10 de noviembre en la versión 16
+
+Se corrigió el uso de los restaurantes ficticios del navegador para filtrar los registros reales del propietario. Se añadieron validaciones de entrada en el servidor, protección de las reservas al cambiar capacidades, control del aforo simultáneo y avisos de cambios de reserva. El cambio de sesión limpia carrito, datos de reportes y vistas previas.
+
+Los permisos de reportes se aplican en el servidor y en la interfaz. El administrador conserva los doce reportes. El propietario consulta los reportes 1, 3, 4, 5, 6, 7, 8, 10 y 11 sobre sus restaurantes. El cliente consulta sus reservas, pedidos y documentos desde las secciones correspondientes.
+
+Los recordatorios aparecen en la campana durante las 24 horas previas a la reserva. Se producen mientras el servidor está activo y se derivan de las reservas y notificaciones existentes. Se conservó el modelo de 20 tablas principales. La hora del aviso quedó fijada por criterio de implementación y puede ajustarse si la profesora pide otra anticipación.
+
+El respaldo definitivo, la verificación de migración, los resultados de las 137 pruebas, las 12 comprobaciones de interfaz y los PDF revisados se conservaron fuera del repositorio en `work/revision-flujos-20261110-214124` del espacio de trabajo. Los registros creados para las pruebas se retiraron al terminar.
+
+## Comprobación del 11 de noviembre — versión 18
+
+Se integraron experiencias con publicación y edición por restaurante, filtros y paginación, reserva/cancelación de cupos y recepción de pago presencial. Se conserva el precio confirmado, se evita el sobrecupo ante solicitudes simultáneas y las referencias impiden duplicar reservas al reintentar. Los avisos son privados. Los cupos de actividades se controlan por separado del servicio de mesas; el alcance de aforo conjunto queda para confirmar con la profesora.
+
+La suite configurada contra la copia MySQL terminó con **151 pruebas aprobadas, cero fallidas y cero omitidas**. Se repitieron las 12 comprobaciones anteriores y se añadieron siete de experiencias/exploración, con cero errores JavaScript observados. Los doce PDF de reportes se descargaron desde la interfaz y sus 14 páginas se revisaron visualmente.
+
+Se comprobó una instalación nueva y la repetición de la migración. Antes de aplicarla en la base habitual se hizo otro respaldo y se guardaron las filas anteriores. La comparación confirmó la conservación de los registros de las 23 tablas. Se incorporaron tres próximas actividades, sin reservas ni cobros nuevos de ejemplo en esta base.
+
+EERCASE, Oracle, schema.sql y la base coinciden en sus relaciones principales: **20 entidades, 22 tablas y 31 FK**. Las exportaciones y las copias de Proy final se actualizaron en sus mismas rutas después de respaldar los archivos anteriores. La comprobación de vista dentro de los editores sigue pendiente.
+
+Código, registros de prueba, respaldos y evidencia del avance están conservados localmente. Evidencia: `work/experiencias-integracion-20261110` del espacio de esta conversación. La publicación en GitHub continúa pendiente del usuario; no se incorporó el commit remoto de Luisa.
+
+## Comprobación del blanco — versión 20
+
+Se abrió el modelo vigente en EERCASE. El panel conservaba un marcador RG11 de Reserva–Visita: en una relación opcional uno a uno faltaba elegir el extremo que recibe la referencia. Se eligió Visita, de acuerdo con `visitas.id_reserva NULL UNIQUE` en Oracle y el esquema. Se conservaron las cardinalidades y el trazado. Además se corrigieron once propiedades `isNull` de Experiencia y ReservaExperiencia que permitían omitir campos exigidos por la base.
+
+Se ejecutaron sin interfaz las reglas EVL originales incluidas en la instalación de EERCASE, con su motor Epsilon/EMF instalado, leyendo el modelo sin guardarlo ni conectarse a una base. El respaldo previo devuelve una advertencia RG11; el archivo corregido devuelve **cero reglas incumplidas**. La comparación adicional comprueba los 88 atributos, las claves identificadoras, nulabilidad, participación, puentes y las 31 referencias de Oracle, schema.sql y la metadata guardada de la base habitual. La exportación blanca se revisó visualmente y la copia de entrega es idéntica al nativo corregido.
+
+La generación automática de SQL de EERCASE devolvió «Operation failed» desde su servicio de transformación externo. Ese resultado no se usó ni se ejecutó en la base. Después falló la activación de la ventana con «failed to activate captured window». Por ello no se afirma que el panel de problemas ya se haya actualizado: recargar el modelo y retirar el marcador antiguo mediante una nueva validación queda en 25. Evidencia y respaldos: `work/revision-modelos-20261111` del espacio de esta conversación. No se modificó código, datos ni Git.
+
+## Cierre del punto 25 — versión 21
+
+Se completaron las cuatro operaciones desde los formularios y botones de restaurantes, mesas, platos y reservas con una cuenta administradora temporal, sobre gastronomia_turistica_academica_revision_20261110_2. Las 16 comprobaciones terminaron aprobadas, sin errores JavaScript. La edición de la reserva conservó ambas mesas y la eliminación retiró sus asignaciones del puente. Se revisaron visualmente las capturas de menú y reserva editados.
+
+Los primeros ensayos requirieron ajustar las esperas del comprobador a los formularios asíncronos y animados y seleccionar la categoría obligatoria del plato. No se identificó un fallo de la aplicación que exigiera cambios de código. Cada ensayo retiró sus registros temporales y verificó que las filas anteriores de las 23 tablas seguían idénticas por conteos y hashes. No se modificó la base habitual.
+
+Se cerró y recargó el mismo archivo blanco en EERCASE, se ejecutó Validate y el panel de problemas quedó en 0 items. La salida SQL fallida de la comprobación anterior se retiró del proyecto de EERCASE y se conservó como evidencia fuera del proyecto. La copia de entrega sigue idéntica al nativo. Evidencia: work/revision-final-20261111 del espacio de esta conversación, resultado-crud.json y validacion-eercase-pantalla.json. No se ejecutaron operaciones de Git.
+
+Este cierre cubre el alcance comprobado; las 151 pruebas y los PDF anteriores siguen como evidencia de su ejecución previa. El ensayo personal de Jaider y Luisa y las decisiones académicas pendientes permanecen en el punto 24.
+
+## Organización visual del blanco — versión 22
+
+Por solicitud del usuario se reorganizó el mismo EERCASE de 20 entidades y 29 relaciones. Se alinearon entidades y atributos en cuatro columnas, se separaron los puntos de entrada/salida y se trazaron las relaciones con giros rectos por espacios entre figuras. Se ajustó el óvalo del identificador más largo y se conservaron las fuentes legibles del nativo. Las comprobaciones geométricas no encontraron figuras superpuestas ni líneas sobre figuras ajenas. Persisten cruces entre conexiones en algunas zonas; no se alteraron relaciones para eliminarlos.
+
+La sección semántica del XML es idéntica a la del respaldo: atributos, identificadores, cardinalidades, participación y elección de Reserva–Visita permanecen intactos. Se abrió y validó el nativo en EERCASE con 0 problemas y se dejó la vista general mediante Zoom to Fit, al 12%; puede ampliarse para leer los detalles. Se actualizaron las imágenes vigentes y GastroTurismo_sin_planes.eer en las mismas rutas. Respaldos y evidencia: work/orden-blanco-20261111. Los estados de los 25 puntos no cambian. No se modificó el amarillo, la base, la aplicación ni Git.
+
+## Segunda distribución visual del blanco — versión 23
+
+Tras la inconformidad del usuario con el primer arreglo se probó una nueva distribución antes de aplicarla. Usuario y Restaurante quedaron contiguos en el centro; las entidades conectadas se situaron alrededor. La longitud total de los recorridos se redujo de 142.760 a 87.740 unidades (38,5 %) y los giros de 194 a 166. No se afirma que desaparezcan todos los cruces: se acortaron y despejaron los recorridos sin retirar relaciones.
+
+Se mantuvieron las 20 entidades, 88 atributos y 29 relaciones, con la sección semántica del archivo idéntica al respaldo. Las comprobaciones no encontraron figuras superpuestas, líneas atravesando figuras ajenas ni nombres fuera de sus figuras. Las reglas originales de EERCASE pasaron y Validate desde la interfaz mostró 0 problemas. Se guardó en el mismo archivo y se actualizaron las imágenes y la copia de entrega existentes.
+
+El diseño previo al primer arreglo permanece respaldado en work/orden-blanco-20261111/antes.eer; el primer arreglo se conserva en work/orden-blanco-segundo-20261111/antes.eer. El usuario puede revisar la segunda propuesta abierta y efectuar sus ajustes manuales. Evidencia: work/orden-blanco-segundo-20261111/revision.json. No se modificó el amarillo, la base, la aplicación ni Git. Los estados del listado siguen en 22 comprobados, 2 parciales y 1 pendiente.
+
+## Herencia correcta de Usuario — versión 24
+
+El usuario aclaró que las lunitas eran las conexiones nativas de herencia. Se retiraron únicamente los cinco puentes visuales añadidos por la interpretación equivocada y se restauraron los tramos originales de esas tres líneas. Se conservó la distribución manual del usuario: ninguna figura ni etiqueta anterior cambió de posición.
+
+Se añadió debajo de Usuario una jerarquía total y disjunta con Cliente, PropietarioRestaurante y Administrador. Los tres subtipos heredan id_usuario y los demás atributos; la transformación relacional usa la tabla usuarios y el discriminador tipo_usuario. El blanco tiene 23 entidades dibujadas (20 con identificador propio y 3 subtipos), 88 atributos, 29 relaciones y 4 enlaces de herencia. El amarillo conserva 22 tablas y 31 FK, con correspondencia comprobada.
+
+Las reglas originales de EERCASE terminaron con cero incumplimientos; se revisaron en la aplicación las tres conexiones curvas de especialización y la imagen nativa exportada. Se actualizaron las copias de entrega y el JPG del repositorio en las mismas rutas. Evidencia y respaldo: work/herencia-usuario-20261111. No se modificaron datos, código de la aplicación ni Git. Los 25 estados siguen en 22 comprobados, 2 parciales y 1 pendiente.
+
+## Entrada pública antes del registro — versión 25
+
+La exploración pública ya existía, pero el acceso inicial seguía mostrando el formulario de contraseña. Se cambió la entrada sin sesión al catálogo público desde el HTML y la inicialización, manteniendo el ingreso directo al panel cuando ya hay una sesión válida. El encabezado permite iniciar sesión o crear cuenta y ambos formularios permiten volver a explorar. Reservar continúa pidiendo autenticación y conserva el restaurante elegido. Cerrar sesión regresa al catálogo y limpia las notificaciones privadas. Se conserva la información de demostración en el formulario de acceso, como había solicitado el usuario.
+
+Verificación dirigida: 46 pruebas aprobadas, cero fallidas y cero omitidas, sobre exploración, autenticación, permisos y notificaciones. Se añadieron cuatro regresiones de entrada anónima, selección pendiente, cambio entre acceso/registro y salida al catálogo. La prueba de respuesta tardía de notificaciones se adaptó para retener únicamente esa consulta mientras el catálogo se carga al cerrar sesión.
+
+Ocho comprobaciones desde navegador con MySQL en la copia de revisión: entrada sin cuenta, menú público, acceso al intentar reservar, registro real retomando el restaurante, cierre de sesión, ingreso de cuenta existente retomando la selección, conservación de sesión al recargar y vista móvil con retorno desde Crear cuenta. Cero errores JavaScript observados y cero reservas automáticas. Se retiró la cuenta temporal y se conservaron exactamente las filas anteriores de las 23 tablas, comparadas por conteos y hashes. Las capturas de escritorio y móvil se revisaron visualmente.
+
+Respaldos y evidencia: work/entrada-publica-20261111 del espacio de esta conversación. La base habitual, el servidor, los modelos y Git no se modificaron. La aplicación habitual sirve los archivos estáticos actualizados. Los estados siguen en 22 comprobados, 2 parciales y 1 pendiente.
+
+## Portada visual y Café Sorrento — versión 26
+
+Se aplicó la propuesta visual aprobada por el usuario: titular editorial, fotografía del Cocora sin overlay oscuro, buscador amplio, filtro de municipio y tarjetas compactas con fotografías ilustrativas originales. Los filtros se combinan, respetan tildes y muestran el número de coincidencias. La dirección y el teléfono se conservan al consultar el menú.
+
+Se editaron las ocho capturas proporcionadas de Café Sorrento para retirar la interfaz de Instagram y los avatares/corazones superpuestos. Se incorporaron como un destacado de Armenia con mosaico y galería: anterior/siguiente, navegación circular, flechas del teclado y Escape. Los productos indicados por el usuario se muestran sin inventar precios. El destacado no crea un restaurante ni habilita reservas sin sus datos de operación. Archivos y prompts: Recursos_visuales_inicio.md.
+
+Verificación: 41 pruebas dirigidas aprobadas, cero fallidas y cero omitidas (exploración, acceso/registro, notificaciones, permisos y experiencias). Nueve comprobaciones en navegador contra localhost:3001 conectado a MySQL: portada e imágenes, filtros combinados y botón de búsqueda, menú y contacto, selección de reserva y acceso/registro, ocho fotos y teclado, vistas de 390/320/768 px y archivos servidos actuales. Cero errores JavaScript, imágenes faltantes o escrituras a la API. Se corrigió un pequeño desbordamiento de los controles de la galería a 320 px y se repitió el recorrido completo.
+
+Respaldos de los archivos anteriores y capturas verificadas: work/inicio-visual-20261112 del espacio de esta conversación. No se cambiaron el servidor, la base ni los modelos; no se guardó en Git. El listado conserva 22 comprobados, 2 parciales y 1 pendiente. El documento final, las decisiones de la profesora y la sustentación mantienen sus estados anteriores.
+
+## Letra ampliada y destacados compartidos — versión 27
+
+Se amplió la introducción de portada a 19,2 px en computador y 17,6 px en anchos pequeños; también aumentaron la nota de acceso, los textos del destacado, los filtros y las tarjetas. Café Sorrento se incorporó al listado y a los filtros junto a los cuatro restaurantes de la base, con idéntico formato visual. Ver sabores y Ver fotos conservan la información aportada sin inventar precios ni permitir una reserva sin datos y mesas.
+
+El destacado superior recorre Sorrento, Café La Palma, Cocina del Mirador, Fogón del Guadual y Sabores del Camino, por turnos de nueve segundos. Dispone de anterior/siguiente y pausa. No cambia con el ratón o el foco dentro, con una galería o un menú abierto ni con la página oculta; el temporizador se retira al abrir acceso o el panel. Respeta movimiento reducido y permite navegación manual. Se reservaron alturas iguales para evitar saltos verticales entre lugares.
+
+Verificación: 45 pruebas dirigidas aprobadas y trece comprobaciones en el navegador habitual conectado a MySQL. Se probaron los cinco lugares, cinco imágenes distintas, filtros de Sorrento, ocho fotos, retorno a un menú real, reserva desde tarjeta y destacado, acceso/registro, cambio automático real, pausa, movimiento reducido y tamaños de 320, 390, 768, 1024, 1366 y 1440 px. Cero errores JavaScript, imágenes faltantes o escrituras a la API. Respaldos, capturas y resultados: work/destacados-20261112 del espacio de esta conversación. No se cambiaron la base, el servidor, los modelos ni Git. Los 25 estados conservan 22 comprobados, 2 parciales y 1 pendiente.
+
+## Portada de una pantalla — versión 28
+
+Por indicación del usuario, la portada vuelve a la distribución de su referencia: encabezado, texto y fotografía principal, buscador y tres tarjetas. Se integraron cafetos decorativos transparentes en las esquinas. La foto principal cambia cada cinco segundos entre trece imágenes; las tarjetas se desplazan cada dos segundos, mostrando los cinco lugares por turnos. En celular se muestra una tarjeta a la vez. Hay pausa y flechas para ambos carruseles, protección al interactuar y respeto de movimiento reducido.
+
+Los clics en imagen o nombre de las tarjetas abren información del café sin registro. Las fotografías principales asociadas a un café también abren su ficha. Solo Reservar conduce a acceso/registro, conservando el restaurante elegido. Sorrento conserva sabores y ocho fotografías; no se creó un ID para reservas sin sus datos y mesas. Cómo reservar abre una guía sin extender la portada hacia abajo.
+
+Verificación: 45 pruebas dirigidas y catorce comprobaciones en navegador con MySQL. Portada sin desplazamiento horizontal o vertical ni botones cortados a 1440×900, 1366×768, 1366×620, 1280×600, 1536×864, 1024×768, 390×844 y 320×700. Desplazamientos reales a dos/cinco segundos, trece imágenes, galerías, filtros y paso a reserva comprobados. Cero errores JavaScript, imágenes faltantes o escrituras a la API. Se corrigió un desbordamiento de cuatro píxeles causado por el adorno inferior y se ajustó la herencia tipográfica del titular antes de repetir el recorrido.
+
+Respaldo y evidencia: work/portada-compacta-20261112 del espacio de esta conversación. Diseño y prompt del nuevo recurso en Portada_compacta.md. No se cambiaron base, servidor, modelos o Git. Los estados siguen en 22 comprobados, 2 parciales y 1 pendiente.
+
+## Fotos completas y navegación por puntos — versión 29
+
+Se retiraron de la portada los rótulos blancos sobre las fotos y los controles de pausa/flechas. Se sustituyeron por puntos pequeños inferiores con una posición activa y selección manual. La reproducción automática conserva cinco segundos para fotos y dos para tarjetas. La hoja de la nota se muestra rellena de verde. El crédito de la fotografía del Cocora se trasladó a Cómo reservar.
+
+Las trece fotografías principales se muestran completas y centradas, manteniendo proporción. No se cambian los archivos: se ajustan al marco, con márgenes discretos cuando su proporción difiere. La portada conserva la altura de una pantalla, sin desplazar contenido hacia abajo.
+
+Verificación: 45 pruebas dirigidas aprobadas y cinco grupos de comprobación en navegador conectado a MySQL. Se verificaron las trece fotos, selección y marcado de puntos, ausencia de controles/rótulos anteriores, hoja verde, acceso a Sorrento y menú real, paso a acceso para reservar, movimiento automático y tamaños 1440×900, 1366×620, 1280×600, 390×844 y 320×700. Sin errores JavaScript ni escrituras a la API. Evidencia y respaldo: work/fotos-completas-20261112 del espacio de esta conversación. Base, servidor, modelos y Git sin cambios. Los 25 estados se conservan.
+
+## Fondo fotográfico suave — versión 30
+
+Tras aprobar la propuesta, el usuario autorizó llenar los laterales vacíos con una versión desenfocada de la misma imagen. Se añadió una capa decorativa detrás de la foto: desenfoque de 20 px, saturación moderada y opacidad 0,48. La fotografía central conserva ajuste completo, proporción y nitidez. El fondo cambia con cada una de las trece imágenes y no captura clics ni se anuncia a lectores de pantalla. No se crearon archivos fotográficos adicionales.
+
+Pasaron 45 pruebas dirigidas y los cinco grupos de comprobación de la portada habitual con MySQL. Se verificó la coincidencia entre fondo y foto en las trece posiciones, desenfoque solo de la capa trasera, navegación por puntos, fichas y acceso al reservar, movimiento automático y cinco tamaños de pantalla sin desbordamiento. Cero errores JavaScript y escrituras a la API. Captura del mismo plato señalado por el usuario y evidencia: work/fondo-fotografias-20261112 del espacio de esta conversación. No se modificaron datos, modelos, servidor o Git. Los 25 estados se conservan.

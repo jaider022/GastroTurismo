@@ -9,11 +9,14 @@
 let demoDataset = null;
 const DEMO_NAMESPACE = 'gt_academico_v2:';
 const DEMO_TABLE_KEYS = {
-  zonas: 'gt_zonas', planes_suscripcion: 'gt_planes', metodos_pago: 'gt_metodos',
+  municipios: 'gt_municipios', tipos_servicio: 'gt_tipos_servicio',
+  estados_pedido: 'gt_estados_pedido', estados_reserva: 'gt_estados_reserva',
+  reserva_mesas: 'gt_reserva_mesas', zonas: 'gt_zonas', metodos_pago: 'gt_metodos',
   categorias: 'gt_categorias', usuarios: 'gt_usuarios', restaurantes: 'gt_restaurantes',
   mesas: 'gt_mesas', platos: 'gt_platos', reservas: 'gt_reservas', pedidos: 'gt_pedidos',
   detalle_pedidos: 'gt_detalle_pedidos', pagos: 'gt_pagos', resenas: 'gt_resenas',
-  notificaciones: 'gt_notificaciones', visitas: 'gt_visitas', accesos_sistema: 'gt_accesos_sistema'
+  notificaciones: 'gt_notificaciones', visitas: 'gt_visitas', accesos_sistema: 'gt_accesos_sistema',
+  experiencias: 'gt_experiencias', reservas_experiencias: 'gt_reservas_experiencias'
 };
 const escapeHTML = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 function bogotaToday() {
@@ -45,10 +48,65 @@ function initLocalStorageData(force = false) {
       localStorage.setItem(DEMO_NAMESPACE + key, JSON.stringify(demoDataset[table] || []));
     }
   }
+  migrateDemoWithoutPlans();
   localStorage.setItem(DEMO_NAMESPACE + 'version', String(demoDataset.meta?.version || '2'));
 }
-const getLS = key => JSON.parse(localStorage.getItem(DEMO_NAMESPACE + key) || '[]');
+const readLS = key => JSON.parse(localStorage.getItem(DEMO_NAMESPACE + key) || '[]');
+
+function getLS(key) {
+  const rows = readLS(key);
+  if (key === 'gt_zonas') {
+    const names = new Map(readLS('gt_municipios').map(r => [r.id_municipio, r.nombre_municipio]));
+    return rows.map(z => ({ ...z, ciudad: z.ciudad ?? names.get(z.id_municipio) }));
+  }
+  if (key === 'gt_pedidos') {
+    const services = new Map(readLS('gt_tipos_servicio').map(r => [r.id_tipo_servicio, r.codigo]));
+    const states = new Map(readLS('gt_estados_pedido').map(r => [r.id_estado_pedido, r.codigo]));
+    return rows.map(p => ({ ...p, tipo_servicio: p.tipo_servicio ?? services.get(p.id_tipo_servicio),
+      estado_pedido: p.estado_pedido ?? states.get(p.id_estado_pedido) }));
+  }
+  if (key === 'gt_reservas') {
+    const states = new Map(readLS('gt_estados_reserva').map(r => [r.id_estado_reserva, r.codigo]));
+    const assignments = new Map();
+    for (const { id_reserva, id_mesa } of readLS('gt_reserva_mesas')) {
+      if (!assignments.has(id_reserva)) assignments.set(id_reserva, []);
+      assignments.get(id_reserva).push(id_mesa);
+    }
+    return rows.map(r => {
+      const id_mesas = r.id_mesas ?? (r.id_mesa ? [Number(r.id_mesa)] : assignments.get(r.id_reserva) ?? []);
+      return { ...r, id_mesas, id_mesa: id_mesas[0], estado_reserva: r.estado_reserva ?? states.get(r.id_estado_reserva) };
+    });
+  }
+  return rows;
+}
+
+function demoAvailableTables(restaurant, date, time, excluded) {
+  const start = new Date(date + 'T' + time + '-05:00').getTime();
+  const busy = new Set(getLS('gt_reservas').filter(r => r.id_reserva != excluded &&
+    ['pendiente', 'confirmada'].includes(r.estado_reserva) &&
+    Math.abs(start - new Date(r.fecha_reserva + 'T' + r.hora_reserva + '-05:00').getTime()) < 7200000)
+    .flatMap(r => r.id_mesas));
+  return getLS('gt_mesas').filter(m => m.id_restaurante == restaurant && m.estado !== 'mantenimiento' && !busy.has(Number(m.id_mesa)));
+}
 const setLS = (key, val) => localStorage.setItem(DEMO_NAMESPACE + key, JSON.stringify(val));
+
+// Conserva las reservas y pedidos del navegador y respalda los registros antiguos
+// antes de adaptar exclusivamente restaurantes y pagos al modelo sin membresías.
+function migrateDemoWithoutPlans() {
+  const restaurants = getLS('gt_restaurantes');
+  const payments = getLS('gt_pagos');
+  const hasLegacy = restaurants.some(r => Object.hasOwn(r, 'id_plan') || Object.hasOwn(r, 'nombre_plan')) ||
+    payments.some(p => Object.hasOwn(p, 'id_plan') || !positiveRecordId(p.id_pedido));
+  if (!hasLegacy) return;
+  const backupKey = DEMO_NAMESPACE + 'respaldo_antes_sin_planes';
+  if (localStorage.getItem(backupKey) === null) {
+    localStorage.setItem(backupKey, JSON.stringify({ fecha: bogotaNow(), restaurantes: restaurants, pagos: payments,
+      planes: JSON.parse(localStorage.getItem(DEMO_NAMESPACE + 'gt_planes') || '[]') }));
+  }
+  const withoutPlan = ({ id_plan, nombre_plan, ...record }) => record;
+  setLS('gt_restaurantes', restaurants.map(withoutPlan));
+  setLS('gt_pagos', payments.filter(p => p.id_plan == null && positiveRecordId(p.id_pedido)).map(withoutPlan));
+}
 
 // --------------------------------------------------------------------
 // 3. COMPROBAR CONEXIÓN AL BACKEND REAL
@@ -140,25 +198,24 @@ function simulateLocalStorageAPI(endpoint, options = {}) {
 
     case 'restaurantes':
       let rests = getLS('gt_restaurantes');
+      const { id_plan: ignoredPlan, nombre_plan: ignoredPlanName, ...restaurantData } = body || {};
       if (method === 'GET') {
         const zones = getLS('gt_zonas');
         const users = getLS('gt_usuarios');
-        const plans = getLS('gt_planes');
         return rests.map(r => {
           const z = zones.find(x => x.id_zona == r.id_zona) || {};
           const u = users.find(x => x.id_usuario == r.id_propietario) || {};
-          const p = plans.find(x => x.id_plan == r.id_plan) || {};
-          return { ...r, nombre_zona: z.nombre_zona, ciudad: z.ciudad, nombre_propietario: u.nombre, nombre_plan: p.nombre_plan };
+          return { ...r, nombre_zona: z.nombre_zona, ciudad: z.ciudad, nombre_propietario: u.nombre };
         });
       }
       if (method === 'POST') {
-        const newR = { id_restaurante: Date.now(), ...body };
+        const newR = { id_restaurante: Date.now(), ...restaurantData };
         rests.push(newR);
         setLS('gt_restaurantes', rests);
         return newR;
       }
       if (method === 'PUT') {
-        rests = rests.map(r => r.id_restaurante == param ? { ...r, ...body } : r);
+        rests = rests.map(r => r.id_restaurante == param ? { ...r, ...restaurantData } : r);
         setLS('gt_restaurantes', rests);
         return { message: 'Actualizado' };
       }
@@ -227,83 +284,66 @@ function simulateLocalStorageAPI(endpoint, options = {}) {
       }
       break;
 
-    case 'reservas':
-      let reservas = getLS('gt_reservas');
+    case 'reservas': {
+      const reservations = getLS('gt_reservas');
+      const tables = getLS('gt_mesas');
+      const restaurants = getLS('gt_restaurantes');
+      const users = getLS('gt_usuarios');
+      const allowed = (r, restaurant) => !currentUser || currentUser.tipo_usuario === 'administrador' ||
+        (currentUser.tipo_usuario === 'cliente' ? r.id_usuario == currentUser.id_usuario : restaurant?.id_propietario == currentUser.id_usuario);
+      const assigned = r => tables.filter(m => r.id_mesas.includes(Number(m.id_mesa)));
+      const restaurantFor = r => restaurants.find(x => x.id_restaurante == assigned(r)[0]?.id_restaurante);
+      const target = reservations.find(r => r.id_reserva == (params.get('id_reserva') || param) && allowed(r, restaurantFor(r)));
       if (method === 'GET') {
-        const users = getLS('gt_usuarios');
-        const mesas = getLS('gt_mesas');
-        const rests = getLS('gt_restaurantes');
-        return reservas.map(res => {
-          const u = users.find(x => x.id_usuario == res.id_usuario) || {};
-          const m = mesas.find(x => x.id_mesa == res.id_mesa) || {};
-          const r = rests.find(x => x.id_restaurante == m.id_restaurante) || {};
-          return {
-            ...res,
-            nombre_usuario: u.nombre,
-            correo_usuario: u.correo,
-            numero_mesa: m.numero_mesa,
-            ubicacion_mesa: m.ubicacion,
-            nombre_restaurante: r.nombre,
-            id_restaurante: r.id_restaurante
-          };
-        }).sort((a,b) => b.fecha_reserva.localeCompare(a.fecha_reserva));
+        if (param === 'disponibilidad') return demoAvailableTables(params.get('id_restaurante'), params.get('fecha'), params.get('hora'), target?.id_reserva);
+        return reservations.filter(r => allowed(r, restaurantFor(r))).map(r => {
+          const user = users.find(u => u.id_usuario == r.id_usuario);
+          const restaurant = restaurantFor(r);
+          const selected = assigned(r);
+          return { ...r, nombre_usuario: user?.nombre, correo_usuario: user?.correo,
+            numero_mesa: selected.map(m => m.numero_mesa).join(', '),
+            ubicacion_mesa: [...new Set(selected.map(m => m.ubicacion))].join(', '),
+            id_restaurante: restaurant?.id_restaurante, nombre_restaurante: restaurant?.nombre };
+        }).sort((a, b) => b.fecha_reserva.localeCompare(a.fecha_reserva));
       }
-      if (method === 'POST') {
-        const newRes = { id_reserva: Date.now(), ...body, estado_reserva: body.estado_reserva || 'pendiente' };
-        reservas.push(newRes);
-        setLS('gt_reservas', reservas);
-
-        // Bloquear mesa
-        let mList = getLS('gt_mesas');
-        mList = mList.map(m => m.id_mesa == body.id_mesa ? { ...m, estado: 'reservada' } : m);
-        setLS('gt_mesas', mList);
-
-        // Crear notificación
-        let notifications = getLS('gt_notificaciones');
-        notifications.push({
-          id_notificacion: Date.now(),
-          mensaje: `Tu reserva para el día ${body.fecha_reserva} a las ${body.hora_reserva} ha sido registrada.`,
-          fecha_envio: new Date().toISOString(),
-          leido: false,
-          id_usuario: body.id_usuario
-        });
-        setLS('gt_notificaciones', notifications);
-
-        return newRes;
-      }
-      if (method === 'PUT') {
-        reservas = reservas.map(res => {
-          if (res.id_reserva == param) {
-            // Actualizar mesa antigua
-            let mList = getLS('gt_mesas');
-            if (body.id_mesa_anterior && body.id_mesa_anterior != body.id_mesa) {
-              mList = mList.map(m => m.id_mesa == body.id_mesa_anterior ? { ...m, estado: 'disponible' } : m);
-            }
-            if (body.estado_reserva === 'cancelada' || body.estado_reserva === 'finalizada') {
-              mList = mList.map(m => m.id_mesa == body.id_mesa ? { ...m, estado: 'disponible' } : m);
-            } else {
-              mList = mList.map(m => m.id_mesa == body.id_mesa ? { ...m, estado: 'reservada' } : m);
-            }
-            setLS('gt_mesas', mList);
-            return { ...res, ...body };
-          }
-          return res;
-        });
-        setLS('gt_reservas', reservas);
-        return { message: 'Actualizada' };
-      }
+      if (method !== 'POST' && !target) throw new Error('Reserva no encontrada.');
       if (method === 'DELETE') {
-        const target = reservas.find(r => r.id_reserva == param);
-        if (target) {
-          let mList = getLS('gt_mesas');
-          mList = mList.map(m => m.id_mesa == target.id_mesa ? { ...m, estado: 'disponible' } : m);
-          setLS('gt_mesas', mList);
-        }
-        reservas = reservas.filter(r => r.id_reserva != param);
-        setLS('gt_reservas', reservas);
+        if (currentUser?.tipo_usuario === 'cliente' && target.estado_reserva !== 'pendiente') throw new Error('Solo se pueden eliminar reservas pendientes.');
+        if (getLS('gt_visitas').some(v => v.id_reserva == param)) throw new Error('Esta reserva tiene una visita registrada.');
+        setLS('gt_reservas', reservations.filter(r => r.id_reserva != param));
         return { message: 'Eliminada' };
       }
+      if (method === 'POST' || method === 'PUT') {
+        const id_mesas = [...new Set((body.id_mesas ?? (body.id_mesa ? [body.id_mesa] : target?.id_mesas ?? [])).map(Number))].sort((a, b) => a - b);
+        const next = { ...target, ...body, id_mesas, id_mesa: id_mesas[0], id_reserva: target?.id_reserva ?? Date.now(),
+          id_usuario: target?.id_usuario ?? (currentUser?.tipo_usuario === 'cliente' ? currentUser.id_usuario : body.id_usuario),
+          estado_reserva: body.estado_reserva ?? target?.estado_reserva ?? 'pendiente' };
+        const selected = assigned(next);
+        const restaurant = restaurantFor(next);
+        if (!restaurant || selected.length !== id_mesas.length || selected.some(m => m.id_restaurante != restaurant.id_restaurante)) throw new Error('Selecciona mesas del mismo restaurante.');
+        if (!allowed(next, restaurant)) throw new Error('No tienes acceso a esta reserva.');
+        const capacity = Math.min(Number(restaurant.capacidad_total) || Infinity, selected.reduce((sum, m) => sum + Number(m.capacidad), 0));
+        if (!Number.isInteger(Number(next.cantidad_personas)) || next.cantidad_personas < 1 || next.cantidad_personas > capacity) throw new Error('La cantidad de personas supera la capacidad de las mesas seleccionadas.');
+        const active = ['pendiente', 'confirmada'];
+        const transitions = { pendiente: ['confirmada', 'cancelada'], confirmada: ['cancelada', 'finalizada'], cancelada: [], finalizada: [] };
+        const changed = !target || ['fecha_reserva', 'hora_reserva', 'cantidad_personas'].some(k => String(next[k]) !== String(target[k])) ||
+          id_mesas.join(',') !== target.id_mesas.join(',');
+        if (target && next.estado_reserva !== target.estado_reserva && !transitions[target.estado_reserva]?.includes(next.estado_reserva)) throw new Error('Ese cambio de estado no está permitido.');
+        if (currentUser?.tipo_usuario === 'cliente' && !['pendiente', 'cancelada', target?.estado_reserva].includes(next.estado_reserva)) throw new Error('El restaurante debe confirmar o finalizar la reserva.');
+        if (target && !active.includes(target.estado_reserva) && changed) throw new Error('Una reserva cerrada no puede reprogramarse.');
+        if (active.includes(next.estado_reserva) && (changed || next.estado_reserva !== target?.estado_reserva)) {
+          const available = demoAvailableTables(restaurant.id_restaurante, next.fecha_reserva, next.hora_reserva, target?.id_reserva);
+          if (selected.some(m => !available.some(a => a.id_mesa === m.id_mesa))) throw new Error('Una de las mesas ya está ocupada en ese horario.');
+        }
+        setLS('gt_reservas', target ? reservations.map(r => r.id_reserva == param ? next : r) : [...reservations, next]);
+        if (!target) setLS('gt_notificaciones', [...getLS('gt_notificaciones'), {
+          id_notificacion: Date.now(), mensaje: `Tu reserva del ${next.fecha_reserva} a las ${next.hora_reserva} fue registrada.`,
+          fecha_envio: bogotaNow(), leido: false, id_usuario: next.id_usuario
+        }]);
+        return next;
+      }
       break;
+    }
 
     case 'pedidos':
       let pedidos = getLS('gt_pedidos');
@@ -387,29 +427,44 @@ function simulateLocalStorageAPI(endpoint, options = {}) {
       return getLS('gt_zonas');
     case 'categorias':
       return getLS('gt_categorias');
-    case 'planes':
-      return getLS('gt_planes');
     case 'metodos_pago':
       return getLS('gt_metodos');
     
     case 'pagos':
       if (method === 'POST') {
+        if (!currentUser) throw new Error('Debes iniciar sesión.');
+        if (!Number.isFinite(Number(body.monto)) || Number(body.monto) <= 0 || !positiveRecordId(body.id_usuario) ||
+            !positiveRecordId(body.id_metodo) || !positiveRecordId(body.id_pedido) || Object.hasOwn(body, 'id_plan')) {
+          throw new Error('El pago debe tener un monto positivo, un usuario, un medio de pago y un pedido válido. Solo se reciben pagos de pedidos.');
+        }
+        if (Number(body.id_usuario) !== Number(currentUser.id_usuario) && currentUser.tipo_usuario !== 'administrador') throw new Error('Solo puedes registrar tus propios pagos.');
+        const order = getLS('gt_pedidos').find(p => Number(p.id_pedido) === Number(body.id_pedido));
+        if (!order) throw new Error('El pedido no existe.');
+        if (Number(order.id_usuario) !== Number(body.id_usuario)) throw new Error('El pago debe pertenecer al usuario que hizo el pedido.');
         const pagos = getLS('gt_pagos');
-        const newPag = { id_pago: Date.now(), ...body, fecha_pago: new Date().toISOString(), estado_pago: 'aprobado' };
+        const orderPayments = pagos.filter(p => Number(p.id_pedido) === Number(body.id_pedido));
+        const previous = body.referencia && orderPayments.find(p => p.referencia === body.referencia);
+        if (previous) {
+          if (Number(previous.monto) !== Number(body.monto) || Number(previous.id_metodo) !== Number(body.id_metodo)) throw new Error('La referencia ya corresponde a otro importe o medio.');
+          return previous;
+        }
+        if (order.estado_pedido === 'cancelado') throw new Error('No se puede pagar un pedido cancelado.');
+        if (!getLS('gt_metodos').some(m => Number(m.id_metodo) === Number(body.id_metodo))) throw new Error('El medio de pago no existe.');
+        const amountCents = Math.round(Number(body.monto) * 100);
+        const paidCents = orderPayments.filter(p => p.estado_pago === 'aprobado').reduce((sum, p) => sum + Math.round(Number(p.monto) * 100), 0);
+        if (amountCents + paidCents > Math.round(Number(order.total_pago) * 100)) throw new Error('El importe supera el saldo del pedido.');
+        const newPag = { id_pago: Math.max(0, ...pagos.map(p => Number(p.id_pago))) + 1,
+          monto: Number(body.monto), id_usuario: Number(body.id_usuario), id_metodo: Number(body.id_metodo),
+          id_pedido: Number(body.id_pedido), fecha_pago: bogotaNow(), estado_pago: 'aprobado', referencia: body.referencia ?? null };
         pagos.push(newPag);
         setLS('gt_pagos', pagos);
 
-        // Si es pago de plan suscripción
-        if (body.id_plan) {
-          let restsList = getLS('gt_restaurantes');
-          restsList = restsList.map(r => r.id_propietario == body.id_usuario ? { ...r, id_plan: body.id_plan } : r);
-          setLS('gt_restaurantes', restsList);
-        }
         return newPag;
       }
       break;
 
     case 'notificaciones':
+      if (method === 'GET' && currentUser && Number(param) === Number(currentUser.id_usuario)) queueDemoReservationReminders();
       let notifs = getLS('gt_notificaciones');
       if (!currentUser) throw new Error('Debes iniciar sesión.');
       if (method === 'GET' && parts.length === 2) {
@@ -431,6 +486,7 @@ function simulateLocalStorageAPI(endpoint, options = {}) {
     case 'visitas':
       return simulateVisitas(method, body);
     case 'reportes':
+      if (!canViewReport(param)) throw new Error('Tu cuenta no tiene acceso a este reporte.');
       if ([11, 12].includes(Number(param))) return calculateMonthlyReport(Number(param), params);
       return calculateMockReport(param);
   }
@@ -442,14 +498,18 @@ function simulateLocalStorageAPI(endpoint, options = {}) {
 function calculateMockReport(reportId) {
   console.log(`[MOCK DB] Calculando Reporte #${reportId}`);
   
-  const rests = getLS('gt_restaurantes');
+  const allRestaurants = getLS('gt_restaurantes');
+  const owner = currentUser?.tipo_usuario === 'restaurante';
+  const rests = owner ? allRestaurants.filter(r => Number(r.id_propietario) === Number(currentUser.id_usuario)) : allRestaurants;
+  const restaurantIds = new Set(rests.map(r => Number(r.id_restaurante)));
+  const belongs = row => !owner || restaurantIds.has(Number(row.id_restaurante));
   const users = getLS('gt_usuarios');
-  const platos = getLS('gt_platos');
-  const resenas = getLS('gt_resenas');
+  const platos = getLS('gt_platos').filter(belongs);
+  const resenas = getLS('gt_resenas').filter(belongs);
   const reservas = getLS('gt_reservas');
-  const mesas = getLS('gt_mesas');
+  const mesas = getLS('gt_mesas').filter(belongs);
   const zonas = getLS('gt_zonas');
-  const pedidos = getLS('gt_pedidos');
+  const pedidos = getLS('gt_pedidos').filter(belongs);
   const categorias = getLS('gt_categorias');
 
   switch (parseInt(reportId)) {
@@ -495,7 +555,7 @@ function calculateMockReport(reportId) {
       return zonas.map(z => {
         const rIds = rests.filter(r => r.id_zona == z.id_zona).map(r => Number(r.id_restaurante));
         const mIds = mesas.filter(m => rIds.includes(Number(m.id_restaurante))).map(m => Number(m.id_mesa));
-        const resCount = reservas.filter(res => mIds.includes(Number(res.id_mesa))).length;
+        const resCount = reservas.filter(res => res.id_mesas.some(id => mIds.includes(Number(id)))).length;
         return {
           Zona: z.nombre_zona,
           Municipio: z.ciudad,
@@ -608,7 +668,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('report-fecha-corte').value = bogotaToday();
     document.getElementById('report-fecha-corte').max = bogotaToday();
   } catch (error) {
-    showLogin();
+    await showPublicRestaurants();
     showToast(error.message, 'danger');
     document.getElementById('login-db-text').textContent = 'No se pudieron cargar los datos: recarga la página.';
   }
@@ -616,13 +676,49 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function initApp() {
   if (window.lucide) lucide.createIcons();
-  if (currentUser) { showDashboard(); await resumePendingReservation(); } else showLogin();
+  if (currentUser) { showDashboard(); await resumePendingReservation(); } else await showPublicRestaurants();
 }
 
 function setupEventHandlers() {
   document.getElementById('btn-explorar-restaurantes').addEventListener('click', showPublicRestaurants);
-  document.getElementById('btn-public-login').addEventListener('click', showLogin);
+  document.getElementById('btn-public-login').addEventListener('click', () => showLogin());
+  document.getElementById('btn-public-register').addEventListener('click', () => showLogin('register'));
   document.getElementById('public-rest-search').addEventListener('input', renderPublicRestaurants);
+  document.getElementById('public-rest-city').addEventListener('change', renderPublicRestaurants);
+  document.getElementById('public-search-form').addEventListener('submit', event => {
+    event.preventDefault();
+    renderPublicRestaurants();
+    document.getElementById('public-catalog').scrollIntoView({ block: 'start' });
+  });
+  for (const kind of ['hero', 'catalog']) {
+    const state = kind === 'hero' ? publicHeroState : publicCatalogState;
+    const region = document.getElementById(kind === 'hero' ? 'public-hero-carousel' : 'public-catalog');
+    region.addEventListener('mouseenter', () => { state.hovered = true; });
+    region.addEventListener('mouseleave', () => { state.hovered = false; });
+    region.addEventListener('focusin', () => { state.focused = true; });
+    region.addEventListener('focusout', event => { state.focused = region.contains(event.relatedTarget); });
+  }
+  document.getElementById('public-hero-open').addEventListener('click', openPublicHeroRestaurant);
+  document.getElementById('btn-public-how').addEventListener('click', () => document.getElementById('public-how').showModal());
+  document.getElementById('public-how-close').addEventListener('click', () => document.getElementById('public-how').close());
+  if (typeof window.addEventListener === 'function') window.addEventListener('resize', () => {
+    renderPublicCatalogPosition(publicCatalogState.index);
+    startPublicCarousel('catalog');
+  });
+  document.querySelectorAll('[data-sorrento-photo]').forEach(button => {
+    button.addEventListener('click', () => openSorrentoGallery(Number(button.dataset.sorrentoPhoto)));
+  });
+  const sorrentoGallery = document.getElementById('sorrento-gallery');
+  document.getElementById('sorrento-gallery-close').addEventListener('click', () => sorrentoGallery.close());
+  document.getElementById('sorrento-gallery-prev').addEventListener('click', () => openSorrentoGallery(sorrentoPhotoIndex - 1));
+  document.getElementById('sorrento-gallery-next').addEventListener('click', () => openSorrentoGallery(sorrentoPhotoIndex + 1));
+  sorrentoGallery.addEventListener('click', event => { if (event.target === sorrentoGallery) sorrentoGallery.close(); });
+  sorrentoGallery.addEventListener('keydown', event => {
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      openSorrentoGallery(sorrentoPhotoIndex + (event.key === 'ArrowLeft' ? -1 : 1));
+    }
+  });
   // Navegación Sidebar
   document.querySelectorAll('.menu-item').forEach(item => {
     item.addEventListener('click', (e) => {
@@ -644,6 +740,7 @@ function setupEventHandlers() {
       if (target === 'section-mesas') loadMesasFilterRestaurantes();
       if (target === 'section-platos') loadPlatosSection();
       if (target === 'section-reservas') renderReservas();
+      if (target === 'section-experiencias') loadExperienciasSection();
       if (target === 'section-pedidos') loadPedidosSection();
       if (target === 'section-resenas') loadResenasSection();
       if (target === 'section-reportes') loadReportesSection();
@@ -655,14 +752,12 @@ function setupEventHandlers() {
   // Toggle Auth Forms
   document.getElementById('go-to-register').addEventListener('click', (e) => {
     e.preventDefault();
-    document.getElementById('form-login').classList.remove('active');
-    document.getElementById('form-register').classList.add('active');
+    showLogin('register');
   });
 
   document.getElementById('go-to-login').addEventListener('click', (e) => {
     e.preventDefault();
-    document.getElementById('form-register').classList.remove('active');
-    document.getElementById('form-login').classList.add('active');
+    showLogin();
   });
 
   // Envío Form Login
@@ -722,9 +817,20 @@ function setupEventHandlers() {
   document.getElementById('btn-logout').addEventListener('click', async () => {
     if (isConnectedToDB) { try { await requestAPI('auth/logout', {method:'POST'}); } catch (e) { showToast(e.message, 'danger'); return; } }
     currentUser = null;
+    if (typeof resetExperiencias === 'function') resetExperiencias();
+    currentCart = [];
+    pendingCheckout = null;
+    currentReportData = [];
+    reportRequest += 1;
+    pedidosRequest += 1;
+    reservasRequest += 1;
+    pedidosList = [];
+    reservasList = [];
+    clearDocumentPreview();
+    document.querySelectorAll('.modal-backdrop').forEach(modal => modal.classList.remove('active'));
     clearPendingReservation();
     localStorage.removeItem(DEMO_NAMESPACE + 'gt_logged_user');
-    showLogin();
+    await showPublicRestaurants();
   });
 
   // Notificaciones Campana Toggle
@@ -938,9 +1044,12 @@ function clearPendingReservation() {
 }
 
 async function showPublicRestaurants() {
+  stopPublicCarousels();
+  for (const state of [publicHeroState, publicCatalogState]) { state.hovered = false; state.focused = false; }
+  resetNotifications();
   document.getElementById('login-container').style.display = 'none';
   document.getElementById('app-container').style.display = 'none';
-  document.getElementById('public-container').style.display = 'block';
+  document.getElementById('public-container').style.display = 'grid';
   window.scrollTo({ top: 0, left: 0 });
   const request = ++publicCatalogRequest;
   const container = document.getElementById('public-restaurants');
@@ -952,37 +1061,251 @@ async function showPublicRestaurants() {
     const restaurants = await requestAPI('restaurantes');
     if (request !== publicCatalogRequest) return;
     publicRestaurants = restaurants.filter(r => positiveRecordId(r.id_restaurante));
+    populatePublicMunicipalities();
     renderPublicRestaurants();
+    renderPublicHero(publicHeroState.index);
+    startPublicCarousel('hero');
+    if (window.lucide) lucide.createIcons();
   } catch (error) {
     if (request !== publicCatalogRequest) return;
     container.innerHTML = `<p class="info-text color-danger">${escapeHTML(error.message)}</p>`;
   }
 }
 
+const sorrentoPhotos = [
+  { file: 'fachada', caption: 'Café Sorrento · La barra, el café y el chocolate de la casa' },
+  { file: 'desayuno-cafe', caption: 'Desayuno con huevos, pan, queso y café' },
+  { file: 'hamburguesa', caption: 'Hamburguesa Sorrento con papas fritas' },
+  { file: 'chocolate-artesanal', caption: 'Chocolate artesanal Sorrento' },
+  { file: 'cafe-interior', caption: 'Un rincón de Café Sorrento' },
+  { file: 'espresso', caption: 'Una pausa para un café' },
+  { file: 'desayuno-mesa', caption: 'Desayuno acompañado de chocolate' },
+  { file: 'chocolate-paisaje', caption: 'Chocolate Sorrento y paisaje del Quindío' }
+];
+let sorrentoPhotoIndex = 0;
+
+const sorrentoListing = {
+  public_key: 'cafe-sorrento', nombre: 'Café Sorrento', ciudad: 'Armenia', nombre_zona: 'Quindío',
+  especialidad: 'Café, chocolate artesanal, desayunos, hamburguesas, maicitos y pizza'
+};
+const publicReducedMotion = Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches);
+const publicHeroState = { index: 0, paused: publicReducedMotion, timer: null, hovered: false, focused: false };
+const publicCatalogState = { index: 0, direction: 1, paused: publicReducedMotion, timer: null, hovered: false, focused: false };
+const publicHeroPhotos = [
+  { file: 'cocora-restaurante.jpg', caption: 'Bosques de Cocora · Quindío', alt: 'Restaurante entre jardines y montañas del Valle de Cocora', position: 'center 54%' },
+  { file: 'cafe-finca.jpg', caption: 'Café La Palma · Imagen ilustrativa', alt: 'Café de origen y repostería junto a un paisaje cafetero', restaurant: 'Café La Palma' },
+  { file: 'cafe-sorrento/fachada.jpg', caption: 'Café Sorrento · Armenia', alt: 'Barra y letrero de Café Sorrento', restaurant: 'Café Sorrento', position: 'center 32%' },
+  { file: 'trucha-huerta.jpg', caption: 'Cocina del Mirador · Imagen ilustrativa', alt: 'Trucha con patacones y ensalada de la huerta', restaurant: 'Cocina del Mirador' },
+  { file: 'mesa-cafetera.jpg', caption: 'Fogón del Guadual · Imagen ilustrativa', alt: 'Plato de frijoles, arroz, arepa y aguacate', restaurant: 'Fogón del Guadual' },
+  { file: 'sancocho-regional.jpg', caption: 'Sabores del Camino · Imagen ilustrativa', alt: 'Sancocho campesino con arroz y aguacate', restaurant: 'Sabores del Camino' },
+  ...sorrentoPhotos.filter(photo => photo.file !== 'fachada').map(photo => ({ file: `cafe-sorrento/${photo.file}.jpg`, caption: `Café Sorrento · ${photo.caption}`, alt: photo.caption, restaurant: 'Café Sorrento', position: 'center 65%' }))
+];
+
+function isSorrentoListing(restaurant) {
+  return normalizePublicSearch(restaurant.nombre) === 'cafe sorrento';
+}
+
+function getPublicListings() {
+  return publicRestaurants.some(isSorrentoListing) ? publicRestaurants : [...publicRestaurants, sorrentoListing];
+}
+
+function stopPublicCarousels() {
+  for (const state of [publicHeroState, publicCatalogState]) {
+    if (state.timer !== null) window.clearInterval(state.timer);
+    state.timer = null;
+  }
+}
+
+function publicCarouselBlocked(state) {
+  return document.hidden || state.hovered || state.focused ||
+    document.getElementById('public-container').style.display === 'none' ||
+    document.getElementById('sorrento-gallery').open || document.getElementById('public-how').open ||
+    document.getElementById('modal-public-menu').classList.contains('active');
+}
+
+function startPublicCarousel(kind) {
+  const state = kind === 'hero' ? publicHeroState : publicCatalogState;
+  if (state.timer !== null) window.clearInterval(state.timer);
+  state.timer = null;
+  if (state.paused || typeof window.setInterval !== 'function' ||
+    document.getElementById('public-container').style.display === 'none' ||
+    (kind === 'catalog' && document.getElementById('public-restaurants').children.length <= publicVisibleCards())) return;
+  state.timer = window.setInterval(() => {
+    if (publicCarouselBlocked(state)) return;
+    if (kind === 'hero') advancePublicHero(1, false); else advancePublicCatalog(1, false);
+  }, kind === 'hero' ? 5000 : 2000);
+}
+
+function syncPublicCarouselDots(kind, total, selected) {
+  const dots = document.getElementById(`${kind}-dots`);
+  if (dots.children.length !== total) {
+    dots.innerHTML = '';
+    for (let i = 0; i < total; i++) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.setAttribute('aria-label', kind === 'hero' ? `Ver foto ${i + 1}: ${publicHeroPhotos[i].alt}` : `Ver grupo de restaurantes ${i + 1}`);
+      button.addEventListener('click', () => {
+        if (kind === 'hero') renderPublicHero(i); else renderPublicCatalogPosition(i);
+        startPublicCarousel(kind);
+      });
+      dots.appendChild(button);
+    }
+  }
+  [...dots.children].forEach((button, i) => button.setAttribute('aria-current', String(i === selected)));
+  dots.hidden = total <= 1;
+}
+
+function setPublicCarouselPaused(kind, paused) {
+  const state = kind === 'hero' ? publicHeroState : publicCatalogState;
+  state.paused = Boolean(paused);
+  startPublicCarousel(kind);
+}
+
+function renderPublicHero(index) {
+  publicHeroState.index = ((index % publicHeroPhotos.length) + publicHeroPhotos.length) % publicHeroPhotos.length;
+  const photo = publicHeroPhotos[publicHeroState.index];
+  const image = document.getElementById('public-hero-image');
+  image.src = `images/${photo.file}`;
+  document.getElementById('public-hero-backdrop').src = image.src;
+  image.alt = photo.alt;
+  image.style.objectPosition = 'center';
+  syncPublicCarouselDots('hero', publicHeroPhotos.length, publicHeroState.index);
+  const opener = document.getElementById('public-hero-open');
+  const available = photo.restaurant && getPublicListings().some(r => normalizePublicSearch(r.nombre) === normalizePublicSearch(photo.restaurant));
+  opener.disabled = !available;
+  opener.setAttribute('aria-label', available ? `Conocer ${photo.restaurant}` : photo.alt);
+}
+
+function advancePublicHero(step, manual = true) {
+  renderPublicHero(publicHeroState.index + step);
+  if (manual) startPublicCarousel('hero');
+}
+
+function openPublicHeroRestaurant() {
+  const name = publicHeroPhotos[publicHeroState.index].restaurant;
+  if (!name) return;
+  const restaurant = publicRestaurants.find(r => normalizePublicSearch(r.nombre) === normalizePublicSearch(name));
+  if (restaurant) openPublicMenu(restaurant.id_restaurante);
+  else if (normalizePublicSearch(name) === 'cafe sorrento') openSorrentoMenu();
+}
+
+function publicVisibleCards() {
+  const styles = typeof window.getComputedStyle === 'function' ? window.getComputedStyle(document.getElementById('public-catalog')) : null;
+  return Number.parseInt(styles?.getPropertyValue('--cards-visible'), 10) || 3;
+}
+
+function renderPublicCatalogPosition(index) {
+  const track = document.getElementById('public-restaurants');
+  const visible = publicVisibleCards();
+  const maximum = Math.max(0, track.children.length - visible);
+  publicCatalogState.index = Math.min(Math.max(0, index), maximum);
+  track.style.transform = `translateX(calc(-${publicCatalogState.index} * (100% + var(--catalog-gap)) / var(--cards-visible)))`;
+  [...track.children].forEach((card, i) => {
+    const hidden = i < publicCatalogState.index || i >= publicCatalogState.index + visible;
+    card.inert = hidden;
+    card.setAttribute('aria-hidden', String(hidden));
+  });
+  syncPublicCarouselDots('catalog', maximum + 1, publicCatalogState.index);
+}
+
+function advancePublicCatalog(step, manual = true) {
+  const maximum = Math.max(0, document.getElementById('public-restaurants').children.length - publicVisibleCards());
+  if (!maximum) return;
+  let next;
+  if (manual) next = (publicCatalogState.index + step + maximum + 1) % (maximum + 1);
+  else {
+    next = publicCatalogState.index + publicCatalogState.direction;
+    if (next > maximum || next < 0) { publicCatalogState.direction *= -1; next = publicCatalogState.index + publicCatalogState.direction; }
+  }
+  renderPublicCatalogPosition(next);
+  if (manual) startPublicCarousel('catalog');
+}
+
+
+function openSorrentoMenu() {
+  ++publicMenuRequest;
+  document.getElementById('public-menu-title').textContent = 'Sabores · Café Sorrento';
+  document.getElementById('public-menu-contact').textContent = 'Armenia · Quindío';
+  document.getElementById('public-menu-items').innerHTML = ['Café', 'Chocolate artesanal', 'Desayunos', 'Hamburguesas', 'Maicitos', 'Pizza']
+    .map(name => `<div class="menu-item-row"><h4>${name}</h4></div>`).join('');
+  const action = document.getElementById('btn-public-reserve');
+  action.textContent = 'Ver las fotografías';
+  action.onclick = () => { closeModal('modal-public-menu'); openSorrentoGallery(0); };
+  document.getElementById('modal-public-menu').classList.add('active');
+}
+
+function openSorrentoGallery(index) {
+  if (!Number.isInteger(index)) return;
+  sorrentoPhotoIndex = ((index % sorrentoPhotos.length) + sorrentoPhotos.length) % sorrentoPhotos.length;
+  const photo = sorrentoPhotos[sorrentoPhotoIndex];
+  const image = document.getElementById('sorrento-gallery-image');
+  image.src = `images/cafe-sorrento/${photo.file}.jpg`;
+  image.alt = photo.caption;
+  document.getElementById('sorrento-gallery-caption').textContent = photo.caption;
+  document.getElementById('sorrento-gallery-count').textContent = `${sorrentoPhotoIndex + 1} de ${sorrentoPhotos.length}`;
+  const gallery = document.getElementById('sorrento-gallery');
+  if (!gallery.open) gallery.showModal();
+}
+
+function normalizePublicSearch(value) {
+  return String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}
+
+function populatePublicMunicipalities() {
+  const select = document.getElementById('public-rest-city');
+  const previous = select.value;
+  const cities = new Map();
+  for (const restaurant of getPublicListings()) {
+    const label = String(restaurant.ciudad || '').trim();
+    if (label) cities.set(normalizePublicSearch(label), label);
+  }
+  select.innerHTML = '<option value="">Todos los municipios</option>' + [...cities]
+    .sort((a, b) => a[1].localeCompare(b[1], 'es-CO'))
+    .map(([value, label]) => `<option value="${escapeHTML(value)}">${escapeHTML(label)}</option>`).join('');
+  select.value = cities.has(previous) ? previous : '';
+}
+
+function publicRestaurantImage(restaurant) {
+  if (isSorrentoListing(restaurant)) return { file: 'cafe-sorrento/fachada.jpg', alt: 'La barra y el letrero de Café Sorrento en Armenia' };
+  const specialty = normalizePublicSearch(restaurant.especialidad);
+  if (/\bcafe\b|repost|pastel/.test(specialty)) return { file: 'cafe-finca.jpg', alt: 'Café de origen y torta artesanal en un paisaje cafetero' };
+  if (/trucha|pescad|marisco/.test(specialty)) return { file: 'trucha-huerta.jpg', alt: 'Trucha asada con patacones y ensalada fresca' };
+  if (/tradicional|tipic|frijol/.test(specialty)) return { file: 'mesa-cafetera.jpg', alt: 'Frijoles, arroz, arepa y plátano de la cocina cafetera' };
+  return { file: 'sancocho-regional.jpg', alt: 'Sancocho campesino servido con arroz y aguacate' };
+}
+
 function renderPublicRestaurants() {
-  const normalize = value => String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  const query = normalize(document.getElementById('public-rest-search').value.trim());
-  const filtered = publicRestaurants.filter(r => normalize([r.nombre, r.especialidad, r.nombre_zona, r.ciudad].join(' ')).includes(query));
+  const query = normalizePublicSearch(document.getElementById('public-rest-search').value);
+  const city = document.getElementById('public-rest-city').value;
+  const filtered = getPublicListings().filter(r =>
+    normalizePublicSearch([r.nombre, r.especialidad, r.nombre_zona, r.ciudad].join(' ')).includes(query) &&
+    (!city || normalizePublicSearch(r.ciudad) === city));
   const container = document.getElementById('public-restaurants');
   container.innerHTML = '';
   document.getElementById('public-rest-count').textContent = `${filtered.length} restaurante${filtered.length === 1 ? '' : 's'} encontrado${filtered.length === 1 ? '' : 's'}`;
-  if (!filtered.length) container.innerHTML = '<p class="info-text">No se encontraron restaurantes. Prueba con otro nombre, especialidad o zona.</p>';
+  if (!filtered.length) container.innerHTML = '<p class="info-text">No se encontraron restaurantes. Prueba con otro nombre, especialidad o municipio.</p>';
   for (const restaurant of filtered) {
+    const reservable = Boolean(positiveRecordId(restaurant.id_restaurante));
+    const photo = publicRestaurantImage(restaurant);
     const card = document.createElement('article');
-    card.className = 'restaurant-card glass';
-    card.innerHTML = `<div class="restaurant-badge-container"><h3>${escapeHTML(restaurant.nombre)}</h3></div>
+    card.className = 'restaurant-card public-restaurant-card glass';
+    card.innerHTML = `<button type="button" class="public-restaurant-photo" data-public-open aria-label="Conocer ${escapeHTML(restaurant.nombre)}"><img src="images/${photo.file}" alt="${photo.alt}" width="1536" height="1024" loading="lazy" decoding="async"></button>
       <div class="restaurant-card-body">
-        <p><i data-lucide="map-pin"></i><span>${escapeHTML(restaurant.direccion)} · ${escapeHTML(restaurant.nombre_zona || restaurant.ciudad || '')}</span></p>
-        <p><i data-lucide="utensils"></i><span>${escapeHTML(restaurant.especialidad || 'Cocina de la región')}</span></p>
-        <p><i data-lucide="phone"></i><span>${escapeHTML(restaurant.telefono || 'Consulta al restaurante')}</span></p>
+        <p class="public-restaurant-location"><i data-lucide="map-pin" aria-hidden="true"></i><span>${escapeHTML(restaurant.ciudad || restaurant.nombre_zona || 'Eje Cafetero')}</span></p>
+        <h3><button type="button" data-public-open>${escapeHTML(restaurant.nombre)}</button></h3>
+        <p class="public-restaurant-specialty">${escapeHTML(restaurant.especialidad || 'Cocina de la región')}</p>
       </div><div class="restaurant-card-footer">
-        <button type="button" class="btn btn-secondary" data-public-menu>Ver menú</button>
-        <button type="button" class="btn btn-primary" data-public-reserve>Reservar</button>
+        <button type="button" class="btn btn-secondary" data-public-menu>${reservable ? 'Ver menú' : 'Ver sabores'}</button>
+        <button type="button" class="btn btn-primary" data-public-reserve>${reservable ? 'Reservar' : 'Ver fotos'}</button>
       </div>`;
-    card.querySelector('[data-public-menu]').addEventListener('click', () => openPublicMenu(restaurant.id_restaurante));
-    card.querySelector('[data-public-reserve]').addEventListener('click', () => beginGuestReservation(restaurant.id_restaurante));
+    card.querySelector('[data-public-menu]').addEventListener('click', () => reservable ? openPublicMenu(restaurant.id_restaurante) : openSorrentoMenu());
+    card.querySelector('[data-public-reserve]').addEventListener('click', () => reservable ? beginGuestReservation(restaurant.id_restaurante) : openSorrentoGallery(0));
+    card.querySelectorAll('[data-public-open]').forEach(button => button.addEventListener('click', () => reservable ? openPublicMenu(restaurant.id_restaurante) : openSorrentoMenu()));
     container.appendChild(card);
   }
+  publicCatalogState.direction = 1;
+  renderPublicCatalogPosition(0);
+  startPublicCarousel('catalog');
   if (window.lucide) lucide.createIcons();
 }
 
@@ -994,6 +1317,8 @@ async function openPublicMenu(value) {
   const modal = document.getElementById('modal-public-menu');
   const container = document.getElementById('public-menu-items');
   document.getElementById('public-menu-title').textContent = `Menú · ${restaurant.nombre}`;
+  document.getElementById('btn-public-reserve').textContent = 'Reservar en este restaurante';
+  document.getElementById('public-menu-contact').innerHTML = `<p><strong>Dirección:</strong> ${escapeHTML(restaurant.direccion || 'Consulta al restaurante')}${restaurant.nombre_zona ? ' · ' + escapeHTML(restaurant.nombre_zona) : ''}</p><p><strong>Teléfono:</strong> ${escapeHTML(restaurant.telefono || 'Consulta al restaurante')}</p>`;
   document.getElementById('btn-public-reserve').onclick = () => beginGuestReservation(id);
   container.innerHTML = '<p class="info-text">Cargando menú…</p>';
   modal.classList.add('active');
@@ -1047,8 +1372,12 @@ async function resumePendingReservation() {
   }
 }
 
-function showLogin() {
+function showLogin(mode = 'login') {
+  stopPublicCarousels();
   resetNotifications();
+  document.getElementById('form-login').classList.remove('active');
+  document.getElementById('form-register').classList.remove('active');
+  document.getElementById(mode === 'register' ? 'form-register' : 'form-login').classList.add('active');
   document.getElementById('public-container').style.display = 'none';
   document.getElementById('login-container').style.display = 'flex';
   document.getElementById('app-container').style.display = 'none';
@@ -1060,9 +1389,14 @@ function showLogin() {
 }
 
 function showDashboard() {
+  stopPublicCarousels();
   document.getElementById('public-container').style.display = 'none';
   document.getElementById('login-container').style.display = 'none';
   document.getElementById('app-container').style.display = 'grid';
+  document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+  document.getElementById('section-dashboard').classList.add('active');
+  document.querySelectorAll('.menu-item').forEach(item => item.classList.toggle('active', item.dataset.target === 'section-dashboard'));
+  document.getElementById('current-section-title').textContent = 'Dashboard';
 
   // Cargar datos en pantalla
   document.getElementById('user-display-name').textContent = currentUser.nombre;
@@ -1074,6 +1408,10 @@ function showDashboard() {
   const isAdmin = currentUser.tipo_usuario === 'administrador';
   const isRestOwner = currentUser.tipo_usuario === 'restaurante';
   document.getElementById('menu-admin-platos').style.display = isAdmin || isRestOwner ? 'flex' : 'none';
+  document.getElementById('menu-reportes').hidden = !isAdmin && !isRestOwner;
+  document.querySelectorAll('.report-btn').forEach(button => {
+    button.hidden = !isAdmin && [2, 9, 12].includes(Number(button.dataset.reportId));
+  });
   
   document.getElementById('btn-add-restaurante').style.display = (isAdmin || isRestOwner) ? 'inline-flex' : 'none';
   document.getElementById('btn-add-mesa').style.display = (isAdmin || isRestOwner) ? 'inline-flex' : 'none';
@@ -1246,14 +1584,13 @@ async function renderRestaurantes(filterQuery = '') {
 
       card.innerHTML = `
         <div class="restaurant-badge-container">
-          <h3>${r.nombre}</h3>
-          <span class="role-badge" style="background: rgba(245, 158, 11, 0.15); color: var(--primary);">${r.nombre_plan || 'Básico'}</span>
+          <h3>${escapeHTML(r.nombre)}</h3>
         </div>
         <div class="restaurant-card-body">
-          <p><i data-lucide="map-pin"></i> <span>${r.direccion} (${r.nombre_zona})</span></p>
-          <p><i data-lucide="utensils"></i> <span>Especialidad: ${r.especialidad}</span></p>
+          <p><i data-lucide="map-pin"></i> <span>${escapeHTML(r.direccion)} (${escapeHTML(r.nombre_zona)})</span></p>
+          <p><i data-lucide="utensils"></i> <span>Especialidad: ${escapeHTML(r.especialidad)}</span></p>
           <p><i data-lucide="users-2"></i> <span>Capacidad total: ${r.capacidad_total} personas</span></p>
-          <p><i data-lucide="phone"></i> <span>Tel: ${r.telefono || 'N/A'}</span></p>
+          <p><i data-lucide="phone"></i> <span>Tel: ${escapeHTML(r.telefono || 'N/A')}</span></p>
         </div>
         <div class="restaurant-card-footer">
           ${actionButtons}
@@ -1326,12 +1663,14 @@ async function saveRestaurante(e) {
     capacidad_total,
     especialidad,
     id_zona,
-    id_propietario: currentUser.id_usuario,
-    id_plan: 1
+    id_propietario: currentUser.id_usuario
   };
 
   try {
     if (id) {
+      const original = (await requestAPI('restaurantes')).find(r => Number(r.id_restaurante) === Number(id));
+      if (!original) throw new Error('El restaurante ya no existe. Actualiza el listado.');
+      body.id_propietario = original.id_propietario;
       await requestAPI(`restaurantes/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -1523,7 +1862,9 @@ async function saveMesa(e) {
     }
     if (original && capacidad < Number(original.capacidad)) {
       const reservas = await requestAPI('reservas');
-      if (reservas.some(reserva => Number(reserva.id_mesa) === Number(id) && ['pendiente', 'confirmada'].includes(reserva.estado_reserva) && Number(reserva.cantidad_personas) > capacidad)) {
+      if (reservas.some(reserva => (reserva.id_mesas || [reserva.id_mesa]).map(Number).includes(Number(id)) && ['pendiente', 'confirmada'].includes(reserva.estado_reserva) &&
+          Number(reserva.cantidad_personas) > capacidad + mesas.filter(m => Number(m.id_mesa) !== Number(id) &&
+            (reserva.id_mesas || []).map(Number).includes(Number(m.id_mesa))).reduce((sum, m) => sum + Number(m.capacidad), 0))) {
         throw new Error('La capacidad no puede ser menor al grupo de una reserva activa de esta mesa.');
       }
     }
@@ -1730,22 +2071,24 @@ function filterReservas() {
 async function renderReservas() {
   const tbody = document.getElementById('reservas-table-body');
   const requestId = ++reservasRequest;
+  const user = currentUser;
   reservasList = [];
   renderReservasPage();
   tbody.innerHTML = '<tr><td colspan="7" class="info-text">Cargando reservas...</td></tr>';
   document.getElementById('reservas-resumen').textContent = 'Cargando reservas…';
 
   try {
-    const list = await requestAPI('reservas');
-    if (requestId !== reservasRequest) return;
+    const [list, restaurants] = await Promise.all([requestAPI('reservas'),
+      user?.tipo_usuario === 'restaurante' ? requestAPI('restaurantes') : Promise.resolve([])]);
+    if (requestId !== reservasRequest || currentUser?.id_usuario !== user?.id_usuario) return;
     
     // Filtrar si no es admin (Clientes ven solo las suyas, propietarios las de sus restaurantes)
     let filtered = list;
     if (currentUser.tipo_usuario === 'cliente') {
       filtered = list.filter(r => r.id_usuario == currentUser.id_usuario);
     } else if (currentUser.tipo_usuario === 'restaurante') {
-      const myRests = getLS('gt_restaurantes').filter(x => x.id_propietario == currentUser.id_usuario).map(x => x.id_restaurante);
-      filtered = list.filter(r => myRests.includes(r.id_restaurante));
+      const myRests = new Set(restaurants.filter(x => Number(x.id_propietario) === Number(user.id_usuario)).map(x => Number(x.id_restaurante)));
+      filtered = list.filter(r => myRests.has(Number(r.id_restaurante)));
     }
 
     reservasList = filtered;
@@ -1809,13 +2152,16 @@ function renderReservasPage() {
         
         if (r.estado_reserva === 'pendiente') {
           if (currentUser.tipo_usuario !== 'cliente') {
-            actionButtons += `<button class="btn btn-sm btn-success" onclick="updateReservaStatus(${r.id_reserva}, 'confirmada', ${r.id_mesa})" title="Confirmar"><i data-lucide="check"></i></button> `;
+            actionButtons += `<button class="btn btn-sm btn-success" onclick="updateReservaStatus(${r.id_reserva}, 'confirmada')" title="Confirmar"><i data-lucide="check"></i></button> `;
           }
-          actionButtons += `<button class="btn btn-sm btn-danger" onclick="updateReservaStatus(${r.id_reserva}, 'cancelada', ${r.id_mesa})" title="Cancelar"><i data-lucide="x"></i></button>`;
-        } else if (r.estado_reserva === 'confirmada' && currentUser.tipo_usuario !== 'cliente') {
-          actionButtons += `<button class="btn btn-sm btn-secondary" onclick="updateReservaStatus(${r.id_reserva}, 'finalizada', ${r.id_mesa})" title="Finalizar"><i data-lucide="check-square"></i></button>`;
+          actionButtons += `<button class="btn btn-sm btn-danger" onclick="updateReservaStatus(${r.id_reserva}, 'cancelada')" title="Cancelar"><i data-lucide="x"></i></button>`;
+      } else if (r.estado_reserva === 'confirmada' && currentUser.tipo_usuario !== 'cliente') {
+          actionButtons += `<button class="btn btn-sm btn-secondary" onclick="updateReservaStatus(${r.id_reserva}, 'finalizada')" title="Finalizar"><i data-lucide="check-square"></i></button>`;
+          actionButtons += ` <button class="btn btn-sm btn-danger" onclick="updateReservaStatus(${r.id_reserva}, 'cancelada')" title="Cancelar"><i data-lucide="x"></i></button>`;
+        } else if (r.estado_reserva === 'confirmada') {
+          actionButtons += `<button class="btn btn-sm btn-danger" onclick="updateReservaStatus(${r.id_reserva}, 'cancelada')" title="Cancelar"><i data-lucide="x"></i></button>`;
         }
-      } else {
+      } else if (currentUser.tipo_usuario !== 'cliente') {
         actionButtons += `<button class="btn btn-sm btn-danger" onclick="deleteReserva(${r.id_reserva})" title="Eliminar"><i data-lucide="trash-2"></i></button>`;
       }
 
@@ -1839,252 +2185,168 @@ function renderReservasPage() {
     if (window.lucide) lucide.createIcons();
 }
 
+function usesLegacyReservations() {
+  return isConnectedToDB && dbStatus.reservasMultiples !== true;
+}
+
+async function legacyAvailableTables(restaurant, date, time, exclude) {
+  const [tables, reservations] = await Promise.all([requestAPI('mesas'), requestAPI('reservas')]);
+  const start = new Date(date + 'T' + time + '-05:00').getTime();
+  const occupied = new Set(reservations.filter(r => r.id_reserva != exclude &&
+    ['pendiente', 'confirmada'].includes(r.estado_reserva) &&
+    Math.abs(start - new Date(r.fecha_reserva + 'T' + r.hora_reserva + '-05:00').getTime()) < 7200000)
+    .map(r => Number(r.id_mesa)));
+  return tables.filter(m => m.id_restaurante == restaurant && m.estado !== 'mantenimiento' && !occupied.has(Number(m.id_mesa)));
+}
+
 async function openReservaModal(preSelectedRestId = null, idReserva = null) {
   const modal = document.getElementById('modal-reserva');
-  const title = document.getElementById('modal-reserva-title');
   const selectRest = document.getElementById('mres-restaurante');
   const selectMesa = document.getElementById('mres-mesa');
-  const dateInput = document.getElementById('mres-fecha');
-  const numPersonas = document.getElementById('mres-personas');
-  
-  const restSummary = document.getElementById('mres-restaurante-summary');
-  const mesaSummary = document.getElementById('mres-mesa-summary');
-
-  // Ocultar etiquetas informativas inicialmente
-  restSummary.style.display = 'none';
-  mesaSummary.style.display = 'none';
-  numPersonas.removeAttribute('max');
-
-  // Limpiar campos del formulario
+  const date = document.getElementById('mres-fecha');
+  const time = document.getElementById('mres-hora');
+  const people = document.getElementById('mres-personas');
+  const id = document.getElementById('mres-id');
+  const summary = document.getElementById('mres-mesa-summary');
+  const legacy = usesLegacyReservations();
+  selectMesa.multiple = !legacy;
+  selectMesa.size = legacy ? 1 : 5;
+  document.getElementById('mres-mesa-help').hidden = legacy;
+  document.getElementById('mres-restaurante-summary').style.display = 'none';
   document.getElementById('form-modal-reserva').reset();
-  document.getElementById('mres-id').value = '';
-  document.getElementById('mres-mesa-anterior').value = '';
+  id.value = '';
+  date.min = bogotaToday();
+  date.value = date.min;
+  time.value = '';
+  document.getElementById('modal-reserva-title').textContent = idReserva ? 'Editar reserva' : 'Nueva reserva de mesa';
 
-  const rests = await requestAPI('restaurantes');
+  const [restaurants, reservations] = await Promise.all([
+    requestAPI('restaurantes'), idReserva ? requestAPI('reservas') : []
+  ]);
+  const allowed = currentUser?.tipo_usuario === 'restaurante' ?
+    restaurants.filter(r => r.id_propietario == currentUser.id_usuario) : restaurants;
   selectRest.innerHTML = '<option value="">Selecciona...</option>';
-  rests.forEach(r => {
-    const opt = document.createElement('option');
-    opt.value = r.id_restaurante;
-    opt.textContent = r.nombre;
-    selectRest.appendChild(opt);
-  });
-
-  selectMesa.innerHTML = '<option value="">Primero selecciona el restaurante...</option>';
-
-  let currentMesaId = null;
-
-  // Función para calcular aforo restante del restaurante para la fecha seleccionada
-  const updateRestaurantAvailability = async () => {
-    const rId = selectRest.value;
-    const selectedDate = dateInput.value;
-    
-    if (rId && selectedDate) {
-      const todasLasMesas = await requestAPI('mesas');
-      const mesasRestaurante = todasLasMesas.filter(m => m.id_restaurante == rId);
-      
-      const todasLasReservas = await requestAPI('reservas');
-      // Contar reservas activas en esa fecha en este local, ignorando la que estamos editando
-      const reservasFecha = todasLasReservas.filter(res => 
-        res.fecha_reserva === selectedDate && 
-        res.id_restaurante == rId && 
-        res.estado_reserva !== 'cancelada' &&
-        res.id_reserva != document.getElementById('mres-id').value
-      );
-      
-      const mesasReservadasIds = reservasFecha.map(res => res.id_mesa);
-      const mesasLibres = mesasRestaurante.filter(m => !mesasReservadasIds.includes(m.id_mesa));
-      const aforoLibre = mesasLibres.reduce((acc, curr) => acc + curr.capacidad, 0);
-
-      restSummary.textContent = `Quedan ${mesasLibres.length} de ${mesasRestaurante.length} mesas disponibles (Aforo libre: ${aforoLibre} personas para esta fecha).`;
-      restSummary.style.display = 'block';
-    } else {
-      restSummary.style.display = 'none';
-    }
-  };
-
-  // Listener para cambiar mesas cuando cambia restaurante o fecha
-  const loadAvailableMesas = async () => {
-    const rId = selectRest.value;
-    const selectedDate = dateInput.value;
-    selectMesa.innerHTML = '<option value="">Cargando mesas...</option>';
-    
-    if (rId && selectedDate) {
-      const mesas = await requestAPI('mesas');
-      const mesasRestaurante = mesas.filter(m => m.id_restaurante == rId);
-
-      const todasLasReservas = await requestAPI('reservas');
-      const reservasFecha = todasLasReservas.filter(res => 
-        res.fecha_reserva === selectedDate && 
-        res.estado_reserva !== 'cancelada' && 
-        res.id_reserva != document.getElementById('mres-id').value
-      );
-      const mesasReservadasIds = reservasFecha.map(res => res.id_mesa);
-
-      // Mostrar mesas que no estén reservadas esa fecha, o incluir la mesa actual que ya tiene asignada si estamos editando
-      const filtered = mesasRestaurante.filter(m => !mesasReservadasIds.includes(m.id_mesa) || m.id_mesa == currentMesaId);
-      
-      selectMesa.innerHTML = '';
-      if (filtered.length === 0) {
-        selectMesa.innerHTML = '<option value="">No hay mesas disponibles en esta fecha</option>';
-        mesaSummary.style.display = 'none';
-      } else {
-        filtered.forEach(m => {
-          const opt = document.createElement('option');
-          opt.value = m.id_mesa;
-          opt.textContent = `${m.numero_mesa} (Capacidad: ${m.capacidad} personas - ${m.ubicacion})`;
-          if (m.id_mesa == currentMesaId) {
-            opt.selected = true;
-          }
-          selectMesa.appendChild(opt);
-        });
-        selectMesa.onchange(); // Disparar cambio de mesa para calcular límites
-      }
-    } else {
-      selectMesa.innerHTML = '<option value="">Primero selecciona el restaurante y fecha...</option>';
-      mesaSummary.style.display = 'none';
-    }
-    await updateRestaurantAvailability();
-  };
-
-  // Listener al seleccionar mesa (Aplica límites de capacidad por mesa)
-  selectMesa.onchange = () => {
-    const selectedMesaId = selectMesa.value;
-    if (selectedMesaId) {
-      const mesasGlobal = getLS('gt_mesas');
-      const mObj = mesasGlobal.find(x => x.id_mesa == selectedMesaId);
-      if (mObj) {
-        numPersonas.max = mObj.capacidad;
-        mesaSummary.textContent = `La ${mObj.numero_mesa} admite un límite máximo de ${mObj.capacidad} comensales.`;
-        mesaSummary.style.display = 'block';
-        
-        // Si el valor del input supera el límite de la mesa seleccionada, reajustarlo
-        if (parseInt(numPersonas.value) > mObj.capacidad) {
-          numPersonas.value = mObj.capacidad;
-          showToast(`Límite ajustado a la capacidad máxima de la mesa (${mObj.capacidad} personas).`, 'warning');
-        }
-      }
-    } else {
-      mesaSummary.style.display = 'none';
-      numPersonas.removeAttribute('max');
-    }
-  };
-
-  selectRest.onchange = loadAvailableMesas;
-  dateInput.onchange = loadAvailableMesas;
-
-  // Poner fecha mínima hoy por defecto
-  const today = new Date().toISOString().split('T')[0];
-  dateInput.min = today;
-  dateInput.value = today;
-
-  if (idReserva) {
-    title.textContent = 'Editar Reserva';
-    const list = await requestAPI('reservas');
-    const res = list.find(x => x.id_reserva == idReserva);
-    if (res) {
-      document.getElementById('mres-id').value = res.id_reserva;
-      document.getElementById('mres-mesa-anterior').value = res.id_mesa;
-      currentMesaId = res.id_mesa;
-      
-      selectRest.value = res.id_restaurante;
-      dateInput.value = res.fecha_reserva;
-      
-      await loadAvailableMesas(); // Cargar mesas y preseleccionar la mesa correcta en el select
-
-      document.getElementById('mres-hora').value = res.hora_reserva.substring(0, 5); // HH:MM
-      numPersonas.value = res.cantidad_personas;
-      selectMesa.onchange(); // Actualizar límites en la interfaz
-    }
-  } else {
-    title.textContent = 'Nueva Reserva de Mesa';
-    if (preSelectedRestId) {
-      selectRest.value = preSelectedRestId;
-      await loadAvailableMesas();
-    }
+  for (const restaurant of allowed) {
+    const option = document.createElement('option');
+    option.value = restaurant.id_restaurante;
+    option.textContent = restaurant.nombre;
+    selectRest.appendChild(option);
+  }
+  const reservation = reservations.find(r => r.id_reserva == idReserva);
+  if (idReserva && !reservation) {
+    showToast('La reserva ya no está disponible.', 'warning');
+    return;
+  }
+  selectRest.value = reservation?.id_restaurante ?? preSelectedRestId ?? '';
+  if (reservation) {
+    id.value = reservation.id_reserva;
+    date.value = reservation.fecha_reserva;
+    if (date.value < date.min) date.min = date.value;
+    time.value = reservation.hora_reserva.slice(0, 5);
+    people.value = reservation.cantidad_personas;
   }
 
+  let requestNumber = 0;
+  let capacities = new Map();
+  const updateCapacity = () => {
+    const total = Array.from(selectMesa.selectedOptions || []).reduce((sum, o) => sum + (capacities.get(Number(o.value)) || 0), 0);
+    const restaurant = allowed.find(r => r.id_restaurante == selectRest.value);
+    const capacity = Math.min(total, Number(restaurant?.capacidad_total) || total);
+    summary.textContent = capacity ? `Capacidad seleccionada: ${capacity} personas.` : legacy ? 'Selecciona una mesa para este horario.' : 'Selecciona una o varias mesas para este horario.';
+    if (capacity) people.max = capacity;
+    else people.removeAttribute('max');
+  };
+  const load = async (preselected = []) => {
+    const request = ++requestNumber;
+    selectMesa.innerHTML = '';
+    selectMesa.disabled = true;
+    people.removeAttribute('max');
+    summary.style.display = '';
+    if (!selectRest.value || !date.value || !time.value) {
+      summary.textContent = 'Elige restaurante, fecha y hora para consultar las mesas.';
+      return;
+    }
+    summary.textContent = 'Consultando mesas disponibles…';
+    try {
+      const params = new URLSearchParams({ id_restaurante: selectRest.value, fecha: date.value, hora: time.value });
+      if (id.value) params.set('id_reserva', id.value);
+      const tables = legacy ? await legacyAvailableTables(selectRest.value, date.value, time.value, id.value)
+        : await requestAPI(`reservas/disponibilidad?${params}`);
+      if (request !== requestNumber) return;
+      capacities = new Map(tables.map(m => [Number(m.id_mesa), Number(m.capacidad)]));
+      for (const m of tables) {
+        const option = document.createElement('option');
+        option.value = m.id_mesa;
+        option.textContent = `Mesa ${m.numero_mesa} · ${m.capacidad} personas · ${m.ubicacion}`;
+        option.selected = preselected.includes(Number(m.id_mesa));
+        selectMesa.appendChild(option);
+      }
+      selectMesa.disabled = tables.length === 0;
+      if (tables.length) updateCapacity();
+      else summary.textContent = 'No hay mesas disponibles en este horario.';
+    } catch (error) {
+      if (request === requestNumber) summary.textContent = error.message;
+    }
+  };
+  selectRest.onchange = date.onchange = time.onchange = () => load();
+  selectMesa.onchange = updateCapacity;
   modal.classList.add('active');
+  await load((reservation?.id_mesas ?? (reservation?.id_mesa ? [reservation.id_mesa] : [])).map(Number));
 }
 
 async function saveReserva(e) {
   e.preventDefault();
   const id = document.getElementById('mres-id').value;
-  const id_mesa_anterior = document.getElementById('mres-mesa-anterior').value;
-  const id_mesa = parseInt(document.getElementById('mres-mesa').value);
-  const fecha_reserva = document.getElementById('mres-fecha').value;
-  const hora_reserva = document.getElementById('mres-hora').value + ':00';
-  const cantidad_personas = parseInt(document.getElementById('mres-personas').value);
-
-  if (!id_mesa) {
-    showToast('Selecciona una mesa disponible.', 'warning');
+  const id_mesas = Array.from(document.getElementById('mres-mesa').selectedOptions).map(o => Number(o.value));
+  if (!id_mesas.length) {
+    showToast('Selecciona por lo menos una mesa disponible.', 'warning');
     return;
   }
-
+  const body = {
+    id_mesas,
+    fecha_reserva: document.getElementById('mres-fecha').value,
+    hora_reserva: document.getElementById('mres-hora').value + ':00',
+    cantidad_personas: Number(document.getElementById('mres-personas').value)
+  };
+  if (!id) body.id_usuario = currentUser.id_usuario;
+  const button = e.submitter;
+  if (button) button.disabled = true;
   try {
-    if (id) {
-      // Obtener la reserva actual
-      const list = await requestAPI('reservas');
-      const target = list.find(r => r.id_reserva == id);
-      const estado_reserva = target ? target.estado_reserva : 'pendiente';
-
-      await requestAPI(`reservas/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fecha_reserva,
-          hora_reserva,
-          cantidad_personas,
-          estado_reserva,
-          id_usuario: target ? target.id_usuario : currentUser.id_usuario,
-          id_mesa,
-          id_mesa_anterior: id_mesa_anterior ? parseInt(id_mesa_anterior) : id_mesa
-        })
-      });
-      showToast('Reserva modificada con éxito.', 'success');
-    } else {
-      await requestAPI('reservas', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fecha_reserva,
-          hora_reserva,
-          cantidad_personas,
-          estado_reserva: 'pendiente',
-          id_usuario: currentUser.id_usuario,
-          id_mesa
-        })
-      });
-      showToast('Reserva realizada con éxito. Queda en estado pendiente de aprobación.', 'success');
+    if (usesLegacyReservations()) {
+      body.id_mesa = id_mesas[0];
+      delete body.id_mesas;
+      if (id) {
+        const previous = (await requestAPI('reservas')).find(r => r.id_reserva == id);
+        if (!previous) throw new Error('La reserva ya no está disponible.');
+        Object.assign(body, { id_mesa_anterior: previous.id_mesa, id_usuario: previous.id_usuario, estado_reserva: previous.estado_reserva });
+      }
     }
+    await requestAPI(id ? `reservas/${id}` : 'reservas', {
+      method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+    });
+    showToast(id ? 'Reserva modificada.' : 'Reserva registrada. Queda pendiente de confirmación.', 'success');
     closeModal('modal-reserva');
     renderReservas();
     loadNotifications();
   } catch (error) {
     showToast(error.message, 'danger');
+  } finally {
+    if (button) button.disabled = false;
   }
 }
 
-async function updateReservaStatus(id, newStatus, idMesa) {
+async function updateReservaStatus(id, estado_reserva) {
   try {
-    const list = await requestAPI('reservas');
-    const target = list.find(r => r.id_reserva == id);
-    if (!target) return;
-
+    let body = { estado_reserva };
+    if (usesLegacyReservations()) {
+      const previous = (await requestAPI('reservas')).find(r => r.id_reserva == id);
+      if (!previous) throw new Error('La reserva ya no está disponible.');
+      body = { ...previous, id_mesa_anterior: previous.id_mesa, estado_reserva };
+    }
     await requestAPI(`reservas/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        fecha_reserva: target.fecha_reserva,
-        hora_reserva: target.hora_reserva,
-        cantidad_personas: target.cantidad_personas,
-        estado_reserva: newStatus,
-        id_usuario: target.id_usuario,
-        id_mesa: idMesa,
-        id_mesa_anterior: idMesa
-      })
+      method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
     });
-
-    showToast(`Reserva ${newStatus} con éxito.`, 'success');
+    showToast(`Reserva ${estado_reserva}.`, 'success');
     renderReservas();
   } catch (error) {
     showToast(error.message, 'danger');
@@ -2133,10 +2395,15 @@ async function loadPedidosSection() {
     selectPay.appendChild(opt);
   });
 
+  updateCartUI();
+  loadPedidoMenu();
   renderPedidosHistorial();
 }
 
+let pedidoMenuRequest = 0;
 async function loadPedidoMenu() {
+  const request = ++pedidoMenuRequest;
+  const userId = currentUser?.id_usuario;
   const restId = document.getElementById('pedido-restaurante').value;
   const menuList = document.getElementById('pedido-menu-list');
   menuList.innerHTML = '';
@@ -2148,6 +2415,7 @@ async function loadPedidoMenu() {
 
   try {
     const platos = await requestAPI('platos');
+    if (request !== pedidoMenuRequest || userId !== currentUser?.id_usuario) return;
     const filtered = platos.filter(p => p.id_restaurante == restId && Number(p.disponibilidad) === 1);
 
     if (filtered.length === 0) {
@@ -2237,7 +2505,11 @@ function changeCartQty(id, delta) {
   updateCartUI();
 }
 
+let checkoutInProgress = false;
+let pendingCheckout = null;
+
 async function executeCheckout() {
+  if (checkoutInProgress) return;
   if (currentCart.length === 0) {
     showToast('El carrito está vacío.', 'warning');
     return;
@@ -2264,33 +2536,47 @@ async function executeCheckout() {
     platos: currentCart
   };
 
+  const orderKey = JSON.stringify(payload);
+  if (!id_metodo) {
+    showToast('Selecciona un medio de pago.', 'warning');
+    return;
+  }
+  const button = document.getElementById('btn-checkout');
+  button.disabled = true;
+  checkoutInProgress = true;
   try {
-    const pedRes = await requestAPI('pedidos', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    const id_pedido = pedRes.id_pedido;
-
-    // Registrar Pago
+    if (pendingCheckout?.orderKey !== orderKey) {
+      const order = await requestAPI('pedidos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: orderKey
+      });
+      pendingCheckout = { orderKey, order, paymentMethod: id_metodo, reference: crypto.randomUUID() };
+    }
+    const { order, paymentMethod, reference } = pendingCheckout;
+    if (paymentMethod !== id_metodo) throw new Error('Selecciona el medio original para confirmar el pago pendiente de este pedido.');
     await requestAPI('pagos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        monto: subtotal,
+        monto: order.total_pago ?? subtotal,
         id_usuario: currentUser.id_usuario,
         id_metodo,
-        id_pedido
+        id_pedido: order.id_pedido,
+        referencia: reference
       })
     });
 
+    pendingCheckout = null;
     showToast('¡Pago aprobado y pedido enviado a cocina!', 'success');
     currentCart = [];
     updateCartUI();
     renderPedidosHistorial();
   } catch (error) {
     showToast(error.message, 'danger');
+  } finally {
+    checkoutInProgress = false;
+    button.disabled = false;
   }
 }
 
@@ -2326,6 +2612,7 @@ function filterPedidos() {
 async function renderPedidosHistorial() {
   const tbody = document.getElementById('pedidos-table-body');
   const requestId = ++pedidosRequest;
+  const user = currentUser;
   const previousPage = pedidosPage;
   pedidosList = [];
   renderPedidosPage();
@@ -2333,16 +2620,17 @@ async function renderPedidosHistorial() {
   document.getElementById('pedidos-contador').textContent = 'Cargando pedidos…';
 
   try {
-    const list = await requestAPI('pedidos');
-    if (requestId !== pedidosRequest) return;
+    const [list, ownedRestaurants] = await Promise.all([requestAPI('pedidos'),
+      user?.tipo_usuario === 'restaurante' ? requestAPI('restaurantes') : Promise.resolve([])]);
+    if (requestId !== pedidosRequest || currentUser?.id_usuario !== user?.id_usuario) return;
 
     // Filtrar según rol
     let filtered = list;
     if (currentUser.tipo_usuario === 'cliente') {
       filtered = list.filter(p => p.id_usuario == currentUser.id_usuario);
     } else if (currentUser.tipo_usuario === 'restaurante') {
-      const myRests = getLS('gt_restaurantes').filter(x => x.id_propietario == currentUser.id_usuario).map(x => x.id_restaurante);
-      filtered = list.filter(p => myRests.includes(p.id_restaurante));
+      const myRests = new Set(ownedRestaurants.filter(x => Number(x.id_propietario) === Number(user.id_usuario)).map(x => Number(x.id_restaurante)));
+      filtered = list.filter(p => myRests.has(Number(p.id_restaurante)));
     }
 
     pedidosList = filtered;
@@ -2410,11 +2698,16 @@ function renderPedidosPage() {
 
       let actionButtons = '';
       if (currentUser.tipo_usuario !== 'cliente' && p.estado_pedido === 'en preparacion') {
-        actionButtons += `<button class="btn btn-sm btn-success" onclick="updatePedidoStatus(${p.id_pedido}, 'en camino')">Despachar</button>`;
+        const nextState = p.tipo_servicio === 'delivery' ? 'en camino' : 'entregado';
+        const label = p.tipo_servicio === 'delivery' ? 'Despachar' : 'Servir';
+        actionButtons += `<button class="btn btn-sm btn-success" onclick="updatePedidoStatus(${p.id_pedido}, '${nextState}')">${label}</button>`;
       } else if (currentUser.tipo_usuario !== 'cliente' && p.estado_pedido === 'en camino') {
         actionButtons += `<button class="btn btn-sm btn-secondary" onclick="updatePedidoStatus(${p.id_pedido}, 'entregado')">Entregar</button>`;
-      } else {
+      } else if (['entregado', 'cancelado'].includes(p.estado_pedido)) {
         actionButtons = '<span class="text-muted">Finalizado</span>';
+      }
+      if (currentUser.tipo_usuario !== 'cliente' && ['en preparacion', 'en camino'].includes(p.estado_pedido)) {
+        actionButtons += ` <button class="btn btn-sm btn-danger" onclick="updatePedidoStatus(${p.id_pedido}, 'cancelado')">Cancelar</button>`;
       }
 
       tr.innerHTML = `
@@ -2547,10 +2840,22 @@ const SQL_QUERIES = {
   
   4: `-- Reporte 4: Calificación Promedio por Restaurante\nSELECT \n    r.nombre AS 'Restaurante',\n    COUNT(re.id_resena) AS 'Total Resenas',\n    ROUND(AVG(re.calificacion), 1) AS 'Calificacion Promedio' \nFROM restaurantes r \nLEFT JOIN resenas re ON r.id_restaurante = re.id_restaurante \nGROUP BY r.id_restaurante, r.nombre \nORDER BY AVG(re.calificacion) DESC;`,
   
-  5: `-- Reporte 5: Reservas por Zona Turística\nSELECT \n    z.nombre_zona AS 'Zona',\n    z.ciudad AS 'Municipio',\n    COUNT(res.id_reserva) AS 'Reservas' \nFROM zonas z \nINNER JOIN restaurantes r ON z.id_zona = r.id_zona \nINNER JOIN mesas m ON r.id_restaurante = m.id_restaurante \nINNER JOIN reservas res ON m.id_mesa = res.id_mesa \nGROUP BY z.id_zona, z.nombre_zona, z.ciudad \nORDER BY Reservas DESC;`,
-  
-  6: `-- Reporte 6: Ingresos Totales por Restaurante (Apto para Gráfico)\nSELECT \n    r.nombre AS 'Restaurante',\n    COUNT(p.id_pedido) AS 'Pedidos',\n    COALESCE(SUM(p.total_pago), 0) AS 'Ingresos Totales' \nFROM restaurantes r \nLEFT JOIN pedidos p ON r.id_restaurante = p.id_restaurante AND p.estado_pedido = 'entregado' \nGROUP BY r.id_restaurante, r.nombre \nORDER BY \`Ingresos Totales\` DESC;`,
-  
+  5: `-- Reporte 5: Reservas por Zona Turística\nSELECT z.nombre_zona AS 'Zona', mu.nombre_municipio AS 'Municipio', COUNT(DISTINCT res.id_reserva) AS 'Reservas'
+      FROM zonas z
+      INNER JOIN municipios mu ON mu.id_municipio=z.id_municipio
+      INNER JOIN restaurantes r ON z.id_zona = r.id_zona
+      INNER JOIN mesas m ON r.id_restaurante = m.id_restaurante
+      INNER JOIN reserva_mesas rm ON m.id_mesa=rm.id_mesa
+      INNER JOIN reservas res ON rm.id_reserva=res.id_reserva
+      GROUP BY z.id_zona, z.nombre_zona, mu.nombre_municipio ORDER BY Reservas DESC;`,
+
+  6: `-- Reporte 6: Ingresos Totales por Restaurante (Apto para Gráfico)\nSELECT r.nombre AS 'Restaurante', COUNT(CASE WHEN ep.codigo='entregado' THEN p.id_pedido END) AS 'Pedidos',
+      COALESCE(SUM(CASE WHEN ep.codigo='entregado' THEN p.total_pago END), 0) AS 'Ingresos Totales'
+      FROM restaurantes r
+      LEFT JOIN pedidos p ON r.id_restaurante = p.id_restaurante
+      LEFT JOIN estados_pedido ep ON ep.id_estado_pedido=p.id_estado_pedido
+      GROUP BY r.id_restaurante, r.nombre ORDER BY \`Ingresos Totales\` DESC;`,
+
   7: `-- Reporte 7: Detalle y Ocupación de Mesas\nSELECT \n    r.nombre AS 'Restaurante',\n    COUNT(m.id_mesa) AS 'Total Mesas',\n    SUM(CASE WHEN m.estado = 'disponible' THEN 1 ELSE 0 END) AS 'Disponibles',\n    SUM(CASE WHEN m.estado = 'reservada' THEN 1 ELSE 0 END) AS 'Reservadas' \nFROM restaurantes r \nINNER JOIN mesas m ON r.id_restaurante = m.id_restaurante \nGROUP BY r.id_restaurante, r.nombre;`,
   
   8: `-- Reporte 8: Restaurantes con Calificación Superior al Promedio General\nSELECT \n    r.nombre AS 'Restaurante',\n    ROUND(AVG(re.calificacion), 2) AS 'Calificacion' \nFROM restaurantes r \nINNER JOIN resenas re ON r.id_restaurante = re.id_restaurante \nGROUP BY r.id_restaurante, r.nombre \nHAVING AVG(re.calificacion) > (SELECT AVG(calificacion) FROM resenas);`,
@@ -2595,13 +2900,27 @@ let currentReportId = 1;
 let currentReportCriteria = '';
 let currentReportData = [];
 let currentReportTitle = "";
+let reportRequest = 0;
 
 async function loadReportesSection() {
   await fillRestaurantSelect(document.getElementById('report-restaurante'), true);
-  renderReport(currentReportId);
+  renderReport(canViewReport(currentReportId) ? currentReportId : 1);
+}
+
+function canViewReport(id) {
+  if (!currentUser) return true;
+  return currentUser.tipo_usuario === 'administrador' ||
+    (currentUser.tipo_usuario === 'restaurante' && ![2, 9, 12].includes(Number(id)));
 }
 
 async function renderReport(id) {
+  if (!canViewReport(id)) {
+    showToast('Tu cuenta no tiene acceso a este reporte.', 'warning');
+    return;
+  }
+  const request = ++reportRequest;
+  const userId = currentUser?.id_usuario;
+  currentReportData = [];
   currentReportId = Number(id);
   document.querySelectorAll('.report-btn').forEach(button => button.classList.toggle('active', Number(button.dataset.reportId) === currentReportId));
   document.getElementById('form-report-filters').hidden = ![11,12].includes(currentReportId);
@@ -2621,7 +2940,9 @@ async function renderReport(id) {
     const query = new URLSearchParams({ fecha_corte: document.getElementById('report-fecha-corte').value || bogotaToday(), comparacion: document.getElementById('report-comparacion').value });
     if (id == 11 && document.getElementById('report-restaurante').value) query.set('id_restaurante', document.getElementById('report-restaurante').value);
     const data = await requestAPI(`reportes/${id}${[11,12].includes(Number(id)) ? '?' + query : ''}`);
-    const source = isConnectedToDB ? 'MySQL' : 'Demostración académica: datos ficticios guardados en este navegador';
+    if (request !== reportRequest || currentUser?.id_usuario !== userId) return;
+    const source = (isConnectedToDB ? 'MySQL' : 'Demostración académica: datos ficticios guardados en este navegador') +
+      (currentUser?.tipo_usuario === 'restaurante' ? ' · Restaurantes de mi cuenta' : '');
     currentReportCriteria = source + ([11,12].includes(Number(id)) ? ` · Corte ${query.get('fecha_corte')} · ${query.get('comparacion') === 'mismo_corte' ? 'Mismos días en ambos meses' : 'Mes anterior completo'}` : ' · Histórico completo');
     if (id == 11) currentReportCriteria += ' · ' + document.getElementById('report-restaurante').selectedOptions[0].textContent;
     document.getElementById('report-criteria').textContent = currentReportCriteria;
@@ -2658,7 +2979,7 @@ async function renderReport(id) {
         
         // Formato moneda
         if (h.includes('Ingresos') || h.includes('Costo') || h.includes('Precio')) {
-          td.textContent = typeof value === 'number' ? `$${value.toLocaleString()} COP` : value;
+          td.textContent = value == null ? 'Sin datos' : `$${Number(value).toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})} COP`;
         } else {
           td.textContent = value;
         }
@@ -2673,6 +2994,7 @@ async function renderReport(id) {
     }
 
   } catch (error) {
+    if (request !== reportRequest || currentUser?.id_usuario !== userId) return;
     tbody.innerHTML = `<tr><td class="info-text color-danger">Error: ${escapeHTML(error.message)}</td></tr>`;
   }
 }
@@ -3137,6 +3459,21 @@ function notificationIsRead(notification) {
   return notification.leido === true || Number(notification.leido) === 1;
 }
 
+function queueDemoReservationReminders() {
+  const now = Date.now();
+  const notifications = getLS('gt_notificaciones');
+  for (const reservation of getLS('gt_reservas')) {
+    if (!['pendiente', 'confirmada'].includes(reservation.estado_reserva)) continue;
+    const start = Date.parse(`${reservation.fecha_reserva}T${reservation.hora_reserva}-05:00`);
+    if (!(start > now && start <= now + 86400000)) continue;
+    const message = `Recordatorio de reserva #${reservation.id_reserva} para ${reservation.fecha_reserva} a las ${reservation.hora_reserva.slice(0, 5)}. Consulta el restaurante y las mesas en Mis reservas.`;
+    if (notifications.some(n => Number(n.id_usuario) === Number(reservation.id_usuario) && n.mensaje === message)) continue;
+    notifications.push({ id_notificacion: Math.max(0, ...notifications.map(n => Number(n.id_notificacion))) + 1,
+      id_usuario: reservation.id_usuario, mensaje: message, fecha_envio: bogotaNow(), leido: false });
+  }
+  setLS('gt_notificaciones', notifications);
+}
+
 function notificationTimestamp(value) {
   const raw = String(value ?? '');
   const localDate = /^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}(?:\.\d+)?$/.test(raw);
@@ -3330,10 +3667,11 @@ function simulateVisitas(method, body) {
   let reservation = null;
   if (body.id_reserva) {
     reservation = reservations.find(r => r.id_reserva == body.id_reserva);
-    const table = tables.find(m => m.id_mesa == reservation?.id_mesa);
+    const reservedTables = tables.filter(m => (reservation?.id_mesas || [reservation?.id_mesa]).includes(Number(m.id_mesa)));
+    const table = reservedTables[0];
     if (!reservation || table?.id_restaurante != body.id_restaurante) throw new Error('La reserva debe pertenecer al restaurante seleccionado.');
     if (reservation.estado_reserva === 'cancelada') throw new Error('No se puede registrar asistencia de una reserva cancelada.');
-    if (count > Number(table.capacidad)) throw new Error('La asistencia supera la capacidad de la mesa reservada.');
+    if (count > reservedTables.reduce((sum, m) => sum + Number(m.capacidad), 0)) throw new Error('La asistencia supera la capacidad de la mesa reservada.');
     if (String(reservation.fecha_reserva).slice(0,10) !== date.slice(0,10)) throw new Error('La asistencia debe corresponder a la fecha de la reserva.');
     if (visits.some(v => v.id_reserva == body.id_reserva)) throw new Error('Esta reserva ya tiene registrada su asistencia.');
   }

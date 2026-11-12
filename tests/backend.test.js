@@ -12,6 +12,13 @@ function fakeDB() {
   const calls = [];
   const db = {
     calls,
+    paymentOrder: { id_pedido: 20, id_usuario: 1, estado_pedido: 'en preparacion' },
+    paymentMethod: { id_metodo: 1 },
+    async getConnection() { return db; },
+    async beginTransaction() {},
+    async commit() {},
+    async rollback() {},
+    release() {},
     async query(sql, params) {
       calls.push({ sql, params });
       if (sql.startsWith('SELECT id_usuario, nombre, correo, tipo_usuario, telefono, contrasena')) return [[{ ...admin }]];
@@ -19,6 +26,9 @@ function fakeDB() {
       if (sql.startsWith('SELECT COUNT(*) AS ingresos')) return [[{ ingresos: '11', usuarios_unicos: '4' }]];
       if (sql.startsWith('SELECT id_restaurante, capacidad_total')) return [[{ id_restaurante: 2, capacidad_total: 40, id_propietario: 1 }]];
       if (sql.startsWith('SELECT r.id_reserva')) return [[{ id_reserva: 4, id_usuario: 6, fecha_reserva: '2026-10-27', estado_reserva: 'confirmada', id_restaurante: 2, capacidad: 4 }]];
+      if (sql.startsWith('SELECT p.id_pedido,p.id_usuario,p.total_pago')) return [db.paymentOrder ? [{ total_pago: 10000, ...db.paymentOrder }] : []];
+      if (sql.startsWith('SELECT COALESCE(SUM(monto)')) return [[{ monto: 0 }]];
+      if (sql.startsWith('SELECT id_metodo FROM metodos_pago')) return [db.paymentMethod ? [db.paymentMethod] : []];
       return [{ insertId: 7, affectedRows: 1 }];
     }
   };
@@ -124,10 +134,34 @@ test('visits validate restaurant, reservation date and capacity', () => withServ
   assert.equal(db.calls.filter(c => c.sql.startsWith('INSERT INTO visitas')).length, 1);
 }));
 
-test('payment must target exactly one concept', () => withServer(async ({ request }) => {
+test('payment requires an order and rejects obsolete subscription fields', () => withServer(async ({ request }) => {
   const { cookie } = await login(request);
-  for (const concepts of [{}, { id_plan: 1, id_pedido: 1 }]) {
+  for (const concepts of [{}, { id_plan: 1 }, { id_plan: 1, id_pedido: 1 }, { id_pedido: -1 }, { id_pedido: 0 }, { id_pedido: 1, id_plan: null }]) {
     const response = await request('/api/pagos', { method: 'POST', headers: { cookie, 'Content-Type': 'application/json' }, body: JSON.stringify({ monto: 10000, id_usuario: 1, id_metodo: 1, ...concepts }) });
     assert.equal(response.status, 400);
   }
+}));
+
+test('order payments validate existence, ownership, cancellation and payment method', () => withServer(async ({ db, request }) => {
+  const { cookie } = await login(request);
+  const send = body => request('/api/pagos', { method: 'POST', headers: { cookie, 'Content-Type': 'application/json' }, body: JSON.stringify({ monto: 10000, id_usuario: 1, id_metodo: 1, id_pedido: 20, ...body }) });
+  db.paymentOrder = null;
+  assert.equal((await send()).status, 404);
+  db.paymentOrder = { id_pedido: 20, id_usuario: 2, estado_pedido: 'en preparacion' };
+  assert.equal((await send()).status, 403);
+  db.paymentOrder = { id_pedido: 20, id_usuario: 1, estado_pedido: 'cancelado' };
+  assert.equal((await send()).status, 400);
+  db.paymentOrder.estado_pedido = 'en preparacion';
+  db.paymentMethod = null;
+  assert.equal((await send()).status, 400);
+  assert.equal(db.calls.filter(c => c.sql.startsWith('INSERT INTO pagos')).length, 0);
+  db.paymentMethod = { id_metodo: 1 };
+  const response = await send();
+  assert.equal(response.status, 201);
+  assert.equal((await response.json()).id_pedido, 20);
+  const insert = db.calls.find(c => c.sql.startsWith('INSERT INTO pagos'));
+  assert.deepEqual(insert.params, [10000, 1, 1, 20, null]);
+  assert.doesNotMatch(insert.sql, /id_plan/);
+  assert.equal(db.calls.some(c => /UPDATE restaurantes/.test(c.sql)), false);
+  assert.equal((await request('/api/planes')).status, 404);
 }));

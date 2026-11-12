@@ -4,6 +4,11 @@ const path = require('path');
 const { randomBytes } = require('node:crypto');
 const { comparisonPeriods, bogotaDate, validDate } = require('./lib/periods');
 const { hashPassword, verifyPassword } = require('./lib/passwords');
+const { catalogId } = require('./lib/catalogos');
+const { managementPayload, sendManagementError, updateCapacity } = require('./lib/gestion');
+const { registerReservations } = require('./lib/reservas');
+const { registerExperiences } = require('./lib/experiencias');
+const { processReservationReminders } = require('./lib/recordatorios');
 require('dotenv').config();
 
 function createApp({ db = null, now = () => new Date() } = {}) {
@@ -101,7 +106,8 @@ app.get('/api/status', (req, res) => {
   res.json({
     connected: dbConnection !== null,
     database: process.env.DB_NAME,
-    error: dbError
+    error: dbError,
+    reservasMultiples: true
   });
 });
 
@@ -195,6 +201,14 @@ app.use('/api', (req, res, next) => {
   next();
 });
 
+app.use('/api/reportes', requireStaff, (req, res, next) => {
+  const number = Number(req.path.split('/')[1]);
+  if (req.user.tipo_usuario !== 'administrador' && [2, 9, 12].includes(number)) {
+    return res.status(403).json({ error: 'Este reporte general requiere una cuenta de administrador.' });
+  }
+  next();
+});
+
 function colombianTimestamp(value) {
   const parts = new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Bogota', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).format(value);
   return parts.replace(',', '');
@@ -202,9 +216,60 @@ function colombianTimestamp(value) {
 
 function positiveInteger(value) { return Number.isInteger(Number(value)) && Number(value) > 0 && Number(value) <= 2147483647; }
 
+async function assertRestaurantOwner(db, user, id) {
+  if (!positiveInteger(id)) throw Object.assign(new Error('Restaurante inválido.'), { status: 400 });
+  const [[restaurant]] = await db.query('SELECT id_propietario FROM restaurantes WHERE id_restaurante=?', [Number(id)]);
+  if (!restaurant) throw Object.assign(new Error('El restaurante no existe.'), { status: 404 });
+  if (user.tipo_usuario !== 'administrador' && (user.tipo_usuario !== 'restaurante' || Number(restaurant.id_propietario) !== Number(user.id_usuario))) {
+    throw Object.assign(new Error('Solo puedes gestionar tus propios restaurantes.'), { status: 403 });
+  }
+}
+
+for (const table of ['restaurantes', 'mesas', 'platos']) {
+  app.use(`/api/${table}`, async (req, res, next) => {
+    if (!['POST', 'PUT', 'DELETE'].includes(req.method)) return next();
+    if (!['administrador', 'restaurante'].includes(req.user?.tipo_usuario)) return res.status(403).json({ error: 'Esta operación requiere una cuenta de gestión.' });
+    if (!dbConnection) return next();
+    const key = { restaurantes: 'id_restaurante', mesas: 'id_mesa', platos: 'id_plato' }[table];
+    try {
+      const id = req.path.split('/').filter(Boolean)[0];
+      if (req.method !== 'POST') {
+        if (!positiveInteger(id)) return res.status(400).json({ error: 'Identificador inválido.' });
+        const [[row]] = await dbConnection.query(`SELECT id_restaurante FROM ${table} WHERE ${key}=?`, [Number(id)]);
+        if (!row) return res.status(404).json({ error: 'El registro no existe.' });
+        await assertRestaurantOwner(dbConnection, req.user, row.id_restaurante);
+        if (table !== 'restaurantes' && req.method === 'PUT' && Number(req.body.id_restaurante) !== Number(row.id_restaurante)) {
+          return res.status(400).json({ error: 'La mesa o plato debe conservar su restaurante.' });
+        }
+      } else if (table !== 'restaurantes') await assertRestaurantOwner(dbConnection, req.user, req.body.id_restaurante);
+      if (table === 'restaurantes' && req.method !== 'DELETE' && req.user.tipo_usuario === 'restaurante') req.body.id_propietario = req.user.id_usuario;
+      if (req.method !== 'DELETE') {
+        req.body = managementPayload(table, req.body);
+        if (table === 'restaurantes') {
+          const [[owner]] = await dbConnection.query('SELECT tipo_usuario FROM usuarios WHERE id_usuario=?', [req.body.id_propietario]);
+          if (!owner || !['restaurante', 'administrador'].includes(owner.tipo_usuario)) return res.status(400).json({ error: 'Selecciona una cuenta de propietario o administrador.' });
+        }
+      }
+      if (table === 'restaurantes' && req.method === 'DELETE') {
+        const [[history]] = await dbConnection.query(`SELECT (
+          EXISTS(SELECT 1 FROM pedidos WHERE id_restaurante=?) OR
+          EXISTS(SELECT 1 FROM reserva_mesas rm JOIN mesas m ON m.id_mesa=rm.id_mesa WHERE m.id_restaurante=?) OR
+          EXISTS(SELECT 1 FROM visitas WHERE id_restaurante=?)) AS ocupado`, [id, id, id]);
+        if (history.ocupado) return res.status(409).json({ error: 'El restaurante tiene historial de reservas, pedidos o visitas.' });
+      }
+      next();
+    } catch (error) {
+      sendManagementError(res, error);
+    }
+  });
+}
+
 app.get('/api/usuarios', checkDbConnection, requireSession, async (req, res) => {
   try {
-    const [rows] = await dbConnection.query('SELECT id_usuario, nombre, correo, telefono, tipo_usuario, fecha_registro FROM usuarios ORDER BY nombre');
+    const role = req.user.tipo_usuario;
+    const scope = role === 'administrador' ? '' : role === 'restaurante' ? " WHERE tipo_usuario = 'cliente' OR id_usuario = ?" : ' WHERE id_usuario = ?';
+    const fields = role === 'administrador' || role === 'cliente' ? 'id_usuario, nombre, correo, telefono, tipo_usuario, fecha_registro' : 'id_usuario, nombre, tipo_usuario';
+    const [rows] = await dbConnection.query(`SELECT ${fields} FROM usuarios${scope} ORDER BY nombre`, scope ? [req.user.id_usuario] : []);
     res.json(rows);
   } catch { res.status(500).json({ error: 'No se pudieron consultar los usuarios.' }); }
 });
@@ -213,7 +278,8 @@ app.get('/api/visitas', checkDbConnection, requireSession, requireStaff, async (
   try {
     const [rows] = await dbConnection.query(`SELECT v.*, r.nombre AS nombre_restaurante, u.nombre AS nombre_usuario
       FROM visitas v JOIN restaurantes r ON r.id_restaurante = v.id_restaurante
-      LEFT JOIN usuarios u ON u.id_usuario = v.id_usuario ORDER BY v.fecha_ingreso DESC`);
+      LEFT JOIN usuarios u ON u.id_usuario = v.id_usuario ${req.user.tipo_usuario === 'restaurante' ? 'WHERE r.id_propietario=?' : ''} ORDER BY v.fecha_ingreso DESC`,
+      req.user.tipo_usuario === 'restaurante' ? [req.user.id_usuario] : []);
     res.json(rows);
   } catch { res.status(500).json({ error: 'No se pudieron consultar las visitas.' }); }
 });
@@ -237,8 +303,11 @@ app.post('/api/visitas', checkDbConnection, requireStaff, async (req, res) => {
     if (Number(cantidad_personas) > restaurants[0].capacidad_total) return res.status(400).json({ error: 'La cantidad supera el aforo del restaurante.' });
     let visitor = id_usuario || null;
     if (id_reserva != null) {
-      const [reservations] = await dbConnection.query(`SELECT r.id_reserva, r.id_usuario, r.fecha_reserva, r.estado_reserva, m.id_restaurante, m.capacidad
-        FROM reservas r JOIN mesas m ON m.id_mesa = r.id_mesa WHERE r.id_reserva = ?`, [id_reserva]);
+      const [reservations] = await dbConnection.query(`SELECT r.id_reserva, r.id_usuario, r.fecha_reserva, er.codigo AS estado_reserva,
+        MIN(m.id_restaurante) AS id_restaurante, LEAST(SUM(m.capacidad),?) AS capacidad
+        FROM reservas r JOIN estados_reserva er ON er.id_estado_reserva=r.id_estado_reserva
+        JOIN reserva_mesas rm ON rm.id_reserva=r.id_reserva JOIN mesas m ON m.id_mesa=rm.id_mesa WHERE r.id_reserva=?
+        GROUP BY r.id_reserva,r.id_usuario,r.fecha_reserva,er.codigo HAVING COUNT(DISTINCT m.id_restaurante)=1`, [restaurants[0].capacidad_total, id_reserva]);
       const reservation = reservations[0];
       if (!reservation || Number(reservation.id_restaurante) !== Number(id_restaurante) || reservation.estado_reserva === 'cancelada' ||
           Number(cantidad_personas) > reservation.capacidad || String(reservation.fecha_reserva).slice(0, 10) !== fecha_ingreso.slice(0, 10) ||
@@ -270,6 +339,10 @@ for (const reportNumber of [11, 12]) {
         if (reportNumber === 11) {
           sql = 'SELECT COALESCE(SUM(cantidad_personas), 0) AS personas_atendidas, COUNT(*) AS visitas FROM visitas WHERE fecha_ingreso >= ? AND fecha_ingreso < ?';
           if (req.query.id_restaurante) { sql += ' AND id_restaurante = ?'; params.push(Number(req.query.id_restaurante)); }
+          if (req.user.tipo_usuario === 'restaurante') {
+            sql += ' AND id_restaurante IN (SELECT id_restaurante FROM restaurantes WHERE id_propietario=?)';
+            params.push(req.user.id_usuario);
+          }
         } else {
           sql = 'SELECT COUNT(*) AS ingresos, COUNT(DISTINCT id_usuario) AS usuarios_unicos FROM accesos_sistema WHERE fecha_ingreso >= ? AND fecha_ingreso < ?';
         }
@@ -287,11 +360,13 @@ for (const reportNumber of [11, 12]) {
 app.get('/api/restaurantes', checkDbConnection, async (req, res) => {
   try {
     const [rows] = await dbConnection.query(`
-      SELECT r.*, z.nombre_zona, z.ciudad, u.nombre AS nombre_propietario, p.nombre_plan 
+      SELECT r.id_restaurante, r.nombre, r.direccion, r.telefono, r.email,
+             r.capacidad_total, r.especialidad, r.id_zona, r.id_propietario,
+             z.nombre_zona, mu.nombre_municipio AS ciudad, z.id_municipio, u.nombre AS nombre_propietario
       FROM restaurantes r
       INNER JOIN zonas z ON r.id_zona = z.id_zona
+      INNER JOIN municipios mu ON mu.id_municipio=z.id_municipio
       INNER JOIN usuarios u ON r.id_propietario = u.id_usuario
-      LEFT JOIN planes_suscripcion p ON r.id_plan = p.id_plan
       ORDER BY r.nombre ASC
     `);
     res.json(rows);
@@ -301,30 +376,23 @@ app.get('/api/restaurantes', checkDbConnection, async (req, res) => {
 });
 
 app.post('/api/restaurantes', checkDbConnection, async (req, res) => {
-  const { nombre, direccion, telefono, email, capacidad_total, especialidad, id_zona, id_propietario, id_plan } = req.body;
+  const { nombre, direccion, telefono, email, capacidad_total, especialidad, id_zona, id_propietario } = req.body;
   try {
     const [result] = await dbConnection.query(
-      'INSERT INTO restaurantes (nombre, direccion, telefono, email, capacidad_total, especialidad, id_zona, id_propietario, id_plan) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [nombre, direccion, telefono, email, capacidad_total, especialidad, id_zona, id_propietario, id_plan || 1]
+      'INSERT INTO restaurantes (nombre, direccion, telefono, email, capacidad_total, especialidad, id_zona, id_propietario) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [nombre, direccion, telefono, email, capacidad_total, especialidad, id_zona, id_propietario]
     );
-    res.status(201).json({ id_restaurante: result.insertId, ...req.body });
+    res.status(201).json({ id_restaurante: result.insertId, nombre, direccion, telefono, email, capacidad_total, especialidad, id_zona, id_propietario });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    sendManagementError(res, error);
   }
 });
 
 app.put('/api/restaurantes/:id', checkDbConnection, async (req, res) => {
-  const { id } = req.params;
-  const { nombre, direccion, telefono, email, capacidad_total, especialidad, id_zona, id_propietario, id_plan } = req.body;
   try {
-    await dbConnection.query(
-      'UPDATE restaurantes SET nombre = ?, direccion = ?, telefono = ?, email = ?, capacidad_total = ?, especialidad = ?, id_zona = ?, id_propietario = ?, id_plan = ? WHERE id_restaurante = ?',
-      [nombre, direccion, telefono, email, capacidad_total, especialidad, id_zona, id_propietario, id_plan, id]
-    );
+    await updateCapacity(dbConnection, 'restaurantes', Number(req.params.id), req.body, colombianTimestamp(now()));
     res.json({ message: 'Restaurante actualizado con éxito.' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  } catch (error) { sendManagementError(res, error); }
 });
 
 app.delete('/api/restaurantes/:id', checkDbConnection, async (req, res) => {
@@ -333,7 +401,7 @@ app.delete('/api/restaurantes/:id', checkDbConnection, async (req, res) => {
     await dbConnection.query('DELETE FROM restaurantes WHERE id_restaurante = ?', [id]);
     res.json({ message: 'Restaurante eliminado con éxito.' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    sendManagementError(res, error);
   }
 });
 
@@ -350,7 +418,7 @@ app.get('/api/mesas', checkDbConnection, async (req, res) => {
     `);
     res.json(rows);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    sendManagementError(res, error);
   }
 });
 
@@ -363,22 +431,15 @@ app.post('/api/mesas', checkDbConnection, async (req, res) => {
     );
     res.status(201).json({ id_mesa: result.insertId, ...req.body });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    sendManagementError(res, error);
   }
 });
 
 app.put('/api/mesas/:id', checkDbConnection, async (req, res) => {
-  const { id } = req.params;
-  const { numero_mesa, capacidad, ubicacion, estado, id_restaurante } = req.body;
   try {
-    await dbConnection.query(
-      'UPDATE mesas SET numero_mesa = ?, capacidad = ?, ubicacion = ?, estado = ?, id_restaurante = ? WHERE id_mesa = ?',
-      [numero_mesa, capacidad, ubicacion, estado, id_restaurante, id]
-    );
-    res.json({ message: 'Mesa actualizada con éxito.' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+    await updateCapacity(dbConnection, 'mesas', Number(req.params.id), req.body, colombianTimestamp(now()));
+    res.json({ message: 'Mesa actualizado con éxito.' });
+  } catch (error) { sendManagementError(res, error); }
 });
 
 app.delete('/api/mesas/:id', checkDbConnection, async (req, res) => {
@@ -387,7 +448,7 @@ app.delete('/api/mesas/:id', checkDbConnection, async (req, res) => {
     await dbConnection.query('DELETE FROM mesas WHERE id_mesa = ?', [id]);
     res.json({ message: 'Mesa eliminada con éxito.' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    sendManagementError(res, error);
   }
 });
 
@@ -405,7 +466,7 @@ app.get('/api/platos', checkDbConnection, async (req, res) => {
     `);
     res.json(rows);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    sendManagementError(res, error);
   }
 });
 
@@ -418,7 +479,7 @@ app.post('/api/platos', checkDbConnection, async (req, res) => {
     );
     res.status(201).json({ id_plato: result.insertId, ...req.body });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    sendManagementError(res, error);
   }
 });
 
@@ -432,7 +493,7 @@ app.put('/api/platos/:id', checkDbConnection, async (req, res) => {
     );
     res.json({ message: 'Plato actualizado con éxito.' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    sendManagementError(res, error);
   }
 });
 
@@ -442,104 +503,32 @@ app.delete('/api/platos/:id', checkDbConnection, async (req, res) => {
     await dbConnection.query('DELETE FROM platos WHERE id_plato = ?', [id]);
     res.json({ message: 'Plato eliminado con éxito.' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    sendManagementError(res, error);
   }
 });
 
 // --------------------------------------------------------------------
 // ENDPOINTS CRUD - RESERVAS
 // --------------------------------------------------------------------
-app.get('/api/reservas', checkDbConnection, async (req, res) => {
-  try {
-    const [rows] = await dbConnection.query(`
-      SELECT res.*, u.nombre AS nombre_usuario, u.correo AS correo_usuario,
-             m.numero_mesa, m.ubicacion AS ubicacion_mesa, r.nombre AS nombre_restaurante, r.id_restaurante
-      FROM reservas res
-      INNER JOIN usuarios u ON res.id_usuario = u.id_usuario
-      INNER JOIN mesas m ON res.id_mesa = m.id_mesa
-      INNER JOIN restaurantes r ON m.id_restaurante = r.id_restaurante
-      ORDER BY res.fecha_reserva DESC, res.hora_reserva DESC
-    `);
-    res.json(rows);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.post('/api/reservas', checkDbConnection, async (req, res) => {
-  const { fecha_reserva, hora_reserva, cantidad_personas, estado_reserva, id_usuario, id_mesa } = req.body;
-  try {
-    const [result] = await dbConnection.query(
-      'INSERT INTO reservas (fecha_reserva, hora_reserva, cantidad_personas, estado_reserva, id_usuario, id_mesa) VALUES (?, ?, ?, ?, ?, ?)',
-      [fecha_reserva, hora_reserva, cantidad_personas, estado_reserva || 'pendiente', id_usuario, id_mesa]
-    );
-    // Cambiar estado de la mesa a 'reservada'
-    await dbConnection.query('UPDATE mesas SET estado = "reservada" WHERE id_mesa = ?', [id_mesa]);
-    
-    // Crear notificación para el cliente
-    await dbConnection.query(
-      'INSERT INTO notificaciones (mensaje, id_usuario) VALUES (?, ?)',
-      [`Tu reserva para el día ${fecha_reserva} a las ${hora_reserva} ha sido registrada.`, id_usuario]
-    );
-
-    res.status(201).json({ id_reserva: result.insertId, ...req.body });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.put('/api/reservas/:id', checkDbConnection, async (req, res) => {
-  const { id } = req.params;
-  const { fecha_reserva, hora_reserva, cantidad_personas, estado_reserva, id_usuario, id_mesa, id_mesa_anterior } = req.body;
-  try {
-    await dbConnection.query(
-      'UPDATE reservas SET fecha_reserva = ?, hora_reserva = ?, cantidad_personas = ?, estado_reserva = ?, id_usuario = ?, id_mesa = ? WHERE id_reserva = ?',
-      [fecha_reserva, hora_reserva, cantidad_personas, estado_reserva, id_usuario, id_mesa, id]
-    );
-
-    // Ajustar estados de las mesas
-    if (id_mesa_anterior && id_mesa_anterior !== id_mesa) {
-      await dbConnection.query('UPDATE mesas SET estado = "disponible" WHERE id_mesa = ?', [id_mesa_anterior]);
-    }
-    if (estado_reserva === 'cancelada' || estado_reserva === 'finalizada') {
-      await dbConnection.query('UPDATE mesas SET estado = "disponible" WHERE id_mesa = ?', [id_mesa]);
-    } else {
-      await dbConnection.query('UPDATE mesas SET estado = "reservada" WHERE id_mesa = ?', [id_mesa]);
-    }
-
-    res.json({ message: 'Reserva actualizada con éxito.' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.delete('/api/reservas/:id', checkDbConnection, async (req, res) => {
-  const { id } = req.params;
-  try {
-    // Obtener mesa antes de borrar para liberarla
-    const [reserva] = await dbConnection.query('SELECT id_mesa FROM reservas WHERE id_reserva = ?', [id]);
-    if (reserva.length > 0) {
-      await dbConnection.query('UPDATE mesas SET estado = "disponible" WHERE id_mesa = ?', [reserva[0].id_mesa]);
-    }
-    await dbConnection.query('DELETE FROM reservas WHERE id_reserva = ?', [id]);
-    res.json({ message: 'Reserva eliminada con éxito.' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+registerReservations(app, { getDb: () => dbConnection, checkDbConnection, requireSession, now });
+registerExperiences(app, { getDb: () => dbConnection, checkDbConnection, requireSession, requireStaff, now, timestamp: colombianTimestamp });
 
 // --------------------------------------------------------------------
 // ENDPOINTS CRUD - PEDIDOS Y DETALLE
 // --------------------------------------------------------------------
-app.get('/api/pedidos', checkDbConnection, async (req, res) => {
+app.get('/api/pedidos', requireSession, checkDbConnection, async (req, res) => {
   try {
+    const scope = req.user.tipo_usuario === 'administrador' ? '' : req.user.tipo_usuario === 'restaurante' ? 'WHERE r.id_propietario=?' : 'WHERE p.id_usuario=?';
     const [pedidos] = await dbConnection.query(`
-      SELECT p.*, u.nombre AS nombre_usuario, r.nombre AS nombre_restaurante
+      SELECT p.*, t.codigo AS tipo_servicio, ep.codigo AS estado_pedido, u.nombre AS nombre_usuario, r.nombre AS nombre_restaurante
       FROM pedidos p
       INNER JOIN usuarios u ON p.id_usuario = u.id_usuario
       INNER JOIN restaurantes r ON p.id_restaurante = r.id_restaurante
+      INNER JOIN tipos_servicio t ON t.id_tipo_servicio=p.id_tipo_servicio
+      INNER JOIN estados_pedido ep ON ep.id_estado_pedido=p.id_estado_pedido
+      ${scope}
       ORDER BY p.fecha_pedido DESC
-    `);
+    `, scope ? [req.user.id_usuario] : []);
     
     // Obtener detalles de cada pedido
     for (let p of pedidos) {
@@ -560,13 +549,14 @@ app.get('/api/pedidos', checkDbConnection, async (req, res) => {
 
 app.post('/api/pedidos', checkDbConnection, async (req, res) => {
   const { tipo_servicio, direccion_entrega, id_usuario, id_restaurante, platos } = req.body;
+  const address = typeof direccion_entrega === 'string' ? direccion_entrega.trim() : '';
   // platos es un array de { id_plato, cantidad, precio_unitario }
   
   if (!['delivery', 'comedor'].includes(tipo_servicio) || !positiveInteger(id_restaurante) ||
       !positiveInteger(id_usuario) || !Array.isArray(platos) || !platos.length || platos.length > 100 ||
       platos.some(p => !positiveInteger(p.id_plato) || !positiveInteger(p.cantidad) || p.cantidad > 1000) ||
       new Set(platos.map(p => Number(p.id_plato))).size !== platos.length ||
-      (tipo_servicio === 'delivery' && (!direccion_entrega || String(direccion_entrega).length > 255))) {
+      (tipo_servicio === 'delivery' && (!address || address.length > 255))) {
     return res.status(400).json({ error: 'Revisa el tipo de servicio, restaurante, usuario y platos del pedido.' });
   }
   if (req.user.tipo_usuario === 'cliente' && Number(id_usuario) !== Number(req.user.id_usuario)) return res.status(403).json({ error: 'Solo puedes crear tus propios pedidos.' });
@@ -574,6 +564,10 @@ app.post('/api/pedidos', checkDbConnection, async (req, res) => {
   try {
     connection = await dbConnection.getConnection();
     await connection.beginTransaction();
+    if (req.user.tipo_usuario === 'restaurante') await assertRestaurantOwner(connection, req.user, id_restaurante);
+    const service = await catalogId(connection, 'tipos_servicio', tipo_servicio);
+    const state = await catalogId(connection, 'estados_pedido', 'en preparacion');
+    if (!service || !state) throw Object.assign(new Error('Falta actualizar los catálogos de pedidos.'), { status: 503 });
     const priced = [];
     let totalCents = 0;
     for (const item of platos) {
@@ -589,8 +583,8 @@ app.post('/api/pedidos', checkDbConnection, async (req, res) => {
     
     // Insertar Pedido
     const [result] = await connection.query(
-      'INSERT INTO pedidos (tipo_servicio, estado_pedido, total_pago, direccion_entrega, id_usuario, id_restaurante) VALUES (?, "en preparacion", ?, ?, ?, ?)',
-      [tipo_servicio, total_pago, direccion_entrega || null, id_usuario, id_restaurante]
+      'INSERT INTO pedidos (id_tipo_servicio, id_estado_pedido, total_pago, direccion_entrega, id_usuario, id_restaurante) VALUES (?, ?, ?, ?, ?, ?)',
+      [service, state, total_pago, tipo_servicio === 'delivery' ? address : null, id_usuario, id_restaurante]
     );
     const id_pedido = result.insertId;
     
@@ -603,7 +597,7 @@ app.post('/api/pedidos', checkDbConnection, async (req, res) => {
     }
     
     await connection.commit();
-    res.status(201).json({ id_pedido, tipo_servicio, total_pago, direccion_entrega, id_usuario, id_restaurante, platos: priced });
+    res.status(201).json({ id_pedido, tipo_servicio, total_pago, direccion_entrega: tipo_servicio === 'delivery' ? address : null, id_usuario, id_restaurante, platos: priced });
   } catch (error) {
     if (connection) await connection.rollback();
     res.status(error.status || 500).json({ error: error.status ? error.message : 'No se pudo guardar el pedido.' });
@@ -612,14 +606,27 @@ app.post('/api/pedidos', checkDbConnection, async (req, res) => {
   }
 });
 
-app.put('/api/pedidos/:id', checkDbConnection, async (req, res) => {
+app.put('/api/pedidos/:id', checkDbConnection, requireStaff, async (req, res) => {
   const { id } = req.params;
   const { estado_pedido } = req.body;
   try {
-    await dbConnection.query('UPDATE pedidos SET estado_pedido = ? WHERE id_pedido = ?', [estado_pedido, id]);
+    const [[order]] = await dbConnection.query(`SELECT p.id_restaurante,p.id_estado_pedido,e.codigo AS estado,t.codigo AS servicio
+      FROM pedidos p JOIN estados_pedido e ON e.id_estado_pedido=p.id_estado_pedido
+      JOIN tipos_servicio t ON t.id_tipo_servicio=p.id_tipo_servicio WHERE p.id_pedido=?`, [id]);
+    if (!order) return res.status(404).json({ error: 'El pedido no existe.' });
+    await assertRestaurantOwner(dbConnection, req.user, order.id_restaurante);
+    const allowed = { 'en preparacion': ['en camino', 'entregado', 'cancelado'], 'en camino': ['entregado', 'cancelado'], entregado: [], cancelado: [] };
+    if (estado_pedido === order.estado) return res.json({ message: 'El pedido ya está en ese estado.' });
+    if (!allowed[order.estado]?.includes(estado_pedido) || (estado_pedido === 'en camino' && order.servicio !== 'delivery')) {
+      return res.status(409).json({ error: 'Ese cambio de estado no corresponde al pedido.' });
+    }
+    const state = await catalogId(dbConnection, 'estados_pedido', estado_pedido);
+    if (!state) return res.status(503).json({ error: 'Falta actualizar los estados de pedido.' });
+    const [result] = await dbConnection.query('UPDATE pedidos SET id_estado_pedido=? WHERE id_pedido=? AND id_estado_pedido=?', [state, id, order.id_estado_pedido]);
+    if (!result.affectedRows) return res.status(409).json({ error: 'El estado cambió. Actualiza la lista de pedidos.' });
     res.json({ message: 'Estado del pedido actualizado.' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(error.status || 500).json({ error: error.status ? error.message : 'No se pudo actualizar el pedido.' });
   }
 });
 
@@ -659,7 +666,7 @@ app.post('/api/resenas', checkDbConnection, async (req, res) => {
 // --------------------------------------------------------------------
 app.get('/api/zonas', checkDbConnection, async (req, res) => {
   try {
-    const [rows] = await dbConnection.query('SELECT * FROM zonas ORDER BY nombre_zona');
+    const [rows] = await dbConnection.query('SELECT z.*, m.nombre_municipio AS ciudad FROM zonas z JOIN municipios m ON m.id_municipio=z.id_municipio ORDER BY z.nombre_zona');
     res.json(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -669,15 +676,6 @@ app.get('/api/zonas', checkDbConnection, async (req, res) => {
 app.get('/api/categorias', checkDbConnection, async (req, res) => {
   try {
     const [rows] = await dbConnection.query('SELECT * FROM categorias ORDER BY nombre_categoria');
-    res.json(rows);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.get('/api/planes', checkDbConnection, async (req, res) => {
-  try {
-    const [rows] = await dbConnection.query('SELECT * FROM planes_suscripcion ORDER BY costo');
     res.json(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -697,30 +695,47 @@ app.get('/api/metodos_pago', checkDbConnection, async (req, res) => {
 // ENDPOINT PAGOS
 // --------------------------------------------------------------------
 app.post('/api/pagos', checkDbConnection, async (req, res) => {
-  const { monto, id_usuario, id_metodo, id_pedido, id_plan } = req.body;
+  const { monto, id_usuario, id_metodo, id_pedido, referencia = null } = req.body;
+  const cents = Math.round(Number(monto) * 100);
   if (!Number.isFinite(Number(monto)) || Number(monto) <= 0 || !positiveInteger(id_usuario) || !positiveInteger(id_metodo) ||
-      Boolean(id_pedido) === Boolean(id_plan) || (id_pedido && !positiveInteger(id_pedido)) || (id_plan && !positiveInteger(id_plan))) {
-    return res.status(400).json({ error: 'El pago debe tener un monto positivo y corresponder a un pedido o a un plan, exclusivamente.' });
+      !positiveInteger(id_pedido) || Object.hasOwn(req.body, 'id_plan') || cents < 1 || cents > 999999999999 ||
+      Math.abs(Number(monto) * 100 - cents) > 0.0001 ||
+      (referencia !== null && (typeof referencia !== 'string' || !/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(referencia)))) {
+    return res.status(400).json({ error: 'El pago debe tener un monto positivo, un usuario, un medio de pago y un pedido válido. Solo se reciben pagos de pedidos.' });
   }
   if (Number(id_usuario) !== Number(req.user.id_usuario) && req.user.tipo_usuario !== 'administrador') return res.status(403).json({ error: 'Solo puedes registrar tus propios pagos.' });
+  let connection;
+  const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
   try {
-    const [result] = await dbConnection.query(
-      'INSERT INTO pagos (monto, estado_pago, id_usuario, id_metodo, id_pedido, id_plan) VALUES (?, "aprobado", ?, ?, ?, ?)',
-      [monto, id_usuario, id_metodo, id_pedido || null, id_plan || null]
-    );
-
-    // Si es pago de suscripción de plan, actualizar el plan del restaurante del usuario dueño
-    if (id_plan) {
-      await dbConnection.query(
-        'UPDATE restaurantes SET id_plan = ? WHERE id_propietario = ?',
-        [id_plan, id_usuario]
-      );
+    connection = await dbConnection.getConnection();
+    await connection.beginTransaction();
+    const [[order]] = await connection.query(`SELECT p.id_pedido,p.id_usuario,p.total_pago,e.codigo AS estado_pedido
+      FROM pedidos p JOIN estados_pedido e ON e.id_estado_pedido=p.id_estado_pedido WHERE p.id_pedido=? FOR UPDATE`, [id_pedido]);
+    if (!order) fail(404, 'El pedido no existe.');
+    if (Number(order.id_usuario) !== Number(id_usuario)) fail(403, 'El pago debe pertenecer al usuario que hizo el pedido.');
+    if (referencia) {
+      const [[previous]] = await connection.query('SELECT id_pago,monto,id_metodo,estado_pago FROM pagos WHERE id_pedido=? AND referencia=?', [id_pedido, referencia]);
+      if (previous) {
+        if (Math.round(Number(previous.monto) * 100) !== cents || Number(previous.id_metodo) !== Number(id_metodo)) fail(409, 'La referencia ya corresponde a otro importe o medio.');
+        await connection.commit();
+        return res.json({ id_pago: previous.id_pago, id_pedido: Number(id_pedido), status: previous.estado_pago });
+      }
     }
-
-    res.status(201).json({ id_pago: result.insertId, status: 'aprobado' });
+    if (order.estado_pedido === 'cancelado') fail(400, 'No se puede pagar un pedido cancelado.');
+    const [methods] = await connection.query('SELECT id_metodo FROM metodos_pago WHERE id_metodo = ?', [id_metodo]);
+    if (!methods.length) fail(400, 'El medio de pago no existe.');
+    const [[approved]] = await connection.query("SELECT COALESCE(SUM(monto),0) AS monto FROM pagos WHERE id_pedido=? AND estado_pago='aprobado'", [id_pedido]);
+    if (cents + Math.round(Number(approved.monto) * 100) > Math.round(Number(order.total_pago) * 100)) fail(409, 'El importe supera el saldo del pedido.');
+    const [result] = await connection.query(
+      'INSERT INTO pagos (monto, estado_pago, id_usuario, id_metodo, id_pedido, referencia) VALUES (?, "aprobado", ?, ?, ?, ?)',
+      [cents / 100, id_usuario, id_metodo, id_pedido, referencia]
+    );
+    await connection.commit();
+    res.status(201).json({ id_pago: result.insertId, id_pedido: Number(id_pedido), status: 'aprobado' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+    if (connection) await connection.rollback();
+    res.status(error.status || 500).json({ error: error.status ? error.message : 'No se pudo registrar el pago.' });
+  } finally { if (connection) connection.release(); }
 });
 
 // --------------------------------------------------------------------
@@ -773,10 +788,11 @@ app.put('/api/notificaciones/leer/:id', requireSession, checkDbConnection, async
 // --------------------------------------------------------------------
 app.get('/api/reportes/1', checkDbConnection, async (req, res) => {
   try {
+    const owner = req.user.tipo_usuario === 'restaurante';
     const [rows] = await dbConnection.query(`
       SELECT nombre AS 'Restaurante', direccion AS 'Direccion', telefono AS 'Telefono', email AS 'Correo', capacidad_total AS 'Aforo' 
-      FROM restaurantes ORDER BY nombre
-    `);
+      FROM restaurantes ${owner ? 'WHERE id_propietario=?' : ''} ORDER BY nombre
+    `, owner ? [req.user.id_usuario] : []);
     res.json(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -797,10 +813,11 @@ app.get('/api/reportes/2', checkDbConnection, async (req, res) => {
 
 app.get('/api/reportes/3', checkDbConnection, async (req, res) => {
   try {
+    const owner = req.user.tipo_usuario === 'restaurante';
     const [rows] = await dbConnection.query(`
       SELECT nombre AS 'Plato', descripcion AS 'Descripcion', precio AS 'Precio', IF(disponibilidad, 'Sí', 'No') AS 'Disponible' 
-      FROM platos WHERE disponibilidad = TRUE ORDER BY precio
-    `);
+      FROM platos WHERE disponibilidad = TRUE ${owner ? 'AND id_restaurante IN (SELECT id_restaurante FROM restaurantes WHERE id_propietario=?)' : ''} ORDER BY precio
+    `, owner ? [req.user.id_usuario] : []);
     res.json(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -809,11 +826,13 @@ app.get('/api/reportes/3', checkDbConnection, async (req, res) => {
 
 app.get('/api/reportes/4', checkDbConnection, async (req, res) => {
   try {
+    const owner = req.user.tipo_usuario === 'restaurante';
     const [rows] = await dbConnection.query(`
       SELECT r.nombre AS 'Restaurante', COUNT(re.id_resena) AS 'Total Resenas', ROUND(AVG(re.calificacion), 1) AS 'Calificacion Promedio' 
       FROM restaurantes r LEFT JOIN resenas re ON r.id_restaurante = re.id_restaurante 
+      ${owner ? 'WHERE r.id_propietario=?' : ''}
       GROUP BY r.id_restaurante, r.nombre ORDER BY AVG(re.calificacion) DESC
-    `);
+    `, owner ? [req.user.id_usuario] : []);
     res.json(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -822,14 +841,18 @@ app.get('/api/reportes/4', checkDbConnection, async (req, res) => {
 
 app.get('/api/reportes/5', checkDbConnection, async (req, res) => {
   try {
+    const owner = req.user.tipo_usuario === 'restaurante';
     const [rows] = await dbConnection.query(`
-      SELECT z.nombre_zona AS 'Zona', z.ciudad AS 'Municipio', COUNT(res.id_reserva) AS 'Reservas' 
+      SELECT z.nombre_zona AS 'Zona', mu.nombre_municipio AS 'Municipio', COUNT(DISTINCT res.id_reserva) AS 'Reservas'
       FROM zonas z 
+      INNER JOIN municipios mu ON mu.id_municipio=z.id_municipio
       INNER JOIN restaurantes r ON z.id_zona = r.id_zona 
       INNER JOIN mesas m ON r.id_restaurante = m.id_restaurante 
-      INNER JOIN reservas res ON m.id_mesa = res.id_mesa 
-      GROUP BY z.id_zona, z.nombre_zona, z.ciudad ORDER BY Reservas DESC
-    `);
+      INNER JOIN reserva_mesas rm ON m.id_mesa=rm.id_mesa
+      INNER JOIN reservas res ON rm.id_reserva=res.id_reserva
+      ${owner ? 'WHERE r.id_propietario=?' : ''}
+      GROUP BY z.id_zona, z.nombre_zona, mu.nombre_municipio ORDER BY Reservas DESC
+    `, owner ? [req.user.id_usuario] : []);
     res.json(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -838,12 +861,16 @@ app.get('/api/reportes/5', checkDbConnection, async (req, res) => {
 
 app.get('/api/reportes/6', checkDbConnection, async (req, res) => {
   try {
+    const owner = req.user.tipo_usuario === 'restaurante';
     const [rows] = await dbConnection.query(`
-      SELECT r.nombre AS 'Restaurante', COUNT(p.id_pedido) AS 'Pedidos', COALESCE(SUM(p.total_pago), 0) AS 'Ingresos Totales' 
+      SELECT r.nombre AS 'Restaurante', COUNT(CASE WHEN ep.codigo='entregado' THEN p.id_pedido END) AS 'Pedidos',
+      COALESCE(SUM(CASE WHEN ep.codigo='entregado' THEN p.total_pago END), 0) AS 'Ingresos Totales'
       FROM restaurantes r 
-      LEFT JOIN pedidos p ON r.id_restaurante = p.id_restaurante AND p.estado_pedido = 'entregado' 
+      LEFT JOIN pedidos p ON r.id_restaurante = p.id_restaurante
+      LEFT JOIN estados_pedido ep ON ep.id_estado_pedido=p.id_estado_pedido
+      ${owner ? 'WHERE r.id_propietario=?' : ''}
       GROUP BY r.id_restaurante, r.nombre ORDER BY \`Ingresos Totales\` DESC
-    `);
+    `, owner ? [req.user.id_usuario] : []);
     res.json(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -852,13 +879,15 @@ app.get('/api/reportes/6', checkDbConnection, async (req, res) => {
 
 app.get('/api/reportes/7', checkDbConnection, async (req, res) => {
   try {
+    const owner = req.user.tipo_usuario === 'restaurante';
     const [rows] = await dbConnection.query(`
       SELECT r.nombre AS 'Restaurante', COUNT(m.id_mesa) AS 'Total Mesas', 
              SUM(CASE WHEN m.estado = 'disponible' THEN 1 ELSE 0 END) AS 'Disponibles', 
              SUM(CASE WHEN m.estado = 'reservada' THEN 1 ELSE 0 END) AS 'Reservadas' 
       FROM restaurantes r INNER JOIN mesas m ON r.id_restaurante = m.id_restaurante 
+      ${owner ? 'WHERE r.id_propietario=?' : ''}
       GROUP BY r.id_restaurante, r.nombre
-    `);
+    `, owner ? [req.user.id_usuario] : []);
     res.json(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -867,12 +896,14 @@ app.get('/api/reportes/7', checkDbConnection, async (req, res) => {
 
 app.get('/api/reportes/8', checkDbConnection, async (req, res) => {
   try {
+    const owner = req.user.tipo_usuario === 'restaurante';
     const [rows] = await dbConnection.query(`
       SELECT r.nombre AS 'Restaurante', ROUND(AVG(re.calificacion), 2) AS 'Calificacion' 
       FROM restaurantes r INNER JOIN resenas re ON r.id_restaurante = re.id_restaurante 
+      ${owner ? 'WHERE r.id_propietario=?' : ''}
       GROUP BY r.id_restaurante, r.nombre 
-      HAVING AVG(re.calificacion) > (SELECT AVG(calificacion) FROM resenas)
-    `);
+      HAVING AVG(re.calificacion) > (SELECT AVG(calificacion) FROM resenas${owner ? ' WHERE id_restaurante IN (SELECT id_restaurante FROM restaurantes WHERE id_propietario=?)' : ''})
+    `, owner ? [req.user.id_usuario, req.user.id_usuario] : []);
     res.json(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -903,21 +934,24 @@ app.get('/api/reportes/9', checkDbConnection, async (req, res) => {
 
 app.get('/api/reportes/10', checkDbConnection, async (req, res) => {
   try {
+    const owner = req.user.tipo_usuario === 'restaurante';
     const [rows] = await dbConnection.query(`
       SELECT p.nombre AS 'Plato', c.nombre_categoria AS 'Categoria', SUM(dp.cantidad) AS 'Vendidos' 
       FROM platos p 
       INNER JOIN categorias c ON p.id_categoria = c.id_categoria 
       INNER JOIN detalle_pedidos dp ON p.id_plato = dp.id_plato 
+      ${owner ? 'WHERE p.id_restaurante IN (SELECT id_restaurante FROM restaurantes WHERE id_propietario=?)' : ''}
       GROUP BY p.id_plato, p.nombre, p.id_categoria, c.nombre_categoria 
       HAVING SUM(dp.cantidad) >= (
           SELECT AVG(cantidad_plato) FROM (
               SELECT p2.id_categoria, SUM(dp2.cantidad) AS cantidad_plato 
               FROM platos p2 
               INNER JOIN detalle_pedidos dp2 ON p2.id_plato = dp2.id_plato 
+              ${owner ? 'WHERE p2.id_restaurante IN (SELECT id_restaurante FROM restaurantes WHERE id_propietario=?)' : ''}
               GROUP BY p2.id_plato, p2.id_categoria
           ) AS sub2 WHERE sub2.id_categoria = p.id_categoria
       ) ORDER BY \`Vendidos\` DESC
-    `);
+    `, owner ? [req.user.id_usuario, req.user.id_usuario] : []);
     res.json(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -925,13 +959,26 @@ app.get('/api/reportes/10', checkDbConnection, async (req, res) => {
 });
 
 app.locals.initDB = initDB;
-app.locals.closeDB = async () => { if (dbConnection?.end) await dbConnection.end(); };
+let reminderTimer;
+app.locals.processReminders = () => dbConnection ? processReservationReminders(dbConnection, colombianTimestamp(now())) : Promise.resolve(0);
+app.locals.startReminders = () => {
+  if (reminderTimer) return;
+  const run = () => app.locals.processReminders().catch(() => console.warn('Los recordatorios se reintentarán en la siguiente revisión.'));
+  run();
+  reminderTimer = setInterval(run, 60000);
+  reminderTimer.unref();
+};
+app.locals.closeDB = async () => {
+  clearInterval(reminderTimer);
+  if (dbConnection?.end) await dbConnection.end();
+};
 return app;
 }
 
 async function start() {
   const app = createApp();
   await app.locals.initDB();
+  app.locals.startReminders();
   const port = Number(process.env.PORT) || 3000;
   return app.listen(port, '127.0.0.1', () => console.log(`GastroTurismo disponible en http://localhost:${port}`));
 }

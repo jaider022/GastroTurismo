@@ -15,10 +15,13 @@ data.pedidos.forEach(row => { row.total_pago = String(row.total_pago); });
 data.platos.forEach(row => { row.precio = String(row.precio); row.disponibilidad = String(Number(row.disponibilidad)); });
 data.resenas.forEach(row => { row.calificacion = String(row.calificacion); });
 data.detalle_pedidos.forEach(row => { row.cantidad = String(row.cantidad); });
-data.zonas.push({ id_zona: 900, nombre_zona: 'Zona sin reservas', ciudad: 'Armenia', descripcion_turistica: 'Prueba' });
+data.zonas.push({ id_zona: 900, nombre_zona: 'Zona sin reservas', id_municipio: data.municipios[0].id_municipio, descripcion_turistica: 'Prueba' });
 data.restaurantes.push({ ...data.restaurantes[0], id_restaurante: 900, id_zona: 900, nombre: 'Sin mesas ni opiniones' });
 const adminId = data.usuarios.find(user => user.tipo_usuario === 'administrador').id_usuario;
-for (let index = 0; index < 30; index += 1) data.reservas.push({ ...data.reservas[0], id_reserva: 900 + index, id_usuario: adminId });
+for (let index = 0; index < 30; index += 1) {
+  data.reservas.push({ ...data.reservas[0], id_reserva: 900 + index, id_usuario: adminId });
+  data.reserva_mesas.push({ ...data.reserva_mesas[0], id_reserva: 900 + index });
+}
 
 const storage = new Map();
 const context = vm.createContext({
@@ -29,7 +32,8 @@ const context = vm.createContext({
 vm.runInContext(fs.readFileSync(path.join(__dirname, '../public/app.js'), 'utf8') +
   '\nglobalThis.reports = {calculateMockReport, SQL_QUERIES, setLS, getLS};', context);
 const frontend = context.reports;
-const keys = { zonas: 'gt_zonas', usuarios: 'gt_usuarios', restaurantes: 'gt_restaurantes', mesas: 'gt_mesas', platos: 'gt_platos', reservas: 'gt_reservas', pedidos: 'gt_pedidos', detalle_pedidos: 'gt_detalle_pedidos', resenas: 'gt_resenas', categorias: 'gt_categorias' };
+const keys = { municipios: 'gt_municipios', estados_reserva: 'gt_estados_reserva', estados_pedido: 'gt_estados_pedido',
+  tipos_servicio: 'gt_tipos_servicio', reserva_mesas: 'gt_reserva_mesas', zonas: 'gt_zonas', usuarios: 'gt_usuarios', restaurantes: 'gt_restaurantes', mesas: 'gt_mesas', platos: 'gt_platos', reservas: 'gt_reservas', pedidos: 'gt_pedidos', detalle_pedidos: 'gt_detalle_pedidos', resenas: 'gt_resenas', categorias: 'gt_categorias' };
 for (const [table, key] of Object.entries(keys)) frontend.setLS(key, data[table]);
 const plain = value => JSON.parse(JSON.stringify(value));
 const canonical = rows => plain(rows).map(row => JSON.stringify(row)).sort();

@@ -211,9 +211,12 @@ test('cerrar sesión limpia avisos y una respuesta pendiente no los vuelve a mos
   await view.context.loadNotifications();
   view.node('notification-panel').classList.add('active');
   let release;
-  view.context.requestAPI = async () => new Promise(resolve => { release = resolve; });
+  view.context.requestAPI = async (route, options = {}) => route.startsWith('notificaciones/')
+    ? new Promise(resolve => { release = resolve; })
+    : view.originalRequest(route, options);
   const loading = view.context.loadNotifications();
   await view.node('btn-logout').dispatch('click');
+  assert.equal(view.node('public-container').style.display, 'grid');
   assert.equal(view.node('notification-count').textContent, '0');
   assert.equal(view.node('notification-count').style.display, 'none');
   assert.equal(view.node('notification-filter').value, 'pendientes');
@@ -256,4 +259,25 @@ test('fechas MySQL de Bogotá e ISO se ordenan por el instante y las inválidas 
   assert.match(rows[2].innerHTML, /Nueve y media en Bogotá/);
   assert.match(rows[3].innerHTML, /Fecha no disponible/);
   assert.equal(view.context.notificationDate('2026-10-29 10:00:00'), view.context.notificationDate('2026-10-29T15:00:00.000Z'));
+});
+
+test('recordatorios de demostración respetan las 24 horas y no se duplican', async () => {
+  const view=fixture();
+  const now=Date.now();
+  const slot=offset=>{
+    const parts=new Intl.DateTimeFormat('sv-SE',{timeZone:'America/Bogota',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).format(new Date(now+offset));
+    const [fecha_reserva,hora_reserva]=parts.split(' ');
+    return {fecha_reserva,hora_reserva};
+  };
+  view.context.data.setLS('gt_reservas',[
+    {id_reserva:901,id_usuario:1,id_mesa:1,estado_reserva:'confirmada',...slot(3600000)},
+    {id_reserva:902,id_usuario:1,id_mesa:1,estado_reserva:'cancelada',...slot(3600000)},
+    {id_reserva:903,id_usuario:1,id_mesa:1,estado_reserva:'pendiente',...slot(25*3600000)}
+  ]);
+  await view.context.loadNotifications();
+  await view.context.loadNotifications();
+  const rows=view.context.data.getLS('gt_notificaciones').filter(n=>n.mensaje.startsWith('Recordatorio de reserva #'));
+  assert.equal(rows.length,1);
+  assert.match(rows[0].mensaje,/#901 /);
+  assert.equal(rows[0].id_usuario,1);
 });

@@ -10,7 +10,7 @@ function element(value = '') {
   const classes = new Set(), events = new Map(), selectors = new Map();
   return {
     value, textContent: '', hidden: false, disabled: false, style: {}, children: [], dataset: {},
-    classList: { add: name => classes.add(name), remove: name => classes.delete(name), contains: name => classes.has(name), toggle: name => classes.has(name) ? classes.delete(name) : classes.add(name) },
+    classList: { add: name => classes.add(name), remove: name => classes.delete(name), contains: name => classes.has(name), toggle(name, force) { const add = force === undefined ? !classes.has(name) : force; if (add) classes.add(name); else classes.delete(name); return add; } },
     get innerHTML() { return html; },
     set innerHTML(next) { html = String(next); this.children = []; selectors.clear(); },
     appendChild(child) { this.children.push(child); return child; },
@@ -22,11 +22,14 @@ function element(value = '') {
     querySelectorAll() { return []; },
     setAttribute(name, value) { this[name] = value; },
     removeAttribute(name) { delete this[name]; },
+    showModal() { this.open = true; },
+    close() { this.open = false; },
+    contains(node) { return node === this || this.children.includes(node); },
     reset() {},
   };
 }
 
-function catalog({ session = new Map(), restaurants, dishes } = {}) {
+function catalog({ session = new Map(), restaurants, dishes, reducedMotion = false } = {}) {
   const nodes = new Map(), calls = [], messages = [], reservations = [];
   const getNode = id => { if (!nodes.has(id)) nodes.set(id, element()); return nodes.get(id); };
   const rests = restaurants || [
@@ -40,10 +43,12 @@ function catalog({ session = new Map(), restaurants, dishes } = {}) {
   ];
   const user = { id_usuario: 42, nombre: 'Turista', tipo_usuario: 'cliente' };
   const local = new Map();
+  const timers = new Map();
+  let timerId = 0;
   const storage = map => ({ getItem: key => map.get(key) ?? null, setItem: (key, value) => map.set(key, String(value)), removeItem: key => map.delete(key) });
   const context = vm.createContext({
     console: { log() {}, error() {}, warn() {} }, Intl, Date, URLSearchParams,
-    window: { scrollTo() {} },
+    window: { scrollTo() {}, matchMedia: () => ({ matches: reducedMotion }), setInterval(callback, delay) { timers.set(++timerId, { callback, delay }); return timerId; }, clearInterval(id) { timers.delete(id); } },
     document: { addEventListener() {}, getElementById: getNode, createElement: () => element(), querySelectorAll: () => [] },
     localStorage: storage(local), sessionStorage: storage(session)
   });
@@ -66,7 +71,8 @@ function catalog({ session = new Map(), restaurants, dishes } = {}) {
     throw new Error(`Consulta inesperada: ${route}`);
   };
   context.requestAPI = response;
-  return { context, nodes, node: getNode, calls, messages, reservations, rests, session, originalOpenReservation,
+  return { context, nodes, node: getNode, calls, messages, reservations, rests, session, originalOpenReservation, timers,
+    tick: () => { for (const timer of [...timers.values()]) timer.callback(); },
     authenticate: () => vm.runInContext(`currentUser = ${JSON.stringify(user)}`, context),
     get writes() { return calls.filter(call => call.method !== 'GET'); }
   };
@@ -76,9 +82,63 @@ test('explorar consulta únicamente el catálogo público y no escribe reservas'
   const view = catalog();
   await view.context.showPublicRestaurants();
   assert.deepEqual(view.calls, [{ route: 'restaurantes', method: 'GET' }]);
-  assert.equal(view.node('public-restaurants').children.length, 2);
+  assert.equal(view.node('public-restaurants').children.length, 3);
   assert.notEqual(view.node('public-container').style.display, 'none');
   assert.equal(view.node('app-container').style.display, 'none');
+  assert.equal(view.writes.length, 0);
+});
+
+test('la entrada sin sesión muestra el catálogo sin pedir credenciales ni crear reservas', async () => {
+  const view = catalog();
+  await view.context.initApp();
+  assert.equal(view.node('public-container').style.display, 'grid');
+  assert.equal(view.node('login-container').style.display, 'none');
+  assert.equal(view.node('app-container').style.display, 'none');
+  assert.deepEqual(view.calls, [{ route: 'restaurantes', method: 'GET' }]);
+  assert.equal(view.writes.length, 0);
+  assert.equal(view.reservations.length, 0);
+});
+
+test('recargar sin sesión conserva una elección anterior y permite seguir explorando', async () => {
+  const view = catalog({ session: new Map([['gt_pending_restaurant', '2']]) });
+  await view.context.initApp();
+  assert.equal(view.node('public-container').style.display, 'grid');
+  assert.equal(view.node('login-container').style.display, 'none');
+  assert.equal(view.context.getPendingReservation(), 2);
+  assert.equal(view.reservations.length, 0);
+});
+
+test('crear cuenta y volver al catálogo conserva el restaurante elegido para reservar', async () => {
+  const view = catalog();
+  view.context.setupEventHandlers();
+  await view.context.initApp();
+  await view.context.beginGuestReservation(2);
+  await view.node('go-to-register').click();
+  assert.equal(view.node('form-register').classList.contains('active'), true);
+  assert.equal(view.node('form-login').classList.contains('active'), false);
+  await view.node('btn-explorar-restaurantes').click();
+  assert.equal(view.node('public-container').style.display, 'grid');
+  assert.equal(view.context.getPendingReservation(), 2);
+  await view.node('btn-public-login').click();
+  assert.equal(view.node('form-login').classList.contains('active'), true);
+  assert.equal(view.node('form-register').classList.contains('active'), false);
+  await view.node('btn-public-register').click();
+  assert.equal(view.node('form-register').classList.contains('active'), true);
+  assert.equal(view.node('login-reserva-context').hidden, false);
+  assert.equal(view.writes.length, 0);
+});
+
+test('cerrar sesión vuelve al catálogo y limpia la selección y los avisos privados', async () => {
+  const view = catalog({ session: new Map([['gt_pending_restaurant', '2']]) });
+  view.context.setupEventHandlers();
+  view.authenticate();
+  view.node('notification-panel').classList.add('active');
+  await view.node('btn-logout').click();
+  assert.equal(view.node('public-container').style.display, 'grid');
+  assert.equal(view.node('login-container').style.display, 'none');
+  assert.equal(view.node('app-container').style.display, 'none');
+  assert.equal(view.context.getPendingReservation(), null);
+  assert.equal(view.node('notification-panel').classList.contains('active'), false);
   assert.equal(view.writes.length, 0);
 });
 
@@ -88,7 +148,7 @@ test('la búsqueda pública encuentra nombre, especialidad, ciudad y zona sin ti
   for (const query of ['cafe', 'tipica', 'salento', 'valle del cocora']) {
     view.node('public-rest-search').value = query;
     view.context.renderPublicRestaurants();
-    assert.equal(view.node('public-restaurants').children.length, 1, query);
+    assert.equal(view.node('public-restaurants').children.length, query === 'cafe' ? 2 : 1, query);
     assert.match(view.node('public-restaurants').children[0].innerHTML, /Café Cocora/);
   }
   view.node('public-rest-search').value = 'inexistente';
@@ -100,7 +160,8 @@ test('los nombres y descripciones públicos se muestran como texto escapado', as
   const view = catalog({ restaurants: [{ id_restaurante: 2, nombre: '<img src=x onerror=alert(1)>', especialidad: 'Comida & café', direccion: '<script>x</script>' }], dishes: [{ id_plato: 1, id_restaurante: 2, nombre: '<b>Trucha</b>', descripcion: '<img src=x>', precio: '15000.50', disponibilidad: 1 }] });
   await view.context.showPublicRestaurants();
   const card = view.node('public-restaurants').children[0].innerHTML;
-  assert.ok(!card.includes('<img'));
+  assert.ok(!card.includes('<img src=x'));
+  assert.doesNotMatch(card, /<img\b[^>]*\bonerror\s*=/i);
   assert.match(card, /&lt;img/);
   assert.match(card, /Comida &amp; café/);
   await view.context.openPublicMenu(2);
@@ -109,6 +170,128 @@ test('los nombres y descripciones públicos se muestran como texto escapado', as
   assert.ok(!html.includes('<b>Trucha'));
   assert.match(html, /&lt;b&gt;Trucha/);
   assert.ok(!html.includes('<img'));
+  assert.match(view.node('public-menu-contact').innerHTML, /&lt;script&gt;x&lt;\/script&gt;/);
+});
+
+test('municipio y búsqueda se combinan sin mezclar restaurantes ni escribir reservas', async () => {
+  const view = catalog();
+  await view.context.showPublicRestaurants();
+  assert.match(view.node('public-rest-city').innerHTML, /Armenia/);
+  assert.match(view.node('public-rest-city').innerHTML, /Salento/);
+  view.node('public-rest-city').value = 'salento';
+  view.context.renderPublicRestaurants();
+  assert.equal(view.node('public-restaurants').children.length, 1);
+  assert.match(view.node('public-restaurants').children[0].innerHTML, /Café Cocora/);
+  view.node('public-rest-search').value = 'asados';
+  view.context.renderPublicRestaurants();
+  assert.equal(view.node('public-restaurants').children.length, 0);
+  assert.equal(view.node('public-rest-count').textContent, '0 restaurantes encontrados');
+  view.node('public-rest-city').value = '';
+  view.context.renderPublicRestaurants();
+  assert.equal(view.node('public-restaurants').children.length, 1);
+  assert.match(view.node('public-restaurants').children[0].innerHTML, /Mirador del Quindío/);
+  assert.equal(view.writes.length, 0);
+});
+
+test('el menú conserva dirección y teléfono aunque las tarjetas sean compactas', async () => {
+  const view = catalog({ restaurants: [{ id_restaurante: 2, nombre: 'Café Cocora', especialidad: 'Café de origen', ciudad: 'Salento', direccion: 'Vía al valle, km 2', nombre_zona: 'Cocora', telefono: '3105550100' }] });
+  await view.context.showPublicRestaurants();
+  const card = view.node('public-restaurants').children[0].innerHTML;
+  assert.ok(!card.includes('3105550100'));
+  await view.context.openPublicMenu(2);
+  const contact = view.node('public-menu-contact').innerHTML;
+  assert.match(contact, /Vía al valle, km 2/);
+  assert.match(contact, /Cocora/);
+  assert.match(contact, /3105550100/);
+});
+
+test('Sorrento aparece y se puede buscar junto a los demás sin inventar una reserva', async () => {
+  const view = catalog();
+  await view.context.showPublicRestaurants();
+  view.node('public-rest-search').value = 'sorrento';
+  view.node('public-rest-city').value = 'armenia';
+  view.context.renderPublicRestaurants();
+  assert.equal(view.node('public-restaurants').children.length, 1);
+  const card = view.node('public-restaurants').children[0];
+  assert.match(card.innerHTML, /Café Sorrento/);
+  assert.ok(!card.innerHTML.includes('>Reservar<'));
+  await card.querySelector('[data-public-menu]').click();
+  assert.match(view.node('public-menu-items').innerHTML, /Maicitos/);
+  assert.match(view.node('public-menu-items').innerHTML, /Pizza/);
+  await card.querySelector('[data-public-reserve]').click();
+  assert.equal(view.node('sorrento-gallery').open, true);
+  assert.equal(view.context.getPendingReservation(), null);
+  assert.equal(view.writes.length, 0);
+  await view.context.openPublicMenu(2);
+  assert.equal(view.node('btn-public-reserve').textContent, 'Reservar en este restaurante');
+});
+
+test('si Sorrento ya llega de la base no se duplica y utiliza su identificador real', async () => {
+  const view = catalog({ restaurants: [{ id_restaurante: 80, nombre: 'Café Sorrento', ciudad: 'Armenia', especialidad: 'Café y desayunos' }] });
+  await view.context.showPublicRestaurants();
+  assert.equal(view.node('public-restaurants').children.length, 1);
+  assert.match(view.node('public-restaurants').children[0].innerHTML, />Reservar</);
+  await view.node('public-restaurants').children[0].querySelector('[data-public-reserve]').click();
+  assert.equal(view.context.getPendingReservation(), 80);
+  assert.equal(view.writes.length, 0);
+});
+
+test('fotos y tarjetas rotan con tiempos independientes, pausa y limpieza al cambiar de vista', async () => {
+  const restaurants = [1, 2, 3, 4].map(id => ({ id_restaurante: id, nombre: 'Restaurante ' + id, ciudad: 'Armenia' }));
+  const view = catalog({ restaurants });
+  await view.context.showPublicRestaurants();
+  assert.equal(view.timers.size, 2);
+  assert.deepEqual([...view.timers.values()].map(t => t.delay).sort((a, b) => a - b), [2000, 5000]);
+  assert.equal(view.node('public-hero-image').src, 'images/cocora-restaurante.jpg');
+  view.tick();
+  assert.equal(view.node('public-hero-image').src, 'images/cafe-finca.jpg');
+  assert.equal(view.node('public-restaurants').children[0].inert, true);
+  assert.equal(view.node('public-restaurants').children[4].inert, true);
+  view.tick();
+  assert.equal(view.node('public-restaurants').children[4].inert, false);
+  view.context.setPublicCarouselPaused('catalog', true);
+  assert.equal(view.timers.size, 1);
+  const transform = view.node('public-restaurants').style.transform;
+  view.tick();
+  assert.equal(view.node('public-restaurants').style.transform, transform);
+  view.context.advancePublicCatalog(-1);
+  assert.notEqual(view.node('public-restaurants').style.transform, transform);
+  assert.equal(view.timers.size, 1);
+  view.context.setPublicCarouselPaused('catalog', false);
+  await view.context.showPublicRestaurants();
+  assert.equal(view.timers.size, 2);
+  view.context.showLogin();
+  assert.equal(view.timers.size, 0);
+  await view.context.showPublicRestaurants();
+  view.authenticate();
+  view.context.showDashboard();
+  assert.equal(view.timers.size, 0);
+});
+
+test('carruseles se detienen al leer detalles o interactuar y respetan movimiento reducido', async () => {
+  const restaurants = [1, 2, 3, 4].map(id => ({ id_restaurante: id, nombre: 'Restaurante ' + id, ciudad: 'Armenia' }));
+  const view = catalog({ restaurants });
+  view.context.setupEventHandlers();
+  await view.context.showPublicRestaurants();
+  view.node('sorrento-gallery').open = true;
+  view.tick();
+  assert.equal(view.node('public-hero-image').src, 'images/cocora-restaurante.jpg');
+  assert.equal(view.node('public-restaurants').children[0].inert, false);
+  view.node('sorrento-gallery').close();
+  view.node('public-catalog').dispatch('mouseenter');
+  view.tick();
+  assert.equal(view.node('public-restaurants').children[0].inert, false);
+  assert.equal(view.node('public-hero-image').src, 'images/cafe-finca.jpg');
+  view.node('public-catalog').dispatch('mouseleave');
+  view.tick();
+  assert.equal(view.node('public-restaurants').children[0].inert, true);
+  const reduced = catalog({ restaurants, reducedMotion: true });
+  await reduced.context.showPublicRestaurants();
+  assert.equal(reduced.timers.size, 0);
+  reduced.context.advancePublicHero(1);
+  assert.equal(reduced.node('public-hero-image').src, 'images/cafe-finca.jpg');
+  reduced.context.advancePublicCatalog(1);
+  assert.equal(reduced.node('public-restaurants').children[0].inert, true);
 });
 
 test('el menú público incluye solo platos disponibles del restaurante elegido', async () => {
@@ -252,10 +435,11 @@ test('el formulario original precarga el restaurante seleccionado sin guardar un
   view.context.openReservaModal = view.originalOpenReservation;
   await view.context.resumePendingReservation();
   assert.equal(Number(view.node('mres-restaurante').value), 2);
-  assert.equal(view.node('modal-reserva-title').textContent, 'Nueva Reserva de Mesa');
+  assert.equal(view.node('modal-reserva-title').textContent, 'Nueva reserva de mesa');
   assert.equal(view.node('modal-reserva').classList.contains('active'), true);
   assert.equal(view.context.getPendingReservation(), null);
-  assert.ok(view.calls.some(call => call.route === 'mesas'));
-  assert.ok(view.calls.some(call => call.route === 'reservas'));
+  assert.ok(view.calls.some(call => call.route === 'restaurantes'));
+  assert.match(view.node('mres-mesa-summary').textContent, /fecha y hora/);
+  assert.equal(view.node('mres-mesa').disabled, true);
   assert.equal(view.writes.length, 0);
 });
