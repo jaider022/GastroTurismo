@@ -166,3 +166,7 @@ Se incorporó la especialización total y disjunta Usuario → Cliente, Propieta
 La entrada sin sesión ahora muestra restaurantes y menús sin pedir contraseña. Las opciones Iniciar sesión y Crear cuenta quedan en el encabezado; pulsar Reservar conduce al acceso y conserva el restaurante para abrir el formulario después del ingreso o registro. No guarda una reserva automáticamente. Cerrar sesión vuelve al catálogo y limpia los avisos privados; una sesión válida sigue restaurando el panel habitual.
 
 Evidencia local en work/entrada-publica-20261111: 46 pruebas dirigidas aprobadas, ocho comprobaciones desde navegador con MySQL, capturas de escritorio/móvil revisadas y comparación de las 23 tablas de la copia de ensayo antes y después de retirar la cuenta temporal. Cero errores JavaScript y cero reservas automáticas. No se modificó el servidor, la base habitual ni los modelos.
+
+## Documento con capturas del 13 de noviembre
+
+Se reconstruyó el informe académico en tercera persona con portada e índice, 35 figuras, 36 tablas y diccionario completo de 22 tablas. Las capturas de pedidos y documentos esperan la carga de sus datos; experiencias muestra el historial. Los diez reportes se ejecutaron en una copia controlada. La mejora identificada es el contador de clientes del resumen, que actualmente depende del navegador. El reporte 2 y los conteos de población sí consultan la base. El enlace del video queda pendiente del grupo.
