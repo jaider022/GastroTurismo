@@ -58,8 +58,8 @@ Reglas detalladas: docs/datos-y-modelo.md.
 
 ## Cierre técnico del 12 de noviembre
 
-Modelo y base normalizados: 22 tablas y 30 claves foráneas, sin usuario duplicado en Pago. Las 22 tablas contienen datos y Sorrento tiene once productos con precios suministrados por el equipo. La plantilla oficial está diligenciada en docs/Trabajo_final_GastroTurismo.docx; falta el enlace del video del grupo. Actualizaciones incrementales: db:normalizar-pagos y db:datos-entrega. Ver docs/Normalizacion_pagos.md y docs/Entrega_y_video.md.
+Modelo y base normalizados: 22 tablas y 30 claves foráneas, sin usuario duplicado en Pago. Las 22 tablas contienen datos y Sorrento tiene once productos con precios suministrados por el equipo. El documento final se conserva localmente para revisión del equipo y está excluido de Git. Actualizaciones incrementales: db:normalizar-pagos y db:datos-entrega. Ver docs/Normalizacion_pagos.md y docs/Entrega_y_video.md.
 
 ## Informe académico con evidencias
 
-Actualizado el 13 de noviembre: [Word del proyecto](docs/Trabajo_final_GastroTurismo.docx), creado desde cero con portada, índice, 35 figuras, 36 tablas, los dos modelos, diccionario de 22 tablas, SQL de los cuatro CRUD y diez reportes. Las cifras corresponden a la base habitual y las capturas de la aplicación a una copia de verificación. Falta incorporar el video del grupo. Durante la revisión se identificó que el contador de clientes del resumen depende del navegador; el reporte 2 sí consulta la base. Ese indicador queda pendiente de sincronizar.
+Por decisión de Jaider del 13 de noviembre, el Word final se retira de la versión actual del repositorio y se mantiene localmente para que él lo organice. No se publicará automáticamente en los siguientes guardados. Durante la revisión se identificó que el contador de clientes del resumen depende del navegador; el reporte 2 sí consulta la base. Ese indicador queda pendiente de sincronizar.
