@@ -878,6 +878,105 @@
       "disponibilidad": true,
       "id_categoria": 5,
       "id_restaurante": 4
+    },
+    {
+      "id_plato": 21,
+      "nombre": "Café",
+      "descripcion": "Café de la casa.",
+      "precio": 4400,
+      "disponibilidad": true,
+      "id_categoria": 3,
+      "id_restaurante": 5
+    },
+    {
+      "id_plato": 22,
+      "nombre": "Capuchino",
+      "descripcion": "Capuchino.",
+      "precio": 8700,
+      "disponibilidad": true,
+      "id_categoria": 3,
+      "id_restaurante": 5
+    },
+    {
+      "id_plato": 23,
+      "nombre": "Latte",
+      "descripcion": "Latte.",
+      "precio": 7800,
+      "disponibilidad": true,
+      "id_categoria": 3,
+      "id_restaurante": 5
+    },
+    {
+      "id_plato": 24,
+      "nombre": "Pizza personal",
+      "descripcion": "Pizza en presentación personal.",
+      "precio": 20000,
+      "disponibilidad": true,
+      "id_categoria": 2,
+      "id_restaurante": 5
+    },
+    {
+      "id_plato": 25,
+      "nombre": "Pizza mediana",
+      "descripcion": "Pizza en presentación mediana.",
+      "precio": 32000,
+      "disponibilidad": true,
+      "id_categoria": 2,
+      "id_restaurante": 5
+    },
+    {
+      "id_plato": 26,
+      "nombre": "Pizza grande",
+      "descripcion": "Pizza en presentación grande.",
+      "precio": 50000,
+      "disponibilidad": true,
+      "id_categoria": 2,
+      "id_restaurante": 5
+    },
+    {
+      "id_plato": 27,
+      "nombre": "Hamburguesa",
+      "descripcion": "Hamburguesa de la casa.",
+      "precio": 26000,
+      "disponibilidad": true,
+      "id_categoria": 2,
+      "id_restaurante": 5
+    },
+    {
+      "id_plato": 28,
+      "nombre": "Maicitos",
+      "descripcion": "Maicitos.",
+      "precio": 24000,
+      "disponibilidad": true,
+      "id_categoria": 2,
+      "id_restaurante": 5
+    },
+    {
+      "id_plato": 29,
+      "nombre": "Rollitos napolitanos",
+      "descripcion": "Rollitos napolitanos.",
+      "precio": 24000,
+      "disponibilidad": true,
+      "id_categoria": 1,
+      "id_restaurante": 5
+    },
+    {
+      "id_plato": 30,
+      "nombre": "Rollitos mixtos",
+      "descripcion": "Rollitos mixtos.",
+      "precio": 26000,
+      "disponibilidad": true,
+      "id_categoria": 1,
+      "id_restaurante": 5
+    },
+    {
+      "id_plato": 31,
+      "nombre": "Rollitos de jamón y queso",
+      "descripcion": "Rollitos de jamón y queso.",
+      "precio": 24000,
+      "disponibilidad": true,
+      "id_categoria": 1,
+      "id_restaurante": 5
     }
   ],
   "reservas": [
@@ -17180,7 +17279,6 @@
       "monto": 57000,
       "fecha_pago": "2026-08-01 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 11,
       "id_metodo": 2,
       "id_pedido": 2
     },
@@ -17189,7 +17287,6 @@
       "monto": 32000,
       "fecha_pago": "2026-08-01 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 16,
       "id_metodo": 3,
       "id_pedido": 3
     },
@@ -17198,7 +17295,6 @@
       "monto": 38000,
       "fecha_pago": "2026-08-01 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 21,
       "id_metodo": 4,
       "id_pedido": 4
     },
@@ -17207,7 +17303,6 @@
       "monto": 90000,
       "fecha_pago": "2026-08-02 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 9,
       "id_metodo": 2,
       "id_pedido": 5
     },
@@ -17216,7 +17311,6 @@
       "monto": 38000,
       "fecha_pago": "2026-08-02 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 14,
       "id_metodo": 3,
       "id_pedido": 6
     },
@@ -17225,7 +17319,6 @@
       "monto": 48000,
       "fecha_pago": "2026-08-02 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 19,
       "id_metodo": 4,
       "id_pedido": 7
     },
@@ -17234,7 +17327,6 @@
       "monto": 58000,
       "fecha_pago": "2026-08-02 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 24,
       "id_metodo": 5,
       "id_pedido": 8
     },
@@ -17243,7 +17335,6 @@
       "monto": 42000,
       "fecha_pago": "2026-08-03 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 12,
       "id_metodo": 3,
       "id_pedido": 9
     },
@@ -17252,7 +17343,6 @@
       "monto": 56000,
       "fecha_pago": "2026-08-03 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 17,
       "id_metodo": 4,
       "id_pedido": 10
     },
@@ -17261,7 +17351,6 @@
       "monto": 70000,
       "fecha_pago": "2026-08-03 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 22,
       "id_metodo": 5,
       "id_pedido": 11
     },
@@ -17270,7 +17359,6 @@
       "monto": 141000,
       "fecha_pago": "2026-08-03 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 27,
       "id_metodo": 1,
       "id_pedido": 12
     },
@@ -17279,7 +17367,6 @@
       "monto": 29000,
       "fecha_pago": "2026-08-04 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 15,
       "id_metodo": 4,
       "id_pedido": 13
     },
@@ -17288,7 +17375,6 @@
       "monto": 35000,
       "fecha_pago": "2026-08-04 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 20,
       "id_metodo": 5,
       "id_pedido": 14
     },
@@ -17297,7 +17383,6 @@
       "monto": 60000,
       "fecha_pago": "2026-08-04 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 25,
       "id_metodo": 1,
       "id_pedido": 15
     },
@@ -17306,7 +17391,6 @@
       "monto": 35000,
       "fecha_pago": "2026-08-04 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 30,
       "id_metodo": 2,
       "id_pedido": 16
     },
@@ -17315,7 +17399,6 @@
       "monto": 46000,
       "fecha_pago": "2026-08-05 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 18,
       "id_metodo": 5,
       "id_pedido": 17
     },
@@ -17324,7 +17407,6 @@
       "monto": 94000,
       "fecha_pago": "2026-08-05 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 23,
       "id_metodo": 1,
       "id_pedido": 18
     },
@@ -17333,7 +17415,6 @@
       "monto": 42000,
       "fecha_pago": "2026-08-05 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 28,
       "id_metodo": 2,
       "id_pedido": 19
     },
@@ -17342,7 +17423,6 @@
       "monto": 52000,
       "fecha_pago": "2026-08-05 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 33,
       "id_metodo": 3,
       "id_pedido": 20
     },
@@ -17351,7 +17431,6 @@
       "monto": 126000,
       "fecha_pago": "2026-08-06 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 21,
       "id_metodo": 1,
       "id_pedido": 21
     },
@@ -17360,7 +17439,6 @@
       "monto": 47000,
       "fecha_pago": "2026-08-06 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 26,
       "id_metodo": 2,
       "id_pedido": 22
     },
@@ -17369,7 +17447,6 @@
       "monto": 61000,
       "fecha_pago": "2026-08-06 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 31,
       "id_metodo": 3,
       "id_pedido": 23
     },
@@ -17378,7 +17455,6 @@
       "monto": 75000,
       "fecha_pago": "2026-08-06 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 8,
       "id_metodo": 4,
       "id_pedido": 24
     },
@@ -17387,7 +17463,6 @@
       "monto": 26000,
       "fecha_pago": "2026-08-07 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 24,
       "id_metodo": 2,
       "id_pedido": 25
     },
@@ -17396,7 +17471,6 @@
       "monto": 32000,
       "fecha_pago": "2026-08-07 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 29,
       "id_metodo": 3,
       "id_pedido": 26
     },
@@ -17405,7 +17479,6 @@
       "monto": 38000,
       "fecha_pago": "2026-08-07 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 6,
       "id_metodo": 4,
       "id_pedido": 27
     },
@@ -17414,7 +17487,6 @@
       "monto": 63000,
       "fecha_pago": "2026-08-07 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 11,
       "id_metodo": 5,
       "id_pedido": 28
     },
@@ -17423,7 +17495,6 @@
       "monto": 40000,
       "fecha_pago": "2026-08-08 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 27,
       "id_metodo": 3,
       "id_pedido": 29
     },
@@ -17432,7 +17503,6 @@
       "monto": 50000,
       "fecha_pago": "2026-08-08 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 32,
       "id_metodo": 4,
       "id_pedido": 30
     },
@@ -17441,7 +17511,6 @@
       "monto": 98000,
       "fecha_pago": "2026-08-08 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 9,
       "id_metodo": 5,
       "id_pedido": 31
     },
@@ -17450,7 +17519,6 @@
       "monto": 46000,
       "fecha_pago": "2026-08-08 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 14,
       "id_metodo": 1,
       "id_pedido": 32
     },
@@ -17459,7 +17527,6 @@
       "monto": 60000,
       "fecha_pago": "2026-08-09 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 30,
       "id_metodo": 4,
       "id_pedido": 33
     },
@@ -17468,7 +17535,6 @@
       "monto": 131000,
       "fecha_pago": "2026-08-09 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 7,
       "id_metodo": 5,
       "id_pedido": 34
     },
@@ -17477,7 +17543,6 @@
       "monto": 52000,
       "fecha_pago": "2026-08-09 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 12,
       "id_metodo": 1,
       "id_pedido": 35
     },
@@ -17486,7 +17551,6 @@
       "monto": 54000,
       "fecha_pago": "2026-08-10 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 33,
       "id_metodo": 5,
       "id_pedido": 37
     },
@@ -17495,7 +17559,6 @@
       "monto": 29000,
       "fecha_pago": "2026-08-10 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 10,
       "id_metodo": 1,
       "id_pedido": 38
     },
@@ -17504,7 +17567,6 @@
       "monto": 41000,
       "fecha_pago": "2026-08-10 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 20,
       "id_metodo": 3,
       "id_pedido": 40
     },
@@ -17513,7 +17575,6 @@
       "monto": 34000,
       "fecha_pago": "2026-08-11 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 8,
       "id_metodo": 1,
       "id_pedido": 41
     },
@@ -17522,7 +17583,6 @@
       "monto": 54000,
       "fecha_pago": "2026-08-11 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 18,
       "id_metodo": 3,
       "id_pedido": 43
     },
@@ -17531,7 +17591,6 @@
       "monto": 102000,
       "fecha_pago": "2026-08-11 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 23,
       "id_metodo": 4,
       "id_pedido": 44
     },
@@ -17540,7 +17599,6 @@
       "monto": 65000,
       "fecha_pago": "2026-08-12 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 16,
       "id_metodo": 3,
       "id_pedido": 46
     },
@@ -17549,7 +17607,6 @@
       "monto": 136000,
       "fecha_pago": "2026-08-12 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 21,
       "id_metodo": 4,
       "id_pedido": 47
     },
@@ -17558,7 +17615,6 @@
       "monto": 57000,
       "fecha_pago": "2026-08-12 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 26,
       "id_metodo": 5,
       "id_pedido": 48
     },
@@ -17567,7 +17623,6 @@
       "monto": 32000,
       "fecha_pago": "2026-08-13 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 14,
       "id_metodo": 3,
       "id_pedido": 49
     },
@@ -17576,7 +17631,6 @@
       "monto": 57000,
       "fecha_pago": "2026-08-13 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 19,
       "id_metodo": 4,
       "id_pedido": 50
     },
@@ -17585,7 +17639,6 @@
       "monto": 32000,
       "fecha_pago": "2026-08-13 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 24,
       "id_metodo": 5,
       "id_pedido": 51
     },
@@ -17594,7 +17647,6 @@
       "monto": 38000,
       "fecha_pago": "2026-08-13 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 29,
       "id_metodo": 1,
       "id_pedido": 52
     },
@@ -17603,7 +17655,6 @@
       "monto": 90000,
       "fecha_pago": "2026-08-14 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 17,
       "id_metodo": 4,
       "id_pedido": 53
     },
@@ -17612,7 +17663,6 @@
       "monto": 38000,
       "fecha_pago": "2026-08-14 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 22,
       "id_metodo": 5,
       "id_pedido": 54
     },
@@ -17621,7 +17671,6 @@
       "monto": 48000,
       "fecha_pago": "2026-08-14 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 27,
       "id_metodo": 1,
       "id_pedido": 55
     },
@@ -17630,7 +17679,6 @@
       "monto": 58000,
       "fecha_pago": "2026-08-14 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 32,
       "id_metodo": 2,
       "id_pedido": 56
     },
@@ -17639,7 +17687,6 @@
       "monto": 42000,
       "fecha_pago": "2026-08-15 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 20,
       "id_metodo": 5,
       "id_pedido": 57
     },
@@ -17648,7 +17695,6 @@
       "monto": 56000,
       "fecha_pago": "2026-08-15 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 25,
       "id_metodo": 1,
       "id_pedido": 58
     },
@@ -17657,7 +17703,6 @@
       "monto": 70000,
       "fecha_pago": "2026-08-15 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 30,
       "id_metodo": 2,
       "id_pedido": 59
     },
@@ -17666,7 +17711,6 @@
       "monto": 141000,
       "fecha_pago": "2026-08-15 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 7,
       "id_metodo": 3,
       "id_pedido": 60
     },
@@ -17675,7 +17719,6 @@
       "monto": 29000,
       "fecha_pago": "2026-08-16 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 23,
       "id_metodo": 1,
       "id_pedido": 61
     },
@@ -17684,7 +17727,6 @@
       "monto": 35000,
       "fecha_pago": "2026-08-16 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 28,
       "id_metodo": 2,
       "id_pedido": 62
     },
@@ -17693,7 +17735,6 @@
       "monto": 60000,
       "fecha_pago": "2026-08-16 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 33,
       "id_metodo": 3,
       "id_pedido": 63
     },
@@ -17702,7 +17743,6 @@
       "monto": 35000,
       "fecha_pago": "2026-08-16 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 10,
       "id_metodo": 4,
       "id_pedido": 64
     },
@@ -17711,7 +17751,6 @@
       "monto": 46000,
       "fecha_pago": "2026-08-17 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 26,
       "id_metodo": 2,
       "id_pedido": 65
     },
@@ -17720,7 +17759,6 @@
       "monto": 94000,
       "fecha_pago": "2026-08-17 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 31,
       "id_metodo": 3,
       "id_pedido": 66
     },
@@ -17729,7 +17767,6 @@
       "monto": 42000,
       "fecha_pago": "2026-08-17 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 8,
       "id_metodo": 4,
       "id_pedido": 67
     },
@@ -17738,7 +17775,6 @@
       "monto": 52000,
       "fecha_pago": "2026-08-17 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 13,
       "id_metodo": 5,
       "id_pedido": 68
     },
@@ -17747,7 +17783,6 @@
       "monto": 126000,
       "fecha_pago": "2026-08-18 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 29,
       "id_metodo": 3,
       "id_pedido": 69
     },
@@ -17756,7 +17791,6 @@
       "monto": 47000,
       "fecha_pago": "2026-08-18 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 6,
       "id_metodo": 4,
       "id_pedido": 70
     },
@@ -17765,7 +17799,6 @@
       "monto": 61000,
       "fecha_pago": "2026-08-18 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 11,
       "id_metodo": 5,
       "id_pedido": 71
     },
@@ -17774,7 +17807,6 @@
       "monto": 75000,
       "fecha_pago": "2026-08-18 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 16,
       "id_metodo": 1,
       "id_pedido": 72
     },
@@ -17783,7 +17815,6 @@
       "monto": 26000,
       "fecha_pago": "2026-08-19 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 32,
       "id_metodo": 4,
       "id_pedido": 73
     },
@@ -17792,7 +17823,6 @@
       "monto": 32000,
       "fecha_pago": "2026-08-19 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 9,
       "id_metodo": 5,
       "id_pedido": 74
     },
@@ -17801,7 +17831,6 @@
       "monto": 38000,
       "fecha_pago": "2026-08-19 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 14,
       "id_metodo": 1,
       "id_pedido": 75
     },
@@ -17810,7 +17839,6 @@
       "monto": 63000,
       "fecha_pago": "2026-08-19 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 19,
       "id_metodo": 2,
       "id_pedido": 76
     },
@@ -17819,7 +17847,6 @@
       "monto": 40000,
       "fecha_pago": "2026-08-20 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 7,
       "id_metodo": 5,
       "id_pedido": 77
     },
@@ -17828,7 +17855,6 @@
       "monto": 50000,
       "fecha_pago": "2026-08-20 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 12,
       "id_metodo": 1,
       "id_pedido": 78
     },
@@ -17837,7 +17863,6 @@
       "monto": 98000,
       "fecha_pago": "2026-08-20 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 17,
       "id_metodo": 2,
       "id_pedido": 79
     },
@@ -17846,7 +17871,6 @@
       "monto": 60000,
       "fecha_pago": "2026-08-21 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 10,
       "id_metodo": 1,
       "id_pedido": 81
     },
@@ -17855,7 +17879,6 @@
       "monto": 131000,
       "fecha_pago": "2026-08-21 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 15,
       "id_metodo": 2,
       "id_pedido": 82
     },
@@ -17864,7 +17887,6 @@
       "monto": 66000,
       "fecha_pago": "2026-08-21 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 25,
       "id_metodo": 4,
       "id_pedido": 84
     },
@@ -17873,7 +17895,6 @@
       "monto": 54000,
       "fecha_pago": "2026-08-22 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 13,
       "id_metodo": 2,
       "id_pedido": 85
     },
@@ -17882,7 +17903,6 @@
       "monto": 35000,
       "fecha_pago": "2026-08-22 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 23,
       "id_metodo": 4,
       "id_pedido": 87
     },
@@ -17891,7 +17911,6 @@
       "monto": 41000,
       "fecha_pago": "2026-08-22 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 28,
       "id_metodo": 5,
       "id_pedido": 88
     },
@@ -17900,7 +17919,6 @@
       "monto": 44000,
       "fecha_pago": "2026-08-23 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 21,
       "id_metodo": 4,
       "id_pedido": 90
     },
@@ -17909,7 +17927,6 @@
       "monto": 54000,
       "fecha_pago": "2026-08-23 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 26,
       "id_metodo": 5,
       "id_pedido": 91
     },
@@ -17918,7 +17935,6 @@
       "monto": 102000,
       "fecha_pago": "2026-08-23 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 31,
       "id_metodo": 1,
       "id_pedido": 92
     },
@@ -17927,7 +17943,6 @@
       "monto": 51000,
       "fecha_pago": "2026-08-24 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 19,
       "id_metodo": 4,
       "id_pedido": 93
     },
@@ -17936,7 +17951,6 @@
       "monto": 65000,
       "fecha_pago": "2026-08-24 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 24,
       "id_metodo": 5,
       "id_pedido": 94
     },
@@ -17945,7 +17959,6 @@
       "monto": 136000,
       "fecha_pago": "2026-08-24 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 29,
       "id_metodo": 1,
       "id_pedido": 95
     },
@@ -17954,7 +17967,6 @@
       "monto": 57000,
       "fecha_pago": "2026-08-24 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 6,
       "id_metodo": 2,
       "id_pedido": 96
     },
@@ -17963,7 +17975,6 @@
       "monto": 32000,
       "fecha_pago": "2026-08-25 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 22,
       "id_metodo": 5,
       "id_pedido": 97
     },
@@ -17972,7 +17983,6 @@
       "monto": 57000,
       "fecha_pago": "2026-08-25 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 27,
       "id_metodo": 1,
       "id_pedido": 98
     },
@@ -17981,7 +17991,6 @@
       "monto": 32000,
       "fecha_pago": "2026-08-25 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 32,
       "id_metodo": 2,
       "id_pedido": 99
     },
@@ -17990,7 +17999,6 @@
       "monto": 38000,
       "fecha_pago": "2026-08-25 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 9,
       "id_metodo": 3,
       "id_pedido": 100
     },
@@ -17999,7 +18007,6 @@
       "monto": 90000,
       "fecha_pago": "2026-08-26 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 25,
       "id_metodo": 1,
       "id_pedido": 101
     },
@@ -18008,7 +18015,6 @@
       "monto": 38000,
       "fecha_pago": "2026-08-26 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 30,
       "id_metodo": 2,
       "id_pedido": 102
     },
@@ -18017,7 +18023,6 @@
       "monto": 48000,
       "fecha_pago": "2026-08-26 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 7,
       "id_metodo": 3,
       "id_pedido": 103
     },
@@ -18026,7 +18031,6 @@
       "monto": 58000,
       "fecha_pago": "2026-08-26 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 12,
       "id_metodo": 4,
       "id_pedido": 104
     },
@@ -18035,7 +18039,6 @@
       "monto": 42000,
       "fecha_pago": "2026-08-27 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 28,
       "id_metodo": 2,
       "id_pedido": 105
     },
@@ -18044,7 +18047,6 @@
       "monto": 56000,
       "fecha_pago": "2026-08-27 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 33,
       "id_metodo": 3,
       "id_pedido": 106
     },
@@ -18053,7 +18055,6 @@
       "monto": 70000,
       "fecha_pago": "2026-08-27 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 10,
       "id_metodo": 4,
       "id_pedido": 107
     },
@@ -18062,7 +18063,6 @@
       "monto": 141000,
       "fecha_pago": "2026-08-27 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 15,
       "id_metodo": 5,
       "id_pedido": 108
     },
@@ -18071,7 +18071,6 @@
       "monto": 29000,
       "fecha_pago": "2026-08-28 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 31,
       "id_metodo": 3,
       "id_pedido": 109
     },
@@ -18080,7 +18079,6 @@
       "monto": 35000,
       "fecha_pago": "2026-08-28 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 8,
       "id_metodo": 4,
       "id_pedido": 110
     },
@@ -18089,7 +18087,6 @@
       "monto": 60000,
       "fecha_pago": "2026-08-28 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 13,
       "id_metodo": 5,
       "id_pedido": 111
     },
@@ -18098,7 +18095,6 @@
       "monto": 35000,
       "fecha_pago": "2026-08-28 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 18,
       "id_metodo": 1,
       "id_pedido": 112
     },
@@ -18107,7 +18103,6 @@
       "monto": 46000,
       "fecha_pago": "2026-08-29 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 6,
       "id_metodo": 4,
       "id_pedido": 113
     },
@@ -18116,7 +18111,6 @@
       "monto": 94000,
       "fecha_pago": "2026-08-29 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 11,
       "id_metodo": 5,
       "id_pedido": 114
     },
@@ -18125,7 +18119,6 @@
       "monto": 42000,
       "fecha_pago": "2026-08-29 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 16,
       "id_metodo": 1,
       "id_pedido": 115
     },
@@ -18134,7 +18127,6 @@
       "monto": 52000,
       "fecha_pago": "2026-08-29 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 21,
       "id_metodo": 2,
       "id_pedido": 116
     },
@@ -18143,7 +18135,6 @@
       "monto": 126000,
       "fecha_pago": "2026-08-30 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 9,
       "id_metodo": 5,
       "id_pedido": 117
     },
@@ -18152,7 +18143,6 @@
       "monto": 47000,
       "fecha_pago": "2026-08-30 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 14,
       "id_metodo": 1,
       "id_pedido": 118
     },
@@ -18161,7 +18151,6 @@
       "monto": 61000,
       "fecha_pago": "2026-08-30 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 19,
       "id_metodo": 2,
       "id_pedido": 119
     },
@@ -18170,7 +18159,6 @@
       "monto": 75000,
       "fecha_pago": "2026-08-30 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 24,
       "id_metodo": 3,
       "id_pedido": 120
     },
@@ -18179,7 +18167,6 @@
       "monto": 26000,
       "fecha_pago": "2026-08-31 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 12,
       "id_metodo": 1,
       "id_pedido": 121
     },
@@ -18188,7 +18175,6 @@
       "monto": 32000,
       "fecha_pago": "2026-08-31 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 17,
       "id_metodo": 2,
       "id_pedido": 122
     },
@@ -18197,7 +18183,6 @@
       "monto": 38000,
       "fecha_pago": "2026-08-31 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 22,
       "id_metodo": 3,
       "id_pedido": 123
     },
@@ -18206,7 +18191,6 @@
       "monto": 40000,
       "fecha_pago": "2026-09-01 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 15,
       "id_metodo": 2,
       "id_pedido": 125
     },
@@ -18215,7 +18199,6 @@
       "monto": 50000,
       "fecha_pago": "2026-09-01 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 20,
       "id_metodo": 3,
       "id_pedido": 126
     },
@@ -18224,7 +18207,6 @@
       "monto": 46000,
       "fecha_pago": "2026-09-01 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 30,
       "id_metodo": 5,
       "id_pedido": 128
     },
@@ -18233,7 +18215,6 @@
       "monto": 60000,
       "fecha_pago": "2026-09-02 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 18,
       "id_metodo": 3,
       "id_pedido": 129
     },
@@ -18242,7 +18223,6 @@
       "monto": 52000,
       "fecha_pago": "2026-09-02 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 28,
       "id_metodo": 5,
       "id_pedido": 131
     },
@@ -18251,7 +18231,6 @@
       "monto": 66000,
       "fecha_pago": "2026-09-02 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 33,
       "id_metodo": 1,
       "id_pedido": 132
     },
@@ -18260,7 +18239,6 @@
       "monto": 29000,
       "fecha_pago": "2026-09-03 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 26,
       "id_metodo": 5,
       "id_pedido": 134
     },
@@ -18269,7 +18247,6 @@
       "monto": 35000,
       "fecha_pago": "2026-09-03 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 31,
       "id_metodo": 1,
       "id_pedido": 135
     },
@@ -18278,7 +18255,6 @@
       "monto": 41000,
       "fecha_pago": "2026-09-03 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 8,
       "id_metodo": 2,
       "id_pedido": 136
     },
@@ -18287,7 +18263,6 @@
       "monto": 34000,
       "fecha_pago": "2026-09-04 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 24,
       "id_metodo": 5,
       "id_pedido": 137
     },
@@ -18296,7 +18271,6 @@
       "monto": 44000,
       "fecha_pago": "2026-09-04 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 29,
       "id_metodo": 1,
       "id_pedido": 138
     },
@@ -18305,7 +18279,6 @@
       "monto": 54000,
       "fecha_pago": "2026-09-04 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 6,
       "id_metodo": 2,
       "id_pedido": 139
     },
@@ -18314,7 +18287,6 @@
       "monto": 102000,
       "fecha_pago": "2026-09-04 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 11,
       "id_metodo": 3,
       "id_pedido": 140
     },
@@ -18323,7 +18295,6 @@
       "monto": 51000,
       "fecha_pago": "2026-09-05 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 27,
       "id_metodo": 1,
       "id_pedido": 141
     },
@@ -18332,7 +18303,6 @@
       "monto": 65000,
       "fecha_pago": "2026-09-05 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 32,
       "id_metodo": 2,
       "id_pedido": 142
     },
@@ -18341,7 +18311,6 @@
       "monto": 136000,
       "fecha_pago": "2026-09-05 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 9,
       "id_metodo": 3,
       "id_pedido": 143
     },
@@ -18350,7 +18319,6 @@
       "monto": 57000,
       "fecha_pago": "2026-09-05 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 14,
       "id_metodo": 4,
       "id_pedido": 144
     },
@@ -18359,7 +18327,6 @@
       "monto": 32000,
       "fecha_pago": "2026-09-06 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 30,
       "id_metodo": 2,
       "id_pedido": 145
     },
@@ -18368,7 +18335,6 @@
       "monto": 57000,
       "fecha_pago": "2026-09-06 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 7,
       "id_metodo": 3,
       "id_pedido": 146
     },
@@ -18377,7 +18343,6 @@
       "monto": 32000,
       "fecha_pago": "2026-09-06 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 12,
       "id_metodo": 4,
       "id_pedido": 147
     },
@@ -18386,7 +18351,6 @@
       "monto": 38000,
       "fecha_pago": "2026-09-06 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 17,
       "id_metodo": 5,
       "id_pedido": 148
     },
@@ -18395,7 +18359,6 @@
       "monto": 90000,
       "fecha_pago": "2026-09-07 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 33,
       "id_metodo": 3,
       "id_pedido": 149
     },
@@ -18404,7 +18367,6 @@
       "monto": 38000,
       "fecha_pago": "2026-09-07 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 10,
       "id_metodo": 4,
       "id_pedido": 150
     },
@@ -18413,7 +18375,6 @@
       "monto": 48000,
       "fecha_pago": "2026-09-07 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 15,
       "id_metodo": 5,
       "id_pedido": 151
     },
@@ -18422,7 +18383,6 @@
       "monto": 58000,
       "fecha_pago": "2026-09-07 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 20,
       "id_metodo": 1,
       "id_pedido": 152
     },
@@ -18431,7 +18391,6 @@
       "monto": 42000,
       "fecha_pago": "2026-09-08 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 8,
       "id_metodo": 4,
       "id_pedido": 153
     },
@@ -18440,7 +18399,6 @@
       "monto": 56000,
       "fecha_pago": "2026-09-08 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 13,
       "id_metodo": 5,
       "id_pedido": 154
     },
@@ -18449,7 +18407,6 @@
       "monto": 70000,
       "fecha_pago": "2026-09-08 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 18,
       "id_metodo": 1,
       "id_pedido": 155
     },
@@ -18458,7 +18415,6 @@
       "monto": 141000,
       "fecha_pago": "2026-09-08 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 23,
       "id_metodo": 2,
       "id_pedido": 156
     },
@@ -18467,7 +18423,6 @@
       "monto": 29000,
       "fecha_pago": "2026-09-09 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 11,
       "id_metodo": 5,
       "id_pedido": 157
     },
@@ -18476,7 +18431,6 @@
       "monto": 35000,
       "fecha_pago": "2026-09-09 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 16,
       "id_metodo": 1,
       "id_pedido": 158
     },
@@ -18485,7 +18439,6 @@
       "monto": 60000,
       "fecha_pago": "2026-09-09 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 21,
       "id_metodo": 2,
       "id_pedido": 159
     },
@@ -18494,7 +18447,6 @@
       "monto": 35000,
       "fecha_pago": "2026-09-09 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 26,
       "id_metodo": 3,
       "id_pedido": 160
     },
@@ -18503,7 +18455,6 @@
       "monto": 46000,
       "fecha_pago": "2026-09-10 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 14,
       "id_metodo": 1,
       "id_pedido": 161
     },
@@ -18512,7 +18463,6 @@
       "monto": 94000,
       "fecha_pago": "2026-09-10 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 19,
       "id_metodo": 2,
       "id_pedido": 162
     },
@@ -18521,7 +18471,6 @@
       "monto": 42000,
       "fecha_pago": "2026-09-10 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 24,
       "id_metodo": 3,
       "id_pedido": 163
     },
@@ -18530,7 +18479,6 @@
       "monto": 52000,
       "fecha_pago": "2026-09-10 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 29,
       "id_metodo": 4,
       "id_pedido": 164
     },
@@ -18539,7 +18487,6 @@
       "monto": 126000,
       "fecha_pago": "2026-09-11 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 17,
       "id_metodo": 2,
       "id_pedido": 165
     },
@@ -18548,7 +18495,6 @@
       "monto": 47000,
       "fecha_pago": "2026-09-11 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 22,
       "id_metodo": 3,
       "id_pedido": 166
     },
@@ -18557,7 +18503,6 @@
       "monto": 61000,
       "fecha_pago": "2026-09-11 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 27,
       "id_metodo": 4,
       "id_pedido": 167
     },
@@ -18566,7 +18511,6 @@
       "monto": 26000,
       "fecha_pago": "2026-09-12 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 20,
       "id_metodo": 3,
       "id_pedido": 169
     },
@@ -18575,7 +18519,6 @@
       "monto": 32000,
       "fecha_pago": "2026-09-12 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 25,
       "id_metodo": 4,
       "id_pedido": 170
     },
@@ -18584,7 +18527,6 @@
       "monto": 63000,
       "fecha_pago": "2026-09-12 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 7,
       "id_metodo": 1,
       "id_pedido": 172
     },
@@ -18593,7 +18535,6 @@
       "monto": 40000,
       "fecha_pago": "2026-09-13 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 23,
       "id_metodo": 4,
       "id_pedido": 173
     },
@@ -18602,7 +18543,6 @@
       "monto": 98000,
       "fecha_pago": "2026-09-13 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 33,
       "id_metodo": 1,
       "id_pedido": 175
     },
@@ -18611,7 +18551,6 @@
       "monto": 46000,
       "fecha_pago": "2026-09-13 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 10,
       "id_metodo": 2,
       "id_pedido": 176
     },
@@ -18620,7 +18559,6 @@
       "monto": 131000,
       "fecha_pago": "2026-09-14 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 31,
       "id_metodo": 1,
       "id_pedido": 178
     },
@@ -18629,7 +18567,6 @@
       "monto": 52000,
       "fecha_pago": "2026-09-14 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 8,
       "id_metodo": 2,
       "id_pedido": 179
     },
@@ -18638,7 +18575,6 @@
       "monto": 66000,
       "fecha_pago": "2026-09-14 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 13,
       "id_metodo": 3,
       "id_pedido": 180
     },
@@ -18647,7 +18583,6 @@
       "monto": 54000,
       "fecha_pago": "2026-09-15 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 29,
       "id_metodo": 1,
       "id_pedido": 181
     },
@@ -18656,7 +18591,6 @@
       "monto": 29000,
       "fecha_pago": "2026-09-15 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 6,
       "id_metodo": 2,
       "id_pedido": 182
     },
@@ -18665,7 +18599,6 @@
       "monto": 35000,
       "fecha_pago": "2026-09-15 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 11,
       "id_metodo": 3,
       "id_pedido": 183
     },
@@ -18674,7 +18607,6 @@
       "monto": 41000,
       "fecha_pago": "2026-09-15 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 16,
       "id_metodo": 4,
       "id_pedido": 184
     },
@@ -18683,7 +18615,6 @@
       "monto": 34000,
       "fecha_pago": "2026-09-16 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 32,
       "id_metodo": 2,
       "id_pedido": 185
     },
@@ -18692,7 +18623,6 @@
       "monto": 44000,
       "fecha_pago": "2026-09-16 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 9,
       "id_metodo": 3,
       "id_pedido": 186
     },
@@ -18701,7 +18631,6 @@
       "monto": 54000,
       "fecha_pago": "2026-09-16 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 14,
       "id_metodo": 4,
       "id_pedido": 187
     },
@@ -18710,7 +18639,6 @@
       "monto": 102000,
       "fecha_pago": "2026-09-16 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 19,
       "id_metodo": 5,
       "id_pedido": 188
     },
@@ -18719,7 +18647,6 @@
       "monto": 51000,
       "fecha_pago": "2026-09-17 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 7,
       "id_metodo": 3,
       "id_pedido": 189
     },
@@ -18728,7 +18655,6 @@
       "monto": 65000,
       "fecha_pago": "2026-09-17 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 12,
       "id_metodo": 4,
       "id_pedido": 190
     },
@@ -18737,7 +18663,6 @@
       "monto": 136000,
       "fecha_pago": "2026-09-17 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 17,
       "id_metodo": 5,
       "id_pedido": 191
     },
@@ -18746,7 +18671,6 @@
       "monto": 57000,
       "fecha_pago": "2026-09-17 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 22,
       "id_metodo": 1,
       "id_pedido": 192
     },
@@ -18755,7 +18679,6 @@
       "monto": 32000,
       "fecha_pago": "2026-09-18 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 10,
       "id_metodo": 4,
       "id_pedido": 193
     },
@@ -18764,7 +18687,6 @@
       "monto": 57000,
       "fecha_pago": "2026-09-18 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 15,
       "id_metodo": 5,
       "id_pedido": 194
     },
@@ -18773,7 +18695,6 @@
       "monto": 32000,
       "fecha_pago": "2026-09-18 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 20,
       "id_metodo": 1,
       "id_pedido": 195
     },
@@ -18782,7 +18703,6 @@
       "monto": 38000,
       "fecha_pago": "2026-09-18 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 25,
       "id_metodo": 2,
       "id_pedido": 196
     },
@@ -18791,7 +18711,6 @@
       "monto": 90000,
       "fecha_pago": "2026-09-19 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 13,
       "id_metodo": 5,
       "id_pedido": 197
     },
@@ -18800,7 +18719,6 @@
       "monto": 38000,
       "fecha_pago": "2026-09-19 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 18,
       "id_metodo": 1,
       "id_pedido": 198
     },
@@ -18809,7 +18727,6 @@
       "monto": 48000,
       "fecha_pago": "2026-09-19 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 23,
       "id_metodo": 2,
       "id_pedido": 199
     },
@@ -18818,7 +18735,6 @@
       "monto": 58000,
       "fecha_pago": "2026-09-19 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 28,
       "id_metodo": 3,
       "id_pedido": 200
     },
@@ -18827,7 +18743,6 @@
       "monto": 42000,
       "fecha_pago": "2026-09-20 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 16,
       "id_metodo": 1,
       "id_pedido": 201
     },
@@ -18836,7 +18751,6 @@
       "monto": 56000,
       "fecha_pago": "2026-09-20 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 21,
       "id_metodo": 2,
       "id_pedido": 202
     },
@@ -18845,7 +18759,6 @@
       "monto": 70000,
       "fecha_pago": "2026-09-20 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 26,
       "id_metodo": 3,
       "id_pedido": 203
     },
@@ -18854,7 +18767,6 @@
       "monto": 141000,
       "fecha_pago": "2026-09-20 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 31,
       "id_metodo": 4,
       "id_pedido": 204
     },
@@ -18863,7 +18775,6 @@
       "monto": 29000,
       "fecha_pago": "2026-09-21 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 19,
       "id_metodo": 2,
       "id_pedido": 205
     },
@@ -18872,7 +18783,6 @@
       "monto": 35000,
       "fecha_pago": "2026-09-21 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 24,
       "id_metodo": 3,
       "id_pedido": 206
     },
@@ -18881,7 +18791,6 @@
       "monto": 60000,
       "fecha_pago": "2026-09-21 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 29,
       "id_metodo": 4,
       "id_pedido": 207
     },
@@ -18890,7 +18799,6 @@
       "monto": 35000,
       "fecha_pago": "2026-09-21 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 6,
       "id_metodo": 5,
       "id_pedido": 208
     },
@@ -18899,7 +18807,6 @@
       "monto": 46000,
       "fecha_pago": "2026-09-22 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 22,
       "id_metodo": 3,
       "id_pedido": 209
     },
@@ -18908,7 +18815,6 @@
       "monto": 94000,
       "fecha_pago": "2026-09-22 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 27,
       "id_metodo": 4,
       "id_pedido": 210
     },
@@ -18917,7 +18823,6 @@
       "monto": 42000,
       "fecha_pago": "2026-09-22 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 32,
       "id_metodo": 5,
       "id_pedido": 211
     },
@@ -18926,7 +18831,6 @@
       "monto": 126000,
       "fecha_pago": "2026-09-23 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 25,
       "id_metodo": 4,
       "id_pedido": 213
     },
@@ -18935,7 +18839,6 @@
       "monto": 47000,
       "fecha_pago": "2026-09-23 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 30,
       "id_metodo": 5,
       "id_pedido": 214
     },
@@ -18944,7 +18847,6 @@
       "monto": 75000,
       "fecha_pago": "2026-09-23 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 12,
       "id_metodo": 2,
       "id_pedido": 216
     },
@@ -18953,7 +18855,6 @@
       "monto": 26000,
       "fecha_pago": "2026-09-24 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 28,
       "id_metodo": 5,
       "id_pedido": 217
     },
@@ -18962,7 +18863,6 @@
       "monto": 38000,
       "fecha_pago": "2026-09-24 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 10,
       "id_metodo": 2,
       "id_pedido": 219
     },
@@ -18971,7 +18871,6 @@
       "monto": 63000,
       "fecha_pago": "2026-09-24 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 15,
       "id_metodo": 3,
       "id_pedido": 220
     },
@@ -18980,7 +18879,6 @@
       "monto": 50000,
       "fecha_pago": "2026-09-25 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 8,
       "id_metodo": 2,
       "id_pedido": 222
     },
@@ -18989,7 +18887,6 @@
       "monto": 98000,
       "fecha_pago": "2026-09-25 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 13,
       "id_metodo": 3,
       "id_pedido": 223
     },
@@ -18998,7 +18895,6 @@
       "monto": 46000,
       "fecha_pago": "2026-09-25 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 18,
       "id_metodo": 4,
       "id_pedido": 224
     },
@@ -19007,7 +18903,6 @@
       "monto": 60000,
       "fecha_pago": "2026-09-26 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 6,
       "id_metodo": 2,
       "id_pedido": 225
     },
@@ -19016,7 +18911,6 @@
       "monto": 131000,
       "fecha_pago": "2026-09-26 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 11,
       "id_metodo": 3,
       "id_pedido": 226
     },
@@ -19025,7 +18919,6 @@
       "monto": 52000,
       "fecha_pago": "2026-09-26 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 16,
       "id_metodo": 4,
       "id_pedido": 227
     },
@@ -19034,7 +18927,6 @@
       "monto": 66000,
       "fecha_pago": "2026-09-26 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 21,
       "id_metodo": 5,
       "id_pedido": 228
     },
@@ -19043,7 +18935,6 @@
       "monto": 54000,
       "fecha_pago": "2026-09-27 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 9,
       "id_metodo": 3,
       "id_pedido": 229
     },
@@ -19052,7 +18943,6 @@
       "monto": 29000,
       "fecha_pago": "2026-09-27 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 14,
       "id_metodo": 4,
       "id_pedido": 230
     },
@@ -19061,7 +18951,6 @@
       "monto": 35000,
       "fecha_pago": "2026-09-27 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 19,
       "id_metodo": 5,
       "id_pedido": 231
     },
@@ -19070,7 +18959,6 @@
       "monto": 41000,
       "fecha_pago": "2026-09-27 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 24,
       "id_metodo": 1,
       "id_pedido": 232
     },
@@ -19079,7 +18967,6 @@
       "monto": 34000,
       "fecha_pago": "2026-09-28 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 12,
       "id_metodo": 4,
       "id_pedido": 233
     },
@@ -19088,7 +18975,6 @@
       "monto": 44000,
       "fecha_pago": "2026-09-28 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 17,
       "id_metodo": 5,
       "id_pedido": 234
     },
@@ -19097,7 +18983,6 @@
       "monto": 54000,
       "fecha_pago": "2026-09-28 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 22,
       "id_metodo": 1,
       "id_pedido": 235
     },
@@ -19106,7 +18991,6 @@
       "monto": 102000,
       "fecha_pago": "2026-09-28 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 27,
       "id_metodo": 2,
       "id_pedido": 236
     },
@@ -19115,7 +18999,6 @@
       "monto": 51000,
       "fecha_pago": "2026-09-29 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 15,
       "id_metodo": 5,
       "id_pedido": 237
     },
@@ -19124,7 +19007,6 @@
       "monto": 65000,
       "fecha_pago": "2026-09-29 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 20,
       "id_metodo": 1,
       "id_pedido": 238
     },
@@ -19133,7 +19015,6 @@
       "monto": 136000,
       "fecha_pago": "2026-09-29 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 25,
       "id_metodo": 2,
       "id_pedido": 239
     },
@@ -19142,7 +19023,6 @@
       "monto": 57000,
       "fecha_pago": "2026-09-29 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 30,
       "id_metodo": 3,
       "id_pedido": 240
     },
@@ -19151,7 +19031,6 @@
       "monto": 32000,
       "fecha_pago": "2026-09-30 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 18,
       "id_metodo": 1,
       "id_pedido": 241
     },
@@ -19160,7 +19039,6 @@
       "monto": 57000,
       "fecha_pago": "2026-09-30 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 23,
       "id_metodo": 2,
       "id_pedido": 242
     },
@@ -19169,7 +19047,6 @@
       "monto": 32000,
       "fecha_pago": "2026-09-30 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 28,
       "id_metodo": 3,
       "id_pedido": 243
     },
@@ -19178,7 +19055,6 @@
       "monto": 38000,
       "fecha_pago": "2026-09-30 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 33,
       "id_metodo": 4,
       "id_pedido": 244
     },
@@ -19187,7 +19063,6 @@
       "monto": 90000,
       "fecha_pago": "2026-10-01 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 21,
       "id_metodo": 2,
       "id_pedido": 245
     },
@@ -19196,7 +19071,6 @@
       "monto": 38000,
       "fecha_pago": "2026-10-01 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 26,
       "id_metodo": 3,
       "id_pedido": 246
     },
@@ -19205,7 +19079,6 @@
       "monto": 48000,
       "fecha_pago": "2026-10-01 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 31,
       "id_metodo": 4,
       "id_pedido": 247
     },
@@ -19214,7 +19087,6 @@
       "monto": 58000,
       "fecha_pago": "2026-10-01 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 8,
       "id_metodo": 5,
       "id_pedido": 248
     },
@@ -19223,7 +19095,6 @@
       "monto": 42000,
       "fecha_pago": "2026-10-02 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 24,
       "id_metodo": 3,
       "id_pedido": 249
     },
@@ -19232,7 +19103,6 @@
       "monto": 56000,
       "fecha_pago": "2026-10-02 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 29,
       "id_metodo": 4,
       "id_pedido": 250
     },
@@ -19241,7 +19111,6 @@
       "monto": 70000,
       "fecha_pago": "2026-10-02 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 6,
       "id_metodo": 5,
       "id_pedido": 251
     },
@@ -19250,7 +19119,6 @@
       "monto": 141000,
       "fecha_pago": "2026-10-02 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 11,
       "id_metodo": 1,
       "id_pedido": 252
     },
@@ -19259,7 +19127,6 @@
       "monto": 29000,
       "fecha_pago": "2026-10-03 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 27,
       "id_metodo": 4,
       "id_pedido": 253
     },
@@ -19268,7 +19135,6 @@
       "monto": 35000,
       "fecha_pago": "2026-10-03 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 32,
       "id_metodo": 5,
       "id_pedido": 254
     },
@@ -19277,7 +19143,6 @@
       "monto": 60000,
       "fecha_pago": "2026-10-03 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 9,
       "id_metodo": 1,
       "id_pedido": 255
     },
@@ -19286,7 +19151,6 @@
       "monto": 46000,
       "fecha_pago": "2026-10-04 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 30,
       "id_metodo": 5,
       "id_pedido": 257
     },
@@ -19295,7 +19159,6 @@
       "monto": 94000,
       "fecha_pago": "2026-10-04 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 7,
       "id_metodo": 1,
       "id_pedido": 258
     },
@@ -19304,7 +19167,6 @@
       "monto": 52000,
       "fecha_pago": "2026-10-04 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 17,
       "id_metodo": 3,
       "id_pedido": 260
     },
@@ -19313,7 +19175,6 @@
       "monto": 126000,
       "fecha_pago": "2026-10-05 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 33,
       "id_metodo": 1,
       "id_pedido": 261
     },
@@ -19322,7 +19183,6 @@
       "monto": 61000,
       "fecha_pago": "2026-10-05 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 15,
       "id_metodo": 3,
       "id_pedido": 263
     },
@@ -19331,7 +19191,6 @@
       "monto": 75000,
       "fecha_pago": "2026-10-05 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 20,
       "id_metodo": 4,
       "id_pedido": 264
     },
@@ -19340,7 +19199,6 @@
       "monto": 32000,
       "fecha_pago": "2026-10-06 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 13,
       "id_metodo": 3,
       "id_pedido": 266
     },
@@ -19349,7 +19207,6 @@
       "monto": 38000,
       "fecha_pago": "2026-10-06 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 18,
       "id_metodo": 4,
       "id_pedido": 267
     },
@@ -19358,7 +19215,6 @@
       "monto": 63000,
       "fecha_pago": "2026-10-06 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 23,
       "id_metodo": 5,
       "id_pedido": 268
     },
@@ -19367,7 +19223,6 @@
       "monto": 40000,
       "fecha_pago": "2026-10-07 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 11,
       "id_metodo": 3,
       "id_pedido": 269
     },
@@ -19376,7 +19231,6 @@
       "monto": 50000,
       "fecha_pago": "2026-10-07 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 16,
       "id_metodo": 4,
       "id_pedido": 270
     },
@@ -19385,7 +19239,6 @@
       "monto": 98000,
       "fecha_pago": "2026-10-07 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 21,
       "id_metodo": 5,
       "id_pedido": 271
     },
@@ -19394,7 +19247,6 @@
       "monto": 46000,
       "fecha_pago": "2026-10-07 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 26,
       "id_metodo": 1,
       "id_pedido": 272
     },
@@ -19403,7 +19255,6 @@
       "monto": 60000,
       "fecha_pago": "2026-10-08 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 14,
       "id_metodo": 4,
       "id_pedido": 273
     },
@@ -19412,7 +19263,6 @@
       "monto": 131000,
       "fecha_pago": "2026-10-08 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 19,
       "id_metodo": 5,
       "id_pedido": 274
     },
@@ -19421,7 +19271,6 @@
       "monto": 52000,
       "fecha_pago": "2026-10-08 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 24,
       "id_metodo": 1,
       "id_pedido": 275
     },
@@ -19430,7 +19279,6 @@
       "monto": 66000,
       "fecha_pago": "2026-10-08 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 29,
       "id_metodo": 2,
       "id_pedido": 276
     },
@@ -19439,7 +19287,6 @@
       "monto": 54000,
       "fecha_pago": "2026-10-09 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 17,
       "id_metodo": 5,
       "id_pedido": 277
     },
@@ -19448,7 +19295,6 @@
       "monto": 29000,
       "fecha_pago": "2026-10-09 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 22,
       "id_metodo": 1,
       "id_pedido": 278
     },
@@ -19457,7 +19303,6 @@
       "monto": 35000,
       "fecha_pago": "2026-10-09 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 27,
       "id_metodo": 2,
       "id_pedido": 279
     },
@@ -19466,7 +19311,6 @@
       "monto": 41000,
       "fecha_pago": "2026-10-09 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 32,
       "id_metodo": 3,
       "id_pedido": 280
     },
@@ -19475,7 +19319,6 @@
       "monto": 34000,
       "fecha_pago": "2026-10-10 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 20,
       "id_metodo": 1,
       "id_pedido": 281
     },
@@ -19484,7 +19327,6 @@
       "monto": 44000,
       "fecha_pago": "2026-10-10 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 25,
       "id_metodo": 2,
       "id_pedido": 282
     },
@@ -19493,7 +19335,6 @@
       "monto": 54000,
       "fecha_pago": "2026-10-10 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 30,
       "id_metodo": 3,
       "id_pedido": 283
     },
@@ -19502,7 +19343,6 @@
       "monto": 102000,
       "fecha_pago": "2026-10-10 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 7,
       "id_metodo": 4,
       "id_pedido": 284
     },
@@ -19511,7 +19351,6 @@
       "monto": 51000,
       "fecha_pago": "2026-10-11 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 23,
       "id_metodo": 2,
       "id_pedido": 285
     },
@@ -19520,7 +19359,6 @@
       "monto": 65000,
       "fecha_pago": "2026-10-11 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 28,
       "id_metodo": 3,
       "id_pedido": 286
     },
@@ -19529,7 +19367,6 @@
       "monto": 136000,
       "fecha_pago": "2026-10-11 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 33,
       "id_metodo": 4,
       "id_pedido": 287
     },
@@ -19538,7 +19375,6 @@
       "monto": 57000,
       "fecha_pago": "2026-10-11 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 10,
       "id_metodo": 5,
       "id_pedido": 288
     },
@@ -19547,7 +19383,6 @@
       "monto": 32000,
       "fecha_pago": "2026-10-12 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 26,
       "id_metodo": 3,
       "id_pedido": 289
     },
@@ -19556,7 +19391,6 @@
       "monto": 57000,
       "fecha_pago": "2026-10-12 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 31,
       "id_metodo": 4,
       "id_pedido": 290
     },
@@ -19565,7 +19399,6 @@
       "monto": 32000,
       "fecha_pago": "2026-10-12 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 8,
       "id_metodo": 5,
       "id_pedido": 291
     },
@@ -19574,7 +19407,6 @@
       "monto": 38000,
       "fecha_pago": "2026-10-12 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 13,
       "id_metodo": 1,
       "id_pedido": 292
     },
@@ -19583,7 +19415,6 @@
       "monto": 90000,
       "fecha_pago": "2026-10-13 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 29,
       "id_metodo": 4,
       "id_pedido": 293
     },
@@ -19592,7 +19423,6 @@
       "monto": 38000,
       "fecha_pago": "2026-10-13 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 6,
       "id_metodo": 5,
       "id_pedido": 294
     },
@@ -19601,7 +19431,6 @@
       "monto": 48000,
       "fecha_pago": "2026-10-13 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 11,
       "id_metodo": 1,
       "id_pedido": 295
     },
@@ -19610,7 +19439,6 @@
       "monto": 58000,
       "fecha_pago": "2026-10-13 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 16,
       "id_metodo": 2,
       "id_pedido": 296
     },
@@ -19619,7 +19447,6 @@
       "monto": 42000,
       "fecha_pago": "2026-10-14 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 32,
       "id_metodo": 5,
       "id_pedido": 297
     },
@@ -19628,7 +19455,6 @@
       "monto": 56000,
       "fecha_pago": "2026-10-14 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 9,
       "id_metodo": 1,
       "id_pedido": 298
     },
@@ -19637,7 +19463,6 @@
       "monto": 70000,
       "fecha_pago": "2026-10-14 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 14,
       "id_metodo": 2,
       "id_pedido": 299
     },
@@ -19646,7 +19471,6 @@
       "monto": 29000,
       "fecha_pago": "2026-10-15 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 7,
       "id_metodo": 1,
       "id_pedido": 301
     },
@@ -19655,7 +19479,6 @@
       "monto": 35000,
       "fecha_pago": "2026-10-15 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 12,
       "id_metodo": 2,
       "id_pedido": 302
     },
@@ -19664,7 +19487,6 @@
       "monto": 35000,
       "fecha_pago": "2026-10-15 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 22,
       "id_metodo": 4,
       "id_pedido": 304
     },
@@ -19673,7 +19495,6 @@
       "monto": 46000,
       "fecha_pago": "2026-10-16 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 10,
       "id_metodo": 2,
       "id_pedido": 305
     },
@@ -19682,7 +19503,6 @@
       "monto": 42000,
       "fecha_pago": "2026-10-16 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 20,
       "id_metodo": 4,
       "id_pedido": 307
     },
@@ -19691,7 +19511,6 @@
       "monto": 52000,
       "fecha_pago": "2026-10-16 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 25,
       "id_metodo": 5,
       "id_pedido": 308
     },
@@ -19700,7 +19519,6 @@
       "monto": 47000,
       "fecha_pago": "2026-10-17 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 18,
       "id_metodo": 4,
       "id_pedido": 310
     },
@@ -19709,7 +19527,6 @@
       "monto": 61000,
       "fecha_pago": "2026-10-17 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 23,
       "id_metodo": 5,
       "id_pedido": 311
     },
@@ -19718,7 +19535,6 @@
       "monto": 75000,
       "fecha_pago": "2026-10-17 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 28,
       "id_metodo": 1,
       "id_pedido": 312
     },
@@ -19727,7 +19543,6 @@
       "monto": 26000,
       "fecha_pago": "2026-10-18 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 16,
       "id_metodo": 4,
       "id_pedido": 313
     },
@@ -19736,7 +19551,6 @@
       "monto": 32000,
       "fecha_pago": "2026-10-18 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 21,
       "id_metodo": 5,
       "id_pedido": 314
     },
@@ -19745,7 +19559,6 @@
       "monto": 38000,
       "fecha_pago": "2026-10-18 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 26,
       "id_metodo": 1,
       "id_pedido": 315
     },
@@ -19754,7 +19567,6 @@
       "monto": 63000,
       "fecha_pago": "2026-10-18 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 31,
       "id_metodo": 2,
       "id_pedido": 316
     },
@@ -19763,7 +19575,6 @@
       "monto": 40000,
       "fecha_pago": "2026-10-19 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 19,
       "id_metodo": 5,
       "id_pedido": 317
     },
@@ -19772,7 +19583,6 @@
       "monto": 50000,
       "fecha_pago": "2026-10-19 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 24,
       "id_metodo": 1,
       "id_pedido": 318
     },
@@ -19781,7 +19591,6 @@
       "monto": 98000,
       "fecha_pago": "2026-10-19 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 29,
       "id_metodo": 2,
       "id_pedido": 319
     },
@@ -19790,7 +19599,6 @@
       "monto": 46000,
       "fecha_pago": "2026-10-19 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 6,
       "id_metodo": 3,
       "id_pedido": 320
     },
@@ -19799,7 +19607,6 @@
       "monto": 60000,
       "fecha_pago": "2026-10-20 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 22,
       "id_metodo": 1,
       "id_pedido": 321
     },
@@ -19808,7 +19615,6 @@
       "monto": 131000,
       "fecha_pago": "2026-10-20 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 27,
       "id_metodo": 2,
       "id_pedido": 322
     },
@@ -19817,7 +19623,6 @@
       "monto": 52000,
       "fecha_pago": "2026-10-20 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 32,
       "id_metodo": 3,
       "id_pedido": 323
     },
@@ -19826,7 +19631,6 @@
       "monto": 66000,
       "fecha_pago": "2026-10-20 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 9,
       "id_metodo": 4,
       "id_pedido": 324
     },
@@ -19835,7 +19639,6 @@
       "monto": 54000,
       "fecha_pago": "2026-10-21 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 25,
       "id_metodo": 2,
       "id_pedido": 325
     },
@@ -19844,7 +19647,6 @@
       "monto": 29000,
       "fecha_pago": "2026-10-21 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 30,
       "id_metodo": 3,
       "id_pedido": 326
     },
@@ -19853,7 +19655,6 @@
       "monto": 35000,
       "fecha_pago": "2026-10-21 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 7,
       "id_metodo": 4,
       "id_pedido": 327
     },
@@ -19862,7 +19663,6 @@
       "monto": 41000,
       "fecha_pago": "2026-10-21 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 12,
       "id_metodo": 5,
       "id_pedido": 328
     },
@@ -19871,7 +19671,6 @@
       "monto": 34000,
       "fecha_pago": "2026-10-22 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 28,
       "id_metodo": 3,
       "id_pedido": 329
     },
@@ -19880,7 +19679,6 @@
       "monto": 44000,
       "fecha_pago": "2026-10-22 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 33,
       "id_metodo": 4,
       "id_pedido": 330
     },
@@ -19889,7 +19687,6 @@
       "monto": 54000,
       "fecha_pago": "2026-10-22 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 10,
       "id_metodo": 5,
       "id_pedido": 331
     },
@@ -19898,7 +19695,6 @@
       "monto": 102000,
       "fecha_pago": "2026-10-22 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 15,
       "id_metodo": 1,
       "id_pedido": 332
     },
@@ -19907,7 +19703,6 @@
       "monto": 51000,
       "fecha_pago": "2026-10-23 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 31,
       "id_metodo": 4,
       "id_pedido": 333
     },
@@ -19916,7 +19711,6 @@
       "monto": 65000,
       "fecha_pago": "2026-10-23 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 8,
       "id_metodo": 5,
       "id_pedido": 334
     },
@@ -19925,7 +19719,6 @@
       "monto": 136000,
       "fecha_pago": "2026-10-23 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 13,
       "id_metodo": 1,
       "id_pedido": 335
     },
@@ -19934,7 +19727,6 @@
       "monto": 57000,
       "fecha_pago": "2026-10-23 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 18,
       "id_metodo": 2,
       "id_pedido": 336
     },
@@ -19943,7 +19735,6 @@
       "monto": 32000,
       "fecha_pago": "2026-10-24 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 6,
       "id_metodo": 5,
       "id_pedido": 337
     },
@@ -19952,7 +19743,6 @@
       "monto": 57000,
       "fecha_pago": "2026-10-24 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 11,
       "id_metodo": 1,
       "id_pedido": 338
     },
@@ -19961,7 +19751,6 @@
       "monto": 32000,
       "fecha_pago": "2026-10-24 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 16,
       "id_metodo": 2,
       "id_pedido": 339
     },
@@ -19970,7 +19759,6 @@
       "monto": 38000,
       "fecha_pago": "2026-10-24 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 21,
       "id_metodo": 3,
       "id_pedido": 340
     },
@@ -19979,7 +19767,6 @@
       "monto": 90000,
       "fecha_pago": "2026-10-25 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 9,
       "id_metodo": 1,
       "id_pedido": 341
     },
@@ -19988,7 +19775,6 @@
       "monto": 38000,
       "fecha_pago": "2026-10-25 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 14,
       "id_metodo": 2,
       "id_pedido": 342
     },
@@ -19997,7 +19783,6 @@
       "monto": 48000,
       "fecha_pago": "2026-10-25 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 19,
       "id_metodo": 3,
       "id_pedido": 343
     },
@@ -20006,7 +19791,6 @@
       "monto": 42000,
       "fecha_pago": "2026-10-26 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 12,
       "id_metodo": 2,
       "id_pedido": 345
     },
@@ -20015,7 +19799,6 @@
       "monto": 56000,
       "fecha_pago": "2026-10-26 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 17,
       "id_metodo": 3,
       "id_pedido": 346
     },
@@ -20024,7 +19807,6 @@
       "monto": 141000,
       "fecha_pago": "2026-10-26 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 27,
       "id_metodo": 5,
       "id_pedido": 348
     },
@@ -20033,7 +19815,6 @@
       "monto": 29000,
       "fecha_pago": "2026-10-27 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 15,
       "id_metodo": 3,
       "id_pedido": 349
     },
@@ -20042,7 +19823,6 @@
       "monto": 60000,
       "fecha_pago": "2026-10-27 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 25,
       "id_metodo": 5,
       "id_pedido": 351
     },
@@ -20051,7 +19831,6 @@
       "monto": 35000,
       "fecha_pago": "2026-10-27 14:15:00",
       "estado_pago": "aprobado",
-      "id_usuario": 30,
       "id_metodo": 1,
       "id_pedido": 352
     }
@@ -29742,7 +29521,7 @@
       "metodos_pago": 5,
       "restaurantes": 5,
       "mesas": 30,
-      "platos": 20,
+      "platos": 31,
       "reservas": 364,
       "reserva_mesas": 364,
       "pedidos": 352,
@@ -29759,8 +29538,10 @@
     "sorrento": {
       "fuente": "Datos comunicados por Jaider; mesas y aforo provisionales",
       "horario": "Lunes a domingo, 08:30–22:30",
-      "precios_confirmados": false
-    }
+      "precios_confirmados": true,
+      "fuente_precios": "Informados por Jaider el 12 de noviembre de 2026"
+    },
+    "normalizacion_pagos": "Cliente derivado exclusivamente del pedido; 2026-11-12"
   },
   "municipios": [
     {

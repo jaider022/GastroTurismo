@@ -2,7 +2,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { normalizeDataset } = require('../lib/catalogos');
-const { addSorrentoDataset } = require('../lib/cafe-sorrento');
+const { addSorrentoDataset, addSorrentoMenuDataset } = require('../lib/cafe-sorrento');
 
 const TABLES = ['municipios', 'tipos_servicio', 'estados_pedido', 'estados_reserva', 'zonas', 'usuarios', 'categorias', 'metodos_pago', 'restaurantes', 'mesas', 'platos', 'reservas', 'reserva_mesas', 'pedidos', 'detalle_pedidos', 'pagos', 'resenas', 'notificaciones', 'visitas', 'accesos_sistema', 'experiencias', 'reservas_experiencias'];
 const DEMO_PASSWORD = 'Gastro2026!';
@@ -61,7 +61,7 @@ function generateDataset(cutoff = todayBogota()) {
         order.total_pago += detail.cantidad * detail.precio_unitario;
       });
       data.pedidos.push(order);
-      if (!cancelled) data.pagos.push({ id_pago: data.pagos.length + 1, monto: order.total_pago, fecha_pago: `${fecha} 14:15:00`, estado_pago: 'aprobado', id_usuario: userId, id_metodo: 1 + (dayIndex + ri) % 5, id_pedido: order.id_pedido });
+      if (!cancelled) data.pagos.push({ id_pago: data.pagos.length + 1, monto: order.total_pago, fecha_pago: `${fecha} 14:15:00`, estado_pago: 'aprobado', id_metodo: 1 + (dayIndex + ri) % 5, id_pedido: order.id_pedido });
       if (!cancelled && !data.resenas.some(x => x.id_usuario === userId && x.id_restaurante === r.id_restaurante)) data.resenas.push({ id_resena: data.resenas.length + 1, calificacion: 3 + (dayIndex + ri) % 3, comentario: ['Buena atención y platos bien presentados.', 'Disfrutamos los sabores de la región.', 'El lugar es agradable y las porciones adecuadas.'][(dayIndex + ri) % 3], fecha_opinion: fecha, id_usuario: userId, id_restaurante: r.id_restaurante });
       if (dayIndex % 8 === 0) data.notificaciones.push({ id_notificacion: data.notificaciones.length + 1, mensaje: `Reserva ${reservation.id_reserva} ${cancelled ? 'cancelada' : 'finalizada'} en ${r.nombre}.`, fecha_envio: `${fecha} 15:00:00`, leido: dayIndex % 16 === 0, id_usuario: userId });
       data.accesos_sistema.push({ id_acceso: data.accesos_sistema.length + 1, id_usuario: userId, fecha_ingreso: `${fecha} 10:00:00` });
@@ -77,6 +77,7 @@ function generateDataset(cutoff = todayBogota()) {
   addExperienceExamples(data, cutoff);
   // Se incorpora después del historial ficticio: no inventa ventas, clientes o visitas del café real.
   addSorrentoDataset(data, DEMO_PASSWORD);
+  addSorrentoMenuDataset(data);
   normalizeDataset(data);
   data.meta.filas = Object.fromEntries(TABLES.map(t => [t, data[t].length]));
   return data;

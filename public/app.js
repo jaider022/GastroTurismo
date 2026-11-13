@@ -49,6 +49,7 @@ function initLocalStorageData(force = false) {
     }
   }
   migrateDemoWithoutPlans();
+  migrateDemoPaymentOwner();
   localStorage.setItem(DEMO_NAMESPACE + 'version', String(demoDataset.meta?.version || '2'));
 }
 const readLS = key => JSON.parse(localStorage.getItem(DEMO_NAMESPACE + key) || '[]');
@@ -106,6 +107,19 @@ function migrateDemoWithoutPlans() {
   const withoutPlan = ({ id_plan, nombre_plan, ...record }) => record;
   setLS('gt_restaurantes', restaurants.map(withoutPlan));
   setLS('gt_pagos', payments.filter(p => p.id_plan == null && positiveRecordId(p.id_pedido)).map(withoutPlan));
+}
+
+function migrateDemoPaymentOwner() {
+  const payments = readLS('gt_pagos');
+  if (!payments.some(p => Object.hasOwn(p, 'id_usuario'))) return;
+  const orders = new Map(readLS('gt_pedidos').map(p => [Number(p.id_pedido), p]));
+  if (payments.some(p => Object.hasOwn(p, 'id_usuario') &&
+      (!orders.has(Number(p.id_pedido)) || Number(p.id_usuario) !== Number(orders.get(Number(p.id_pedido)).id_usuario)))) {
+    throw new Error('Hay pagos cuyo cliente no coincide con el pedido. Conserva los datos y revísalos antes de actualizar.');
+  }
+  const key = DEMO_NAMESPACE + 'respaldo_antes_normalizar_pagos';
+  if (localStorage.getItem(key) === null) localStorage.setItem(key, JSON.stringify({ fecha: bogotaNow(), pagos: payments }));
+  setLS('gt_pagos', payments.map(({ id_usuario, ...payment }) => payment));
 }
 
 // --------------------------------------------------------------------
@@ -433,14 +447,15 @@ function simulateLocalStorageAPI(endpoint, options = {}) {
     case 'pagos':
       if (method === 'POST') {
         if (!currentUser) throw new Error('Debes iniciar sesión.');
-        if (!Number.isFinite(Number(body.monto)) || Number(body.monto) <= 0 || !positiveRecordId(body.id_usuario) ||
+        if (!Number.isFinite(Number(body.monto)) || Number(body.monto) <= 0 ||
+            (Object.hasOwn(body, 'id_usuario') && !positiveRecordId(body.id_usuario)) ||
             !positiveRecordId(body.id_metodo) || !positiveRecordId(body.id_pedido) || Object.hasOwn(body, 'id_plan')) {
-          throw new Error('El pago debe tener un monto positivo, un usuario, un medio de pago y un pedido válido. Solo se reciben pagos de pedidos.');
+          throw new Error('El pago debe tener un monto positivo, un medio de pago y un pedido válido. Solo se reciben pagos de pedidos.');
         }
-        if (Number(body.id_usuario) !== Number(currentUser.id_usuario) && currentUser.tipo_usuario !== 'administrador') throw new Error('Solo puedes registrar tus propios pagos.');
         const order = getLS('gt_pedidos').find(p => Number(p.id_pedido) === Number(body.id_pedido));
         if (!order) throw new Error('El pedido no existe.');
-        if (Number(order.id_usuario) !== Number(body.id_usuario)) throw new Error('El pago debe pertenecer al usuario que hizo el pedido.');
+        if (Number(order.id_usuario) !== Number(currentUser.id_usuario) && currentUser.tipo_usuario !== 'administrador') throw new Error('Solo puedes registrar tus propios pagos.');
+        if (Object.hasOwn(body, 'id_usuario') && Number(order.id_usuario) !== Number(body.id_usuario)) throw new Error('El pago debe pertenecer al usuario que hizo el pedido.');
         const pagos = getLS('gt_pagos');
         const orderPayments = pagos.filter(p => Number(p.id_pedido) === Number(body.id_pedido));
         const previous = body.referencia && orderPayments.find(p => p.referencia === body.referencia);
@@ -454,7 +469,7 @@ function simulateLocalStorageAPI(endpoint, options = {}) {
         const paidCents = orderPayments.filter(p => p.estado_pago === 'aprobado').reduce((sum, p) => sum + Math.round(Number(p.monto) * 100), 0);
         if (amountCents + paidCents > Math.round(Number(order.total_pago) * 100)) throw new Error('El importe supera el saldo del pedido.');
         const newPag = { id_pago: Math.max(0, ...pagos.map(p => Number(p.id_pago))) + 1,
-          monto: Number(body.monto), id_usuario: Number(body.id_usuario), id_metodo: Number(body.id_metodo),
+          monto: Number(body.monto), id_metodo: Number(body.id_metodo),
           id_pedido: Number(body.id_pedido), fecha_pago: bogotaNow(), estado_pago: 'aprobado', referencia: body.referencia ?? null };
         pagos.push(newPag);
         setLS('gt_pagos', pagos);
@@ -2684,7 +2699,6 @@ async function executeCheckout() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         monto: order.total_pago ?? subtotal,
-        id_usuario: currentUser.id_usuario,
         id_metodo,
         id_pedido: order.id_pedido,
         referencia: reference

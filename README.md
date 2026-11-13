@@ -55,3 +55,7 @@ Si MySQL no conecta hay una demostración separada; la fuente se indica en panta
 Los modelos nativos de EERCASE y Oracle se ajustaron para retirar planes, vincular Pago con Pedido e incorporar experiencias. El diseño de trabajo en Oracle es `GastroTurismo_Oracle_revisado`. Hay 20 entidades independientes y tres subtipos de Usuario en el conceptual (23 rectángulos), 22 tablas principales y 31 claves foráneas. Los subtipos usan usuarios.tipo_usuario en una sola tabla; véase [Herencia de Usuario](docs/Herencia_usuarios.md). La correspondencia se contrastó con la base académica. Los tres perfiles tienen pruebas de permisos. En **Experiencias** se publican actividades, se reservan cupos y se registra el pago recibido en el restaurante. Guía: [Experiencias gastronómicas](docs/Experiencias_gastronomicas.md). Los modelos se revisaron en sus editores. Quedan el documento final y la sustentación. Listado vigente: [Seguimiento](docs/Seguimiento_proyecto.md); relación con la guía de la profesora: [Trazabilidad](docs/Trazabilidad_requisitos.md).
 
 Reglas detalladas: docs/datos-y-modelo.md.
+
+## Cierre técnico del 12 de noviembre
+
+Modelo y base normalizados: 22 tablas y 30 claves foráneas, sin usuario duplicado en Pago. Las 22 tablas contienen datos y Sorrento tiene once productos con precios suministrados por el equipo. La plantilla oficial está diligenciada en docs/Trabajo_final_GastroTurismo.docx; falta el enlace del video del grupo. Actualizaciones incrementales: db:normalizar-pagos y db:datos-entrega. Ver docs/Normalizacion_pagos.md y docs/Entrega_y_video.md.

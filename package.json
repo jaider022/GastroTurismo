@@ -13,6 +13,8 @@
     "db:asesoria": "node scripts/migrar-asesoria.js",
     "db:experiencias": "node scripts/migrar-experiencias.js",
     "db:sorrento": "node scripts/incorporar-sorrento.js",
+    "db:normalizar-pagos": "node scripts/normalizar-pagos.js",
+    "db:datos-entrega": "node scripts/completar-datos-entrega.js",
     "start:local": "node scripts/iniciar-local.js"
   },
   "dependencies": {

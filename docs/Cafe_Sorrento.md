@@ -35,3 +35,7 @@ Pasaron 140 pruebas de la suite general, con cero fallidas y dos pruebas MySQL o
 En la base habitual hay ahora cinco restaurantes; Sorrento tiene un identificador real (6 en este equipo), diez mesas y 30 cupos provisionales. Se comparó el respaldo anterior con las filas posteriores: solo se agregaron los trece registros previstos (zona, cuenta, restaurante y diez mesas). Todas las filas previas de 23 tablas se conservaron. La portada habitual se comprobó sin escrituras a la API: ficha, galería y solicitud de acceso al reservar. La copia de demostración y los SQL también conservan sus filas previas.
 
 Evidencia local: `work/incorporar-sorrento-20261112` del espacio de esta conversación. La incorporación y los ajustes anteriores del carrusel y formulario se incluyen en el guardado autorizado de la versión principal `main` del 12 de noviembre. Cada integrante debe aplicar la carga incremental en su propia base; GitHub no sincroniza el servidor local.
+
+## Actualización posterior de precios
+
+Jaider confirmó café $4.400, capuchino $8.700, latte $7.800; pizzas personal $20.000, mediana $32.000 y grande $50.000; hamburguesa $26.000; maicitos $24.000; rollitos napolitanos $24.000, mixtos $26.000 y de jamón y queso $24.000. Los once productos están cargados y visibles en el menú. Desayunos y otras categorías no recibieron precios inventados. Se conservan las diez mesas y 30 cupos provisionales. La ficha, la compra y su pago se comprobaron desde la interfaz con la copia MySQL.

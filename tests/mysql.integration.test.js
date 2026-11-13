@@ -217,7 +217,7 @@ test('integration with the isolated academic MySQL-compatible database', { skip:
       assert.ok(orderIds.length);
       const [[order]] = await db.query('SELECT total_pago FROM pedidos WHERE id_pedido = ?', [orderIds[0]]);
       const [[method]] = await db.query('SELECT id_metodo FROM metodos_pago ORDER BY id_metodo LIMIT 1');
-      const payload = {monto: Number(order.total_pago), id_usuario: userId, id_metodo: method.id_metodo, id_pedido: orderIds[0], referencia: '01eb05c0-d18b-43a8-b0d1-d498fb45b91a'};
+      const payload = {monto: Number(order.total_pago), id_metodo: method.id_metodo, id_pedido: orderIds[0], referencia: '01eb05c0-d18b-43a8-b0d1-d498fb45b91a'};
       const response = await request('/api/pagos', {method: 'POST', body: JSON.stringify(payload)});
       assert.equal(response.status, 201, await response.clone().text());
       const payment = await response.json(); paymentIds.push(payment.id_pago);
@@ -227,12 +227,14 @@ test('integration with the isolated academic MySQL-compatible database', { skip:
       const excess = await request('/api/pagos', {method: 'POST', body: JSON.stringify({...payload, referencia: null, monto: 1})});
       assert.equal(excess.status, 409);
       const [[saved]] = await db.query('SELECT * FROM pagos WHERE id_pago = ?', [payment.id_pago]);
-      assert.equal(saved.id_pedido, orderIds[0]); assert.equal(saved.id_usuario, userId);
+      assert.equal(saved.id_pedido, orderIds[0]); assert.equal(Object.hasOwn(saved, 'id_usuario'), false);
+      const [[owner]] = await db.query('SELECT id_usuario FROM pedidos WHERE id_pedido=?', [saved.id_pedido]);
+      assert.equal(owner.id_usuario, userId);
       assert.equal(Number(saved.monto), payload.monto); assert.equal(Object.hasOwn(saved, 'id_plan'), false);
       assert.equal((await request('/api/pagos', {method: 'POST', body: JSON.stringify({...payload, id_plan: 1})})).status, 400);
       assert.equal((await request('/api/pagos', {method: 'POST', body: JSON.stringify({...payload, id_pedido: 2147483647})})).status, 404);
-      await assert.rejects(db.query('INSERT INTO pagos (monto,id_usuario,id_metodo,id_pedido) VALUES (?,?,?,NULL)', [1000, userId, method.id_metodo]), error => error.code === 'ER_BAD_NULL_ERROR');
-      await assert.rejects(db.query('INSERT INTO pagos (monto,id_usuario,id_metodo,id_pedido) VALUES (?,?,?,2147483647)', [1000, userId, method.id_metodo]), error => error.code === 'ER_NO_REFERENCED_ROW_2');
+      await assert.rejects(db.query('INSERT INTO pagos (monto,id_metodo,id_pedido) VALUES (?,?,NULL)', [1000, method.id_metodo]), error => error.code === 'ER_BAD_NULL_ERROR');
+      await assert.rejects(db.query('INSERT INTO pagos (monto,id_metodo,id_pedido) VALUES (?,?,2147483647)', [1000, method.id_metodo]), error => error.code === 'ER_NO_REFERENCED_ROW_2');
     });
 
     await t.test('client sees only their reservations and orders and cannot edit restaurant records', async () => {

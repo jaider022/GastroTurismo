@@ -160,8 +160,20 @@ test('order payments validate existence, ownership, cancellation and payment met
   assert.equal(response.status, 201);
   assert.equal((await response.json()).id_pedido, 20);
   const insert = db.calls.find(c => c.sql.startsWith('INSERT INTO pagos'));
-  assert.deepEqual(insert.params, [10000, 1, 1, 20, null]);
+  assert.deepEqual(insert.params, [10000, 1, 20, null]);
+  assert.doesNotMatch(insert.sql, /id_usuario/);
   assert.doesNotMatch(insert.sql, /id_plan/);
   assert.equal(db.calls.some(c => /UPDATE restaurantes/.test(c.sql)), false);
   assert.equal((await request('/api/planes')).status, 404);
+}));
+
+test('payment derives its client from the order and stores no duplicate user', () => withServer(async ({ db, request }) => {
+  const { cookie } = await login(request);
+  db.paymentOrder = { id_pedido: 20, id_usuario: 6, estado_pedido: 'en preparacion' };
+  const response = await request('/api/pagos', { method: 'POST', headers: { cookie, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ monto: 1000, id_metodo: 1, id_pedido: 20 }) });
+  assert.equal(response.status, 201); // El administrador puede cobrar el pedido del cliente 6.
+  const insert = db.calls.find(c => c.sql.startsWith('INSERT INTO pagos'));
+  assert.deepEqual(insert.params, [1000, 1, 20, null]);
+  assert.doesNotMatch(insert.sql, /id_usuario/);
 }));

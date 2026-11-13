@@ -70,7 +70,7 @@ test('pedidos tienen detalle del mismo restaurante y totales exactos; cada pago 
       const order = by('pedidos', 'id_pedido', p.id_pedido);
       assert.equal(by('estados_pedido', 'id_estado_pedido', order.id_estado_pedido).codigo, 'entregado');
       assert.equal(p.monto, order.total_pago);
-      assert.equal(p.id_usuario, order.id_usuario);
+      assert.equal(Object.hasOwn(p, 'id_usuario'), false);
       assert.ok(p.fecha_pago >= order.fecha_pedido);
   });
 });
@@ -107,7 +107,11 @@ test('Sorrento tiene diez mesas combinables, datos pendientes explícitos e hist
   assert.equal(restaurant.telefono, null);
   assert.equal(restaurant.email, null);
   assert.match(restaurant.direccion, /Mall Privilegio.*por confirmar/);
-  for (const table of ['platos', 'pedidos', 'visitas', 'resenas', 'experiencias']) {
+  assert.equal(data.platos.filter(p=>p.id_restaurante===restaurant.id_restaurante).length,11);
+  const menu=Object.fromEntries(data.platos.filter(p=>p.id_restaurante===restaurant.id_restaurante).map(p=>[p.nombre,p.precio]));
+  assert.equal(menu.Café,4400); assert.equal(menu.Maicitos,24000); assert.equal(menu['Rollitos mixtos'],26000);
+  assert.equal(menu['Pizza personal'],20000); assert.equal(menu['Pizza mediana'],32000); assert.equal(menu['Pizza grande'],50000);
+  for (const table of ['pedidos', 'visitas', 'resenas', 'experiencias']) {
     assert.equal(data[table].filter(row => row.id_restaurante === restaurant.id_restaurante).length, 0, table);
   }
   assert.equal(data.reserva_mesas.some(a => tables.some(m => m.id_mesa === a.id_mesa)), false);

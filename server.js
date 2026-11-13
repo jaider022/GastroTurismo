@@ -697,13 +697,13 @@ app.get('/api/metodos_pago', checkDbConnection, async (req, res) => {
 app.post('/api/pagos', checkDbConnection, async (req, res) => {
   const { monto, id_usuario, id_metodo, id_pedido, referencia = null } = req.body;
   const cents = Math.round(Number(monto) * 100);
-  if (!Number.isFinite(Number(monto)) || Number(monto) <= 0 || !positiveInteger(id_usuario) || !positiveInteger(id_metodo) ||
+  if (!Number.isFinite(Number(monto)) || Number(monto) <= 0 ||
+      (Object.hasOwn(req.body, 'id_usuario') && !positiveInteger(id_usuario)) || !positiveInteger(id_metodo) ||
       !positiveInteger(id_pedido) || Object.hasOwn(req.body, 'id_plan') || cents < 1 || cents > 999999999999 ||
       Math.abs(Number(monto) * 100 - cents) > 0.0001 ||
       (referencia !== null && (typeof referencia !== 'string' || !/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(referencia)))) {
-    return res.status(400).json({ error: 'El pago debe tener un monto positivo, un usuario, un medio de pago y un pedido válido. Solo se reciben pagos de pedidos.' });
+    return res.status(400).json({ error: 'El pago debe tener un monto positivo, un medio de pago y un pedido válido. Solo se reciben pagos de pedidos.' });
   }
-  if (Number(id_usuario) !== Number(req.user.id_usuario) && req.user.tipo_usuario !== 'administrador') return res.status(403).json({ error: 'Solo puedes registrar tus propios pagos.' });
   let connection;
   const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
   try {
@@ -712,7 +712,9 @@ app.post('/api/pagos', checkDbConnection, async (req, res) => {
     const [[order]] = await connection.query(`SELECT p.id_pedido,p.id_usuario,p.total_pago,e.codigo AS estado_pedido
       FROM pedidos p JOIN estados_pedido e ON e.id_estado_pedido=p.id_estado_pedido WHERE p.id_pedido=? FOR UPDATE`, [id_pedido]);
     if (!order) fail(404, 'El pedido no existe.');
-    if (Number(order.id_usuario) !== Number(id_usuario)) fail(403, 'El pago debe pertenecer al usuario que hizo el pedido.');
+    if (Number(order.id_usuario) !== Number(req.user.id_usuario) && req.user.tipo_usuario !== 'administrador') fail(403, 'Solo puedes registrar tus propios pagos.');
+    // Compatibilidad con formularios anteriores; el usuario no se almacena en Pago.
+    if (Object.hasOwn(req.body, 'id_usuario') && Number(order.id_usuario) !== Number(id_usuario)) fail(403, 'El pago debe pertenecer al usuario que hizo el pedido.');
     if (referencia) {
       const [[previous]] = await connection.query('SELECT id_pago,monto,id_metodo,estado_pago FROM pagos WHERE id_pedido=? AND referencia=?', [id_pedido, referencia]);
       if (previous) {
@@ -727,8 +729,8 @@ app.post('/api/pagos', checkDbConnection, async (req, res) => {
     const [[approved]] = await connection.query("SELECT COALESCE(SUM(monto),0) AS monto FROM pagos WHERE id_pedido=? AND estado_pago='aprobado'", [id_pedido]);
     if (cents + Math.round(Number(approved.monto) * 100) > Math.round(Number(order.total_pago) * 100)) fail(409, 'El importe supera el saldo del pedido.');
     const [result] = await connection.query(
-      'INSERT INTO pagos (monto, estado_pago, id_usuario, id_metodo, id_pedido, referencia) VALUES (?, "aprobado", ?, ?, ?, ?)',
-      [cents / 100, id_usuario, id_metodo, id_pedido, referencia]
+      'INSERT INTO pagos (monto, estado_pago, id_metodo, id_pedido, referencia) VALUES (?, "aprobado", ?, ?, ?)',
+      [cents / 100, id_metodo, id_pedido, referencia]
     );
     await connection.commit();
     res.status(201).json({ id_pago: result.insertId, id_pedido: Number(id_pedido), status: 'aprobado' });

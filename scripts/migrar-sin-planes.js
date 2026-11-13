@@ -21,7 +21,7 @@ async function inspect(connection, { expectedDatabase = 'gastronomia_turistica_a
   const legacyColumn = has('pagos', 'id_plan');
   const [invalid] = await connection.query(`SELECT p.id_pago FROM pagos p LEFT JOIN pedidos d ON d.id_pedido = p.id_pedido
     WHERE (p.id_pedido IS NULL ${legacyColumn ? 'AND p.id_plan IS NULL' : ''})
-       OR (p.id_pedido IS NOT NULL AND (d.id_pedido IS NULL OR p.id_usuario <> d.id_usuario ${legacyColumn ? 'OR p.id_plan IS NOT NULL' : ''}))`);
+       OR (p.id_pedido IS NOT NULL AND (d.id_pedido IS NULL ${has('pagos','id_usuario') ? 'OR p.id_usuario <> d.id_usuario' : ''} ${legacyColumn ? 'OR p.id_plan IS NOT NULL' : ''}))`);
   if (invalid.length) throw new Error(`Hay ${invalid.length} pagos sin pedido válido o con concepto ambiguo. Revisarlos antes de migrar.`);
   const [[counts]] = await connection.query(`SELECT COUNT(*) AS total FROM pagos ${legacyColumn ? 'WHERE id_pedido IS NULL AND id_plan IS NOT NULL' : 'WHERE 1 = 0'}`);
   const [fks] = await connection.query(`SELECT TABLE_NAME AS table_name, CONSTRAINT_NAME AS constraint_name,

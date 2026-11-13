@@ -13,7 +13,7 @@ function fixture() {
     document: { addEventListener() {} }, window: {},
     localStorage: { getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, String(value)) } });
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../public/app.js'), 'utf8') +
-    '\nglobalThis.model = {getLS, setLS, initLocalStorageData, migrateDemoWithoutPlans, simulateLocalStorageAPI};', context);
+    '\nglobalThis.model = {getLS, setLS, initLocalStorageData, migrateDemoWithoutPlans, migrateDemoPaymentOwner, simulateLocalStorageAPI};', context);
   context.loadedData = plain(dataset);
   vm.runInContext('demoDataset = loadedData; currentUser = {id_usuario: 6, tipo_usuario: "cliente"};', context);
   context.model.initLocalStorageData();
@@ -59,12 +59,26 @@ test('crear pedido y registrar su pago conserva el flujo sin planes ni cambios e
   const post = (route, body) => api.simulateLocalStorageAPI(route, {method: 'POST', body: JSON.stringify(body)});
   const order = post('pedidos', {id_usuario: 6, id_restaurante: 1, tipo_servicio: 'comedor', total_pago: 14000,
     platos: [{id_plato: 1, cantidad: 1, precio_unitario: 14000}]});
-  const payment = post('pagos', {monto: 14000, id_usuario: 6, id_metodo: 1, id_pedido: order.id_pedido});
+  const payment = post('pagos', {monto: 14000, id_metodo: 1, id_pedido: order.id_pedido});
   assert.equal(payment.id_pedido, order.id_pedido);
   assert.equal(payment.estado_pago, 'aprobado');
   assert.equal(Object.hasOwn(payment, 'id_plan'), false);
+  assert.equal(Object.hasOwn(payment, 'id_usuario'), false);
   assert.deepEqual(plain(api.getLS('gt_restaurantes')), restaurants);
   assert.ok(api.getLS('gt_pagos').some(p => p.id_pago === payment.id_pago && p.id_pedido === order.id_pedido));
+});
+
+test('normalizar pagos demo respalda, conserva los importes y rechaza clientes inconsistentes', () => {
+  const {api, storage} = fixture();
+  api.setLS('gt_pedidos', [{id_pedido: 902, id_usuario: 6}]);
+  api.setLS('gt_pagos', [{id_pago: 904, id_pedido: 902, id_usuario: 6, monto: 45000}]);
+  api.migrateDemoPaymentOwner();
+  assert.deepEqual(plain(api.getLS('gt_pagos')), [{id_pago: 904, id_pedido: 902, monto: 45000}]);
+  assert.equal(JSON.parse(storage.get('gt_academico_v2:respaldo_antes_normalizar_pagos')).pagos[0].id_usuario, 6);
+  const normalized = [...storage.entries()]; api.migrateDemoPaymentOwner(); assert.deepEqual([...storage.entries()], normalized);
+  api.setLS('gt_pagos', [{id_pago: 904, id_pedido: 902, id_usuario: 7, monto: 45000}]);
+  const inconsistent = [...storage.entries()]; assert.throws(() => api.migrateDemoPaymentOwner(), /no coincide/);
+  assert.deepEqual([...storage.entries()], inconsistent);
 });
 
 test('un formulario antiguo no puede volver a asignar planes al crear o editar restaurantes', () => {

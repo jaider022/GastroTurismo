@@ -165,12 +165,10 @@ CREATE TABLE IF NOT EXISTS pagos (
     monto DECIMAL(12, 2) NOT NULL CHECK (monto > 0),
     fecha_pago TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     estado_pago ENUM('aprobado', 'rechazado', 'pendiente') NOT NULL DEFAULT 'aprobado',
-    id_usuario INT NOT NULL,
     id_metodo INT NOT NULL,
     id_pedido INT NOT NULL,
     referencia CHAR(36) NULL,
     UNIQUE KEY uq_pago_referencia (id_pedido, referencia),
-    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON UPDATE CASCADE ON DELETE RESTRICT,
     FOREIGN KEY (id_metodo) REFERENCES metodos_pago(id_metodo) ON UPDATE CASCADE ON DELETE RESTRICT,
     FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
