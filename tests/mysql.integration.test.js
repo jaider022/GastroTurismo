@@ -1,7 +1,7 @@
 'use strict';
 
-// Explicit opt-in: these tests insert and remove only their own fixtures in the
-// isolated academic database. They never create/drop tables or alter seeded rows.
+// La integración requiere activación explícita y utiliza registros temporales propios en la
+// base académica. Conserva las tablas y los datos iniciales; retira sus registros al terminar.
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const mysql = require('mysql2/promise');
@@ -131,6 +131,27 @@ test('integration with the isolated academic MySQL-compatible database', { skip:
       const listing = await request('/api/restaurantes'); assert.equal(listing.status, 200);
       const rows = await listing.json(); assert.ok(rows.some(row => row.id_restaurante === rest.id_restaurante));
       assert.ok(rows.every(row => !Object.hasOwn(row, 'id_plan') && !Object.hasOwn(row, 'nombre_plan')));
+    });
+
+    await t.test('restaurant hours reject closed times without saving and offer valid slots in real MySQL', async () => {
+      const [[before]] = await db.query('SELECT COUNT(*) AS n FROM reservas WHERE id_usuario=?', [userId]);
+      for (const time of ['08:00:00', '10:45:00', '11:07:00', '13:15:01', '20:45:00', '22:30:00']) {
+        const response = await request('/api/reservas', {method:'POST',body:JSON.stringify({
+          fecha_reserva:'2030-01-02',hora_reserva:time,cantidad_personas:2,id_usuario:userId,id_mesas:[tableIds[0]]
+        })});
+        assert.equal(response.status,400,await response.clone().text());
+      }
+      const [[after]] = await db.query('SELECT COUNT(*) AS n FROM reservas WHERE id_usuario=?', [userId]);
+      assert.equal(Number(after.n),Number(before.n));
+      const [restaurants] = await db.query('SELECT id_restaurante,nombre FROM restaurantes WHERE nombre IN (?,?)', ['Café La Palma','Café Sorrento']);
+      assert.equal(restaurants.length,2);
+      for (const restaurant of restaurants) {
+        const available = time => request(`/api/reservas/disponibilidad?id_restaurante=${restaurant.id_restaurante}&fecha=2030-01-02&hora=${encodeURIComponent(time)}`);
+        assert.equal((await available('08:00')).status,400);
+        assert.equal((await available(restaurant.nombre==='Café Sorrento'?'08:30':'11:00')).status,200);
+        assert.equal((await available('20:30')).status,200);
+        assert.equal((await available('20:45')).status,400);
+      }
     });
 
     await t.test('reservation reminders are private, skip cancellations and are idempotent', async () => {
@@ -322,12 +343,12 @@ test('integration with the isolated academic MySQL-compatible database', { skip:
 
     await t.test('reservation edit preserves its two table assignments and permitted deletion removes the bridge rows', async () => {
       const future=new Date(cutoff+'T12:00:00Z');future.setUTCDate(future.getUTCDate()+2);const date=future.toISOString().slice(0,10);
-      const body={fecha_reserva:date,hora_reserva:'10:00:00',cantidad_personas:6,id_mesas:tableIds.slice(0,2),id_usuario:registeredIds[0]};
+      const body={fecha_reserva:date,hora_reserva:'11:00:00',cantidad_personas:6,id_mesas:tableIds.slice(0,2),id_usuario:registeredIds[0]};
       const headers={cookie:clientCookie};
       const created=await request('/api/reservas',{method:'POST',headers,body:JSON.stringify(body)});
       assert.equal(created.status,201,await created.clone().text());const reservation=await created.json();reservationIds.push(reservation.id_reserva);
       const route='/api/reservas/'+reservation.id_reserva;
-      const changed=await request(route,{method:'PUT',headers,body:JSON.stringify({...body,hora_reserva:'11:00:00',cantidad_personas:5})});
+      const changed=await request(route,{method:'PUT',headers,body:JSON.stringify({...body,hora_reserva:'12:00:00',cantidad_personas:5})});
       assert.equal(changed.status,200,await changed.clone().text());const row=await changed.json();assert.equal(row.id_reserva,reservation.id_reserva);assert.equal(row.cantidad_personas,5);assert.deepEqual(row.id_mesas,body.id_mesas);
       assert.equal((await request(route,{method:'PUT',headers,body:JSON.stringify({estado_reserva:'confirmada'})})).status,403);
       assert.equal((await request(route,{method:'PUT',headers,body:JSON.stringify({cantidad_personas:99})})).status,400);

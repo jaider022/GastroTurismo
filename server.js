@@ -26,7 +26,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Servir archivos estáticos del frontend
+// Publica los archivos estáticos de la interfaz.
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Estado de la conexión a la base de datos
@@ -53,7 +53,7 @@ const requireSession = (req, res, next) => req.user ? next() : res.status(401).j
 const requireStaff = (req, res, next) => ['administrador', 'restaurante'].includes(req.user?.tipo_usuario)
   ? next() : res.status(403).json({ error: 'Esta acción requiere una cuenta de administrador o restaurante.' });
 
-// Función para inicializar conexión a MySQL
+// Inicializa el grupo de conexiones MySQL.
 async function initDB() {
   try {
     dbConnection = await mysql.createPool({
@@ -70,7 +70,7 @@ async function initDB() {
       dateStrings: true
     });
     dbConnection.pool.on('connection', connection => connection.query("SET time_zone = '-05:00'"));
-    // Test de conexión
+    // Comprueba la conexión con una consulta de prueba.
     const [rows] = await dbConnection.query('SELECT 1');
     console.log(' Conectado exitosamente a la base de datos MySQL.');
     dbError = null;
@@ -83,7 +83,7 @@ async function initDB() {
   }
 }
 
-// La conexión se inicia explícitamente al arrancar el servidor, no al importar para pruebas.
+// Inicializa la conexión durante el arranque del servidor; la importación permite usar una base de prueba.
 
 // --------------------------------------------------------------------
 // MIDDLEWARE PARA PROTEGER RUTAS SI LA BASE DE DATOS NO ESTÁ CONECTADA
@@ -111,9 +111,9 @@ app.get('/api/status', (req, res) => {
   });
 });
 
-// Re-intentar conexión (útil si el usuario inicia MySQL después de encender el servidor)
+// Reintenta la conexión cuando el motor MySQL vuelve a estar disponible.
 app.post('/api/status/reconnect', async (req, res) => {
-  // Las credenciales pertenecen a .env, nunca se cambian desde un navegador.
+  // Las credenciales de conexión se cargan desde la configuración local del servidor.
   if (dbConnection) return res.json({ connected: true, database: process.env.DB_NAME });
   await initDB();
 
@@ -125,7 +125,7 @@ app.post('/api/status/reconnect', async (req, res) => {
 });
 
 // --------------------------------------------------------------------
-// ENDPOINTS DE AUTENTICACIÓN (LOGIN & REGISTRO)
+// ENDPOINTS DE AUTENTICACIÓN Y REGISTRO
 // --------------------------------------------------------------------
 app.post('/api/auth/login', checkDbConnection, async (req, res) => {
   const { correo, contrasena } = req.body;
@@ -530,7 +530,7 @@ app.get('/api/pedidos', requireSession, checkDbConnection, async (req, res) => {
       ORDER BY p.fecha_pedido DESC
     `, scope ? [req.user.id_usuario] : []);
     
-    // Obtener detalles de cada pedido
+    // Consulta los platos, cantidades y precios asociados a cada pedido.
     for (let p of pedidos) {
       const [detalles] = await dbConnection.query(`
         SELECT dp.*, plato.nombre AS nombre_plato
@@ -550,7 +550,7 @@ app.get('/api/pedidos', requireSession, checkDbConnection, async (req, res) => {
 app.post('/api/pedidos', checkDbConnection, async (req, res) => {
   const { tipo_servicio, direccion_entrega, id_usuario, id_restaurante, platos } = req.body;
   const address = typeof direccion_entrega === 'string' ? direccion_entrega.trim() : '';
-  // platos es un array de { id_plato, cantidad, precio_unitario }
+  // La solicitud contiene los platos y sus cantidades; el precio vigente se consulta en la base.
   
   if (!['delivery', 'comedor'].includes(tipo_servicio) || !positiveInteger(id_restaurante) ||
       !positiveInteger(id_usuario) || !Array.isArray(platos) || !platos.length || platos.length > 100 ||
@@ -581,14 +581,14 @@ app.post('/api/pedidos', checkDbConnection, async (req, res) => {
     }
     const total_pago = totalCents / 100;
     
-    // Insertar Pedido
+    // Registra la cabecera del pedido.
     const [result] = await connection.query(
       'INSERT INTO pedidos (id_tipo_servicio, id_estado_pedido, total_pago, direccion_entrega, id_usuario, id_restaurante) VALUES (?, ?, ?, ?, ?, ?)',
       [service, state, total_pago, tipo_servicio === 'delivery' ? address : null, id_usuario, id_restaurante]
     );
     const id_pedido = result.insertId;
     
-    // Insertar Detalles
+    // Registra los platos y precios del pedido.
     for (let plato of priced) {
       await connection.query(
         'INSERT INTO detalle_pedidos (id_pedido, id_plato, cantidad, precio_unitario) VALUES (?, ?, ?, ?)',
@@ -662,7 +662,7 @@ app.post('/api/resenas', checkDbConnection, async (req, res) => {
 });
 
 // --------------------------------------------------------------------
-// ENDPOINTS AUXILIARES: ZONAS, CATEGORÍAS, PLANES, MÉTODOS PAGO
+// ENDPOINTS AUXILIARES: ZONAS, CATEGORÍAS Y MÉTODOS DE PAGO
 // --------------------------------------------------------------------
 app.get('/api/zonas', checkDbConnection, async (req, res) => {
   try {
@@ -713,7 +713,7 @@ app.post('/api/pagos', checkDbConnection, async (req, res) => {
       FROM pedidos p JOIN estados_pedido e ON e.id_estado_pedido=p.id_estado_pedido WHERE p.id_pedido=? FOR UPDATE`, [id_pedido]);
     if (!order) fail(404, 'El pedido no existe.');
     if (Number(order.id_usuario) !== Number(req.user.id_usuario) && req.user.tipo_usuario !== 'administrador') fail(403, 'Solo puedes registrar tus propios pagos.');
-    // Compatibilidad con formularios anteriores; el usuario no se almacena en Pago.
+    // Valida la compatibilidad del formulario; el cliente del pago se obtiene a través del pedido.
     if (Object.hasOwn(req.body, 'id_usuario') && Number(order.id_usuario) !== Number(id_usuario)) fail(403, 'El pago debe pertenecer al usuario que hizo el pedido.');
     if (referencia) {
       const [[previous]] = await connection.query('SELECT id_pago,monto,id_metodo,estado_pago FROM pagos WHERE id_pedido=? AND referencia=?', [id_pedido, referencia]);
@@ -773,7 +773,7 @@ app.put('/api/notificaciones/leer/:id', requireSession, checkDbConnection, async
       'UPDATE notificaciones SET leido = TRUE WHERE id_notificacion = ? AND id_usuario = ?', params
     );
     if (!result.affectedRows) {
-      // Algunos clientes cuentan solo cambios: una notificación propia ya leída sigue siendo válida.
+      // Una notificación propia ya leída conserva una respuesta válida aunque la actualización no cambie filas.
       const [existing] = await dbConnection.query(
         'SELECT id_notificacion FROM notificaciones WHERE id_notificacion = ? AND id_usuario = ? LIMIT 1', params
       );
@@ -786,7 +786,7 @@ app.put('/api/notificaciones/leer/:id', requireSession, checkDbConnection, async
 });
 
 // --------------------------------------------------------------------
-// ENDPOINTS PARA LOS 10 REPORTES DEL SISTEMA
+// ENDPOINTS PARA LOS DIEZ REPORTES ACADÉMICOS
 // --------------------------------------------------------------------
 app.get('/api/reportes/1', checkDbConnection, async (req, res) => {
   try {

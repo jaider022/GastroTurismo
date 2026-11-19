@@ -6,7 +6,7 @@ Sorrento ya es un registro de la base habitual y aparece en restaurantes y en el
 
 - Nombre utilizado: Café Sorrento. La captura aportada muestra Café Sorrento Gourmet.
 - Ubicación indicada por Jaider: Mall Privilegio, Armenia. La dirección exacta queda explícitamente por confirmar. No se atribuye a la zona Centro de Armenia.
-- Horario indicado: lunes a domingo, 08:30–22:30. El selector ofrece inicios hasta las 20:30 para terminar la ocupación de dos horas antes del cierre. Se trata del perfil del formulario, sin nueva tabla de horarios o restricción de cierre en la API.
+- Horario indicado: lunes a domingo, 08:30–22:30. El selector ofrece inicios hasta las 20:30 para terminar la ocupación de dos horas antes del cierre. Desde el 18 de noviembre, la API también valida apertura, cierre e intervalos de quince minutos; no se agregó una tabla de horarios. Ver [horarios de reservas](Reservas_horarios.md).
 - Oferta comunicada: café, capuchino, latte, chocolate artesanal, desayunos, hamburguesas, maicitos, pizza, rollitos y cerveza. La ficha muestra categorías informativas. No se crearon platos con precios inventados ni importes cero.
 - Teléfono, correo del negocio y precios: pendientes. La captura de Google no se convirtió en una lista de precios.
 - Mesas autorizadas como configuración provisional: **diez mesas**, cinco de dos personas y cinco de cuatro. Suman **30 cupos**, también provisionales. El aforo real del café no está confirmado.

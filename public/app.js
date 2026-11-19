@@ -1,11 +1,11 @@
 // ====================================================================
-// APPLICACIÓN PRINCIPAL JS - GASTROTURISMO (EJE CAFETERO)
+// APLICACIÓN PRINCIPAL - GASTROTURISMO
 // ====================================================================
 
 // --------------------------------------------------------------------
-// 1. BASE DE DATOS DE SEMILLA / COPIA EN LOCALSTORAGE (MOCK FALLBACK)
+// 1. DATOS INICIALES Y ALMACENAMIENTO DE DEMOSTRACIÓN
 // --------------------------------------------------------------------
-// El mismo conjunto académico alimenta la demostración y el SQL de MySQL.
+// El conjunto académico se utiliza en la demostración y en los archivos SQL de instalación.
 let demoDataset = null;
 const DEMO_NAMESPACE = 'gt_academico_v2:';
 const DEMO_TABLE_KEYS = {
@@ -40,7 +40,7 @@ let chartInstanceDashboard1 = null;
 let chartInstanceDashboard2 = null;
 let chartInstanceReport = null;
 
-// Inicializa LocalStorage si no existen datos
+// Inicializa el almacenamiento local cuando no hay datos guardados.
 function initLocalStorageData(force = false) {
   if (!demoDataset) throw new Error('No se cargó la semilla académica. Recarga la página.');
   for (const [table, key] of Object.entries(DEMO_TABLE_KEYS)) {
@@ -82,6 +82,10 @@ function getLS(key) {
 }
 
 function demoAvailableTables(restaurant, date, time, excluded) {
+  const selectedRestaurant = getLS('gt_restaurantes').find(r => r.id_restaurante == restaurant);
+  if (!selectedRestaurant) throw new Error('Selecciona un restaurante válido.');
+  const timeError = reservationTimeError(selectedRestaurant, time);
+  if (timeError) throw new Error(timeError);
   const start = new Date(date + 'T' + time + '-05:00').getTime();
   const busy = new Set(getLS('gt_reservas').filter(r => r.id_reserva != excluded &&
     ['pendiente', 'confirmada'].includes(r.estado_reserva) &&
@@ -91,8 +95,8 @@ function demoAvailableTables(restaurant, date, time, excluded) {
 }
 const setLS = (key, val) => localStorage.setItem(DEMO_NAMESPACE + key, JSON.stringify(val));
 
-// Conserva las reservas y pedidos del navegador y respalda los registros antiguos
-// antes de adaptar exclusivamente restaurantes y pagos al modelo sin membresías.
+// Respalda los registros locales y conserva el historial de reservas y pedidos
+// al migrar las referencias de restaurantes y pagos al modelo sin membresías.
 function migrateDemoWithoutPlans() {
   const restaurants = getLS('gt_restaurantes');
   const payments = getLS('gt_pagos');
@@ -158,7 +162,7 @@ function updateDbStatusUI() {
 }
 
 // --------------------------------------------------------------------
-// 4. SISTEMA DE LLAMADAS API CON FALLBACK AUTOMÁTICO
+// 4. ACCESO A LA API Y SIMULACIÓN LOCAL
 // --------------------------------------------------------------------
 async function requestAPI(endpoint, options = {}) {
   if (isConnectedToDB) {
@@ -175,7 +179,7 @@ async function requestAPI(endpoint, options = {}) {
   return simulateLocalStorageAPI(endpoint, options);
 }
 
-// Simulación de CRUD en LocalStorage
+// Operaciones CRUD de la demostración en almacenamiento local.
 function simulateLocalStorageAPI(endpoint, options = {}) {
   const method = options.method || 'GET';
   const body = options.body ? JSON.parse(options.body) : null;
@@ -374,7 +378,7 @@ function simulateLocalStorageAPI(endpoint, options = {}) {
         const id_pedido = Date.now();
         const platosLS = getLS('gt_platos');
         
-        // Formar el array de detalles inyectando nombres de platos
+        // Relaciona los detalles del pedido con los nombres de sus platos.
         const details = body.platos.map(pl => {
           const matchPlato = platosLS.find(x => x.id_plato == pl.id_plato) || {};
           return {
@@ -508,7 +512,7 @@ function simulateLocalStorageAPI(endpoint, options = {}) {
 }
 
 // --------------------------------------------------------------------
-// 5. CÁLCULO DE LOS 10 REPORTES EN LOCALSTORAGE (MOCK DE CONSULTAS)
+// 5. REPORTES ACADÉMICOS DE LA DEMOSTRACIÓN LOCAL
 // --------------------------------------------------------------------
 function calculateMockReport(reportId) {
   console.log(`[MOCK DB] Calculando Reporte #${reportId}`);
@@ -529,7 +533,7 @@ function calculateMockReport(reportId) {
 
   switch (parseInt(reportId)) {
     case 1:
-      // Directorio completo restaurantes
+      // Directorio de restaurantes
       return [...rests].sort((a,b) => a.nombre.localeCompare(b.nombre, 'es')).map(r => ({
         Restaurante: r.nombre,
         Direccion: r.direccion,
@@ -578,7 +582,7 @@ function calculateMockReport(reportId) {
         };
       }).filter(row => row.Reservas > 0).sort((a,b) => b.Reservas - a.Reservas);
     case 6:
-      // Ingresos totales por restaurante
+      // Importe de los pedidos entregados por restaurante
       return rests.map(r => {
         const pList = pedidos.filter(p => p.id_restaurante == r.id_restaurante && p.estado_pedido === 'entregado');
         const sum = pList.reduce((acc, curr) => acc + Number(curr.total_pago), 0);
@@ -589,7 +593,7 @@ function calculateMockReport(reportId) {
         };
       }).sort((a,b) => b['Ingresos Totales'] - a['Ingresos Totales']);
     case 7:
-      // Ocupación de mesas
+      // Cantidad de mesas por estado y restaurante
       return rests.map(r => {
         const mList = mesas.filter(m => m.id_restaurante == r.id_restaurante);
         const total = mList.length;
@@ -626,15 +630,15 @@ function calculateMockReport(reportId) {
         'Total Reservas': x.count
       })).sort((a,b) => b['Total Reservas'] - a['Total Reservas']);
     case 10:
-      // Platos más vendidos por categoría por encima de la media de su categoría
+      // Platos con ventas iguales o superiores a la media de su categoría
       const salesMap = {};
       const storedDetails = getLS('gt_detalle_pedidos');
       const storedOrders = new Set(storedDetails.map(d => Number(d.id_pedido)));
-      // La tabla de detalles es la fuente principal; los pedidos demo nuevos conservan detalles anidados.
+      // Obtiene los detalles de la tabla asociativa o de los platos incluidos en los pedidos de demostración.
       const reportDetails = storedDetails.concat(pedidos.filter(p => !storedOrders.has(Number(p.id_pedido))).flatMap(p => p.detalles || []));
       reportDetails.forEach(d => { salesMap[d.id_plato] = (salesMap[d.id_plato] || 0) + Number(d.cantidad); });
 
-      // Calcular medias por categoría
+      // Calcula la media de unidades vendidas por categoría.
       const categoryAverages = {};
       categorias.forEach(cat => {
         const catPlatos = platos.filter(p => p.id_categoria == cat.id_categoria && salesMap[p.id_plato] > 0);
@@ -662,7 +666,7 @@ function calculateMockReport(reportId) {
 }
 
 // --------------------------------------------------------------------
-// 6. CONTROLADORES DE RUTA & CAMBIO DE SECCIÓN
+// 6. EVENTOS DE LA INTERFAZ Y CAMBIO DE SECCIÓN
 // --------------------------------------------------------------------
 document.addEventListener('DOMContentLoaded', async () => {
   // Los controles no dependen de las bibliotecas visuales externas.
@@ -742,7 +746,7 @@ function setupEventHandlers() {
       openSorrentoGallery(sorrentoPhotoIndex + (event.key === 'ArrowLeft' ? -1 : 1));
     }
   });
-  // Navegación Sidebar
+  // Navegación del menú lateral.
   document.querySelectorAll('.menu-item').forEach(item => {
     item.addEventListener('click', (e) => {
       e.preventDefault();
@@ -754,7 +758,7 @@ function setupEventHandlers() {
       document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
       document.getElementById(target).classList.add('active');
       
-      // Título de topbar
+      // Actualiza el título de la barra superior.
       document.getElementById('current-section-title').textContent = item.textContent.trim();
       
       // Acciones adicionales por sección
@@ -772,7 +776,7 @@ function setupEventHandlers() {
     });
   });
 
-  // Toggle Auth Forms
+  // Alterna los formularios de acceso y registro.
   document.getElementById('go-to-register').addEventListener('click', (e) => {
     e.preventDefault();
     showLogin('register');
@@ -783,7 +787,7 @@ function setupEventHandlers() {
     showLogin();
   });
 
-  // Envío Form Login
+  // Envía el formulario de inicio de sesión.
   document.getElementById('form-login').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('login-email').value;
@@ -808,7 +812,7 @@ function setupEventHandlers() {
     }
   });
 
-  // Envío Form Registro
+  // Envía el formulario de registro.
   document.getElementById('form-register').addEventListener('submit', async (e) => {
     e.preventDefault();
     const nombre = document.getElementById('register-name').value;
@@ -836,7 +840,7 @@ function setupEventHandlers() {
     }
   });
 
-  // Cerrar Sesión
+  // Cierra la sesión activa.
   document.getElementById('btn-logout').addEventListener('click', async () => {
     if (isConnectedToDB) { try { await requestAPI('auth/logout', {method:'POST'}); } catch (e) { showToast(e.message, 'danger'); return; } }
     currentUser = null;
@@ -856,7 +860,7 @@ function setupEventHandlers() {
     await showPublicRestaurants();
   });
 
-  // Notificaciones Campana Toggle
+  // Abre o cierra el panel de notificaciones.
   document.getElementById('bell-btn').addEventListener('click', (e) => {
     e.stopPropagation();
     const panel = document.getElementById('notification-panel');
@@ -876,7 +880,7 @@ function setupEventHandlers() {
     document.getElementById('bell-btn').setAttribute('aria-expanded', 'false');
   });
 
-  // Configuración de BD Form
+  // Comprueba la conexión desde el formulario de base de datos.
   document.getElementById('form-db-config').addEventListener('submit', async (e) => {
     e.preventDefault();
     const host = document.getElementById('cfg-db-host').value;
@@ -908,7 +912,7 @@ function setupEventHandlers() {
     }
   });
 
-  // Restaurar datos de LocalStorage
+  // Restaura los datos de la demostración local.
   document.getElementById('btn-reset-demo').addEventListener('click', () => {
     if (confirm('¿Estás seguro de restaurar los datos iniciales de fábrica? Esto limpiará tus cambios en LocalStorage.')) {
       initLocalStorageData(true);
@@ -917,14 +921,14 @@ function setupEventHandlers() {
     }
   });
 
-  // Filtro mesas por restaurante
+  // Filtra las mesas por restaurante.
   document.getElementById('filter-mesas-restaurante').addEventListener('change', renderMesas);
 
-  // Botón añadir restaurante
+  // Abre el formulario para agregar un restaurante.
   document.getElementById('btn-add-restaurante').addEventListener('click', () => openRestauranteModal());
   document.getElementById('form-modal-restaurante').addEventListener('submit', saveRestaurante);
 
-  // Botón añadir mesa
+  // Abre el formulario para agregar una mesa.
   document.getElementById('btn-add-mesa').addEventListener('click', () => openMesaModal());
   document.getElementById('form-modal-mesa').addEventListener('submit', saveMesa);
   document.getElementById('btn-add-plato').addEventListener('click', () => openPlatoModal());
@@ -936,7 +940,7 @@ function setupEventHandlers() {
   document.getElementById('platos-anterior').addEventListener('click', () => { platosAdminPage -= 1; renderPlatosAdminPage(); });
   document.getElementById('platos-siguiente').addEventListener('click', () => { platosAdminPage += 1; renderPlatosAdminPage(); });
 
-  // Botón nueva reserva
+  // Abre el formulario de nueva reserva.
   document.getElementById('btn-new-reserva').addEventListener('click', () => openReservaModal());
   document.getElementById('reservas-busqueda').addEventListener('input', filterReservas);
   document.getElementById('reservas-estado').addEventListener('change', filterReservas);
@@ -958,14 +962,14 @@ function setupEventHandlers() {
   });
   document.getElementById('form-modal-reserva').addEventListener('submit', saveReserva);
 
-  // Restaurante selector en pedidos
+  // Carga los platos del restaurante seleccionado para el pedido.
   document.getElementById('pedido-restaurante').addEventListener('change', loadPedidoMenu);
   document.getElementById('pedido-servicio').addEventListener('change', (e) => {
     const isDelivery = e.target.value === 'delivery';
     document.getElementById('pedido-direccion-group').style.display = isDelivery ? 'block' : 'none';
   });
 
-  // Realizar pedido
+  // Registra el pedido con los platos del carrito.
   document.getElementById('btn-checkout').addEventListener('click', executeCheckout);
   for (const id of ['pedidos-filtro-restaurante', 'pedidos-desde', 'pedidos-hasta', 'pedidos-por-pagina']) {
     document.getElementById(id).addEventListener('change', filterPedidos);
@@ -985,10 +989,10 @@ function setupEventHandlers() {
     renderPedidosPage();
   });
 
-  // Crear reseña
+  // Envía la calificación y el comentario del cliente.
   document.getElementById('form-resena').addEventListener('submit', saveResena);
 
-  // Cambio de reporte
+  // Carga el reporte seleccionado.
   document.querySelectorAll('.report-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.report-btn').forEach(b => b.classList.remove('active'));
@@ -1018,20 +1022,20 @@ function setupEventHandlers() {
     renderAsistenciaPage();
   });
 
-  // Mostrar SQL
+  // Muestra la consulta SQL del reporte.
   document.getElementById('btn-toggle-sql').addEventListener('click', () => {
     const box = document.getElementById('sql-box');
     box.style.display = box.style.display === 'none' ? 'block' : 'none';
   });
 
-  // Exportar reporte a PDF
+  // Exporta el reporte a PDF.
   document.getElementById('btn-export-pdf').addEventListener('click', exportReportToPDF);
 
-  // Generar documentos
+  // Genera la vista previa del documento seleccionado.
   document.getElementById('btn-gen-comprobante').addEventListener('click', () => generateDocumentPDF('reserva'));
   document.getElementById('btn-gen-factura').addEventListener('click', () => generateDocumentPDF('pedido'));
   
-  // Buscar restaurantes filter
+  // Filtra los restaurantes por el texto de búsqueda.
   document.getElementById('search-restaurantes').addEventListener('input', (e) => {
     renderRestaurantes(e.target.value);
   });
@@ -1465,13 +1469,13 @@ function showDashboard() {
   document.querySelectorAll('.menu-item').forEach(item => item.classList.toggle('active', item.dataset.target === 'section-dashboard'));
   document.getElementById('current-section-title').textContent = 'Dashboard';
 
-  // Cargar datos en pantalla
+  // Muestra los datos de la cuenta autenticada.
   document.getElementById('user-display-name').textContent = currentUser.nombre;
   document.getElementById('user-display-role').textContent = currentUser.tipo_usuario;
   document.getElementById('welcome-user-name').textContent = currentUser.nombre;
   document.getElementById('user-avatar').textContent = currentUser.nombre.substring(0, 1).toUpperCase();
 
-  // Ajustes de rol
+  // Configura las opciones visibles según el rol de la cuenta.
   const isAdmin = currentUser.tipo_usuario === 'administrador';
   const isRestOwner = currentUser.tipo_usuario === 'restaurante';
   document.getElementById('menu-admin-platos').style.display = isAdmin || isRestOwner ? 'flex' : 'none';
@@ -1483,13 +1487,13 @@ function showDashboard() {
   document.getElementById('btn-add-restaurante').style.display = (isAdmin || isRestOwner) ? 'inline-flex' : 'none';
   document.getElementById('btn-add-mesa').style.display = (isAdmin || isRestOwner) ? 'inline-flex' : 'none';
 
-  // Renderizar
+  // Carga el resumen inicial del panel.
   renderDashboardStats();
   loadNotifications();
 }
 
 // --------------------------------------------------------------------
-// 8. RENDERIZACIÓN DE CONTENIDOS Y DASHBOARD STATS
+// 8. RESUMEN DEL PANEL Y ESTADÍSTICAS
 // --------------------------------------------------------------------
 async function renderDashboardStats() {
   try {
@@ -1497,7 +1501,7 @@ async function renderDashboardStats() {
     const resvs = await requestAPI('reservas');
     const peds = await requestAPI('pedidos');
     
-    // Contar usuarios del localStorage (o API si existiera usuarios list)
+    // Cuenta los clientes almacenados en los datos de demostración local.
     let clientsCount = 0;
     try {
       const usersList = getLS('gt_usuarios');
@@ -1506,13 +1510,13 @@ async function renderDashboardStats() {
       clientsCount = 8;
     }
 
-    // Set stats
+    // Actualiza los indicadores del panel.
     document.getElementById('stat-restaurantes').textContent = rests.length;
     document.getElementById('stat-reservas').textContent = resvs.filter(r => r.estado_reserva !== 'cancelada' && r.estado_reserva !== 'finalizada').length;
     document.getElementById('stat-pedidos').textContent = peds.filter(p => p.estado_pedido === 'entregado').length;
     document.getElementById('stat-clientes').textContent = clientsCount;
 
-    // Renderizar Gráficos de Resumen
+    // Genera las gráficas del resumen.
     renderDashboardCharts(rests, resvs, peds);
 
   } catch (error) {
@@ -1532,7 +1536,7 @@ function getChartPalette() {
 function renderDashboardCharts(rests, resvs, peds) {
   if (!window.Chart) return;
   const palette = getChartPalette();
-  // Gráfico 1: Ingresos Totales por Restaurante (COP)
+  // Gráfica 1: importe de pedidos entregados por restaurante en pesos colombianos.
   const incomeData = rests.map(r => {
     const rPeds = peds.filter(p => p.id_restaurante == r.id_restaurante && p.estado_pedido === 'entregado');
     const total = rPeds.reduce((acc, curr) => acc + curr.total_pago, 0);
@@ -1565,7 +1569,7 @@ function renderDashboardCharts(rests, resvs, peds) {
     }
   });
 
-  // Gráfico 2: Reservas por Zona
+  // Gráfica 2: reservas por zona turística.
   const zonesMap = {};
   const zonesList = getLS('gt_zonas');
   const mesas = getLS('gt_mesas');
@@ -1677,7 +1681,7 @@ async function openRestauranteModal(id = null) {
   const title = document.getElementById('modal-restaurante-title');
   const form = document.getElementById('form-modal-restaurante');
 
-  // Cargar zonas en el select
+  // Carga las zonas disponibles en el selector.
   const zonas = await requestAPI('zonas');
   const selectZona = document.getElementById('mrest-zona');
   selectZona.innerHTML = '';
@@ -1772,7 +1776,7 @@ async function deleteRestaurante(id) {
 }
 
 function goToReserveFromRest(restId) {
-  // Simula clic en el menú reservas
+  // Abre la sección de reservas.
   const menuItem = document.querySelector('.menu-item[data-target="section-reservas"]');
   if (menuItem) {
     menuItem.click();
@@ -1964,7 +1968,7 @@ async function deleteMesa(id) {
 }
 
 // --------------------------------------------------------------------
-// ADMINISTRACIÓN DE PLATOS (INTERFAZ; PERMISOS DE SERVIDOR EN SEGUIMIENTO 15)
+// ADMINISTRACIÓN DE PLATOS Y MENÚ
 // --------------------------------------------------------------------
 let platosAdminList = [];
 let platosAdminPage = 1;
@@ -2149,7 +2153,7 @@ async function renderReservas() {
       user?.tipo_usuario === 'restaurante' ? requestAPI('restaurantes') : Promise.resolve([])]);
     if (requestId !== reservasRequest || currentUser?.id_usuario !== user?.id_usuario) return;
     
-    // Filtrar si no es admin (Clientes ven solo las suyas, propietarios las de sus restaurantes)
+    // Limita las reservas visibles según el rol y los restaurantes asociados a la cuenta.
     let filtered = list;
     if (currentUser.tipo_usuario === 'cliente') {
       filtered = list.filter(r => r.id_usuario == currentUser.id_usuario);
@@ -2232,7 +2236,7 @@ function renderReservasPage() {
         actionButtons += `<button class="btn btn-sm btn-danger" onclick="deleteReserva(${r.id_reserva})" title="Eliminar"><i data-lucide="trash-2"></i></button>`;
       }
 
-      // Si es administrador, siempre puede eliminar físicamente cualquier reserva
+      // Ofrece la eliminación al administrador; el servidor valida los registros vinculados a la reserva.
       if (currentUser.tipo_usuario === 'administrador' && r.estado_reserva !== 'cancelada' && r.estado_reserva !== 'finalizada') {
         actionButtons += ` <button class="btn btn-sm btn-danger" onclick="deleteReserva(${r.id_reserva})" title="Borrar de la BD"><i data-lucide="trash-2"></i></button>`;
       }
@@ -2268,18 +2272,27 @@ async function legacyAvailableTables(restaurant, date, time, exclude) {
 
 function reservationTimeOptions(restaurant) {
   if (!restaurant) return [];
-  const description = normalizePublicSearch([restaurant.nombre, restaurant.especialidad].join(' '));
-  const cafe = /\bcafe(?:s|teria)?\b|reposteria|desayunos?/.test(description);
   const sorrento = isSorrentoListing(restaurant);
-  const first = sorrento ? 8 * 60 + 30 : cafe ? 8 * 60 : 11 * 60 + 30;
-  // La ocupación vigente dura dos horas: en Sorrento debe terminar antes del cierre de las 22:30.
-  const last = sorrento ? 20 * 60 + 30 : cafe ? 22 * 60 : 23 * 60;
+  const first = sorrento ? 8 * 60 + 30 : 11 * 60;
+  // Todos cierran a las 22:30; el turno de dos horas debe finalizar dentro del horario.
+  const last = 20 * 60 + 30;
   const options = [];
   for (let minute = first; minute <= last; minute += 15) {
     const hour = Math.floor(minute / 60), part = String(minute % 60).padStart(2, '0');
     options.push({ value: `${String(hour).padStart(2, '0')}:${part}`, label: `${hour % 12 || 12}:${part} ${hour < 12 ? 'a. m.' : 'p. m.'}` });
   }
   return options;
+}
+
+function reservationTimeError(restaurant, time) {
+  const match = typeof time === 'string' && /^(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(time);
+  if (!match || Number(match[1]) > 23 || Number(match[2]) > 59 || Number(match[3] || 0) > 59) return 'Indica una hora válida.';
+  const minute = Number(match[1]) * 60 + Number(match[2]);
+  const opening = isSorrentoListing(restaurant) ? 510 : 660;
+  if (minute < opening || minute >= 1350) return `El restaurante está cerrado a esa hora. Atiende de ${opening === 510 ? '8:30' : '11:00'} a. m. a 10:30 p. m.`;
+  if (minute + 120 > 1350) return 'La reserva dura dos horas y debe terminar a más tardar a las 10:30 p. m. La última hora de llegada es a las 8:30 p. m.';
+  if (minute % 15 !== 0 || Number(match[3] || 0) !== 0) return 'Selecciona una hora en intervalos de 15 minutos.';
+  return '';
 }
 
 async function openReservaModal(preSelectedRestId = null, idReserva = null) {
@@ -2340,8 +2353,7 @@ async function openReservaModal(preSelectedRestId = null, idReserva = null) {
       help.textContent = 'Selecciona un restaurante para ver sus horas.';
       return;
     }
-    help.textContent = `De ${options[0].label} a ${options.at(-1).label}, cada 15 minutos.`;
-    if (isSorrentoListing(restaurant)) help.textContent += ' Atención hasta las 10:30 p. m.; la reserva ocupa dos horas.';
+    help.textContent = `Atención de ${options[0].label} a 10:30 p. m. Llegadas hasta las 8:30 p. m., cada 15 minutos; la reserva ocupa dos horas.`;
     const originalHour = reservation?.hora_reserva?.slice(0, 5);
     const sameOriginal = reservation && String(reservation.id_restaurante) === String(selectRest.value) &&
       String(reservation.fecha_reserva).slice(0, 10) === date.value;
@@ -2395,6 +2407,8 @@ async function openReservaModal(preSelectedRestId = null, idReserva = null) {
     }
     summary.textContent = 'Consultando mesas disponibles…';
     try {
+      const timeError = reservationTimeError(allowed.find(r => r.id_restaurante == selectRest.value), time.value);
+      if (timeError) throw new Error(timeError);
       const params = new URLSearchParams({ id_restaurante: selectRest.value, fecha: date.value, hora: time.value });
       if (id.value) params.set('id_reserva', id.value);
       const tables = legacy ? await legacyAvailableTables(selectRest.value, date.value, time.value, id.value)
@@ -2506,13 +2520,13 @@ async function deleteReserva(id) {
 }
 
 // --------------------------------------------------------------------
-// 12. MÓDULO PEDIDOS, MENÚ Y CARRITO (DE COMIDA / DELIVERY)
+// 12. PEDIDOS DE COMIDA, DOMICILIOS Y CARRITO
 // --------------------------------------------------------------------
 async function loadPedidosSection() {
   currentCart = [];
   updateCartUI();
 
-  // Cargar selector de restaurantes
+  // Carga los establecimientos disponibles en el selector.
   const rests = await requestAPI('restaurantes');
   const selectRest = document.getElementById('pedido-restaurante');
   selectRest.innerHTML = '<option value="">Selecciona un restaurante...</option>';
@@ -2523,7 +2537,7 @@ async function loadPedidosSection() {
     selectRest.appendChild(opt);
   });
 
-  // Cargar métodos de pago
+  // Carga los métodos de pago disponibles.
   const metodos = await requestAPI('metodos_pago');
   const selectPay = document.getElementById('cart-payment-select');
   selectPay.innerHTML = '';
@@ -2722,7 +2736,7 @@ let pedidosList = [];
 let pedidosPage = 1;
 let pedidosRequest = 0;
 
-// MySQL devuelve fecha civil; el modo demo también puede devolver un ISO con zona.
+// Interpreta las fechas de MySQL y las fechas ISO con desfase horario de la demostración.
 function pedidoFechaLocal(value) {
   const text = String(value ?? '');
   if (/(?:Z|[+-]\d{2}:?\d{2})$/i.test(text)) {
@@ -2762,7 +2776,7 @@ async function renderPedidosHistorial() {
       user?.tipo_usuario === 'restaurante' ? requestAPI('restaurantes') : Promise.resolve([])]);
     if (requestId !== pedidosRequest || currentUser?.id_usuario !== user?.id_usuario) return;
 
-    // Filtrar según rol
+    // Filtra los pedidos según el rol de la cuenta.
     let filtered = list;
     if (currentUser.tipo_usuario === 'cliente') {
       filtered = list.filter(p => p.id_usuario == currentUser.id_usuario);
@@ -2881,7 +2895,7 @@ async function updatePedidoStatus(id, newStatus) {
 // 13. MÓDULO RESEÑAS Y COMENTARIOS
 // --------------------------------------------------------------------
 async function loadResenasSection() {
-  // Cargar selector de restaurantes
+  // Carga los establecimientos disponibles en el selector.
   const rests = await requestAPI('restaurantes');
   const select = document.getElementById('resena-restaurante');
   select.innerHTML = '<option value="">Selecciona...</option>';
@@ -2938,7 +2952,7 @@ async function saveResena(e) {
   const id_restaurante = parseInt(document.getElementById('resena-restaurante').value);
   const comment = document.getElementById('resena-comentario').value;
   
-  // Buscar calificacion estrellas seleccionadas
+  // Obtiene la calificación seleccionada en las estrellas.
   const selectedStar = document.querySelector('input[name="stars"]:checked');
   if (!selectedStar) {
     showToast('Selecciona una calificación de estrellas.', 'warning');
@@ -2967,7 +2981,7 @@ async function saveResena(e) {
 }
 
 // --------------------------------------------------------------------
-// 14. MÓDULO REPORTES (CARGA Y VIZUALIZACIÓN DE SQL CON GRÁFICOS)
+// 14. REPORTES, CONSULTAS SQL Y GRÁFICAS
 // --------------------------------------------------------------------
 const SQL_QUERIES = {
   1: `-- Reporte 1: Directorio Completo de Restaurantes\nSELECT \n    nombre AS 'Restaurante',\n    direccion AS 'Direccion',\n    telefono AS 'Telefono',\n    email AS 'Correo',\n    capacidad_total AS 'Aforo' \nFROM restaurantes \nORDER BY nombre;`,
@@ -3071,7 +3085,7 @@ async function renderReport(id) {
   tbody.innerHTML = '<tr><td class="info-text">Cargando reporte...</td></tr>';
   chartCard.style.display = 'none';
 
-  // Mostrar SQL
+  // Muestra la consulta SQL del reporte.
   document.getElementById('sql-query-display').textContent = SQL_QUERIES[id] || monthlySQLExample(id);
 
   try {
@@ -3086,7 +3100,7 @@ async function renderReport(id) {
     document.getElementById('report-criteria').textContent = currentReportCriteria;
     currentReportData = data;
     
-    // Set Título
+    // Actualiza el título del reporte.
     const btn = document.querySelector(`.report-btn[data-report-id="${id}"]`);
     currentReportTitle = btn ? btn.textContent.split('. ')[1] : `Reporte ${id}`;
     document.getElementById('report-title').textContent = currentReportTitle;
@@ -3098,7 +3112,7 @@ async function renderReport(id) {
       return;
     }
 
-    // Cabeceras de tabla
+    // Construye las cabeceras de la tabla.
     const headers = Object.keys(data[0]);
     const trHead = document.createElement('tr');
     headers.forEach(h => {
@@ -3108,14 +3122,14 @@ async function renderReport(id) {
     });
     thead.appendChild(trHead);
 
-    // Contenido
+    // Muestra las filas del reporte.
     data.forEach(row => {
       const tr = document.createElement('tr');
       headers.forEach(h => {
         const td = document.createElement('td');
         const value = row[h];
         
-        // Formato moneda
+        // Aplica el formato monetario a los importes.
         if (h.includes('Ingresos') || h.includes('Costo') || h.includes('Precio')) {
           td.textContent = value == null ? 'Sin datos' : `$${Number(value).toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})} COP`;
         } else {
@@ -3126,7 +3140,7 @@ async function renderReport(id) {
       tbody.appendChild(tr);
     });
 
-    // Renderizar gráficos si corresponde (Reporte 6, 9 y 10)
+    // Genera las gráficas de los reportes 6, 9 y 10.
     if (window.Chart && [6, 9, 10].includes(parseInt(id))) {
       renderReportChart(id, data);
     }
@@ -3204,7 +3218,7 @@ function exportReportToPDF() {
   const doc = new jsPDF();
   if (typeof doc.autoTable !== 'function') { printCurrentReport(); return; }
 
-  // Encabezado estético Universidad del Quindío
+  // Encabezado del reporte con la identificación de la Universidad del Quindío.
   doc.setFillColor(10, 15, 29);
   doc.rect(0, 0, 210, 40, 'F');
   
@@ -3251,7 +3265,7 @@ function exportReportToPDF() {
 }
 
 // --------------------------------------------------------------------
-// 15. MÓDULO DOCUMENTOS & PLANTILLAS (VISTA PREVIA Y PDF)
+// 15. DOCUMENTOS Y PLANTILLAS CON VISTA PREVIA Y PDF
 // --------------------------------------------------------------------
 async function loadDocumentosSection() {
   clearDocumentPreview();
@@ -3447,7 +3461,7 @@ async function generateDocumentPDF(type) {
   }
   activeDocumentPreview = {type, id: type === 'reserva' ? previewRecord.id_reserva : previewRecord.id_pedido, data: previewRecord};
   
-  // Agregar listener para descargar
+  // Asocia el botón de descarga con el documento mostrado en la vista previa.
   document.getElementById('btn-download-preview-pdf').onclick = downloadActivePreviewPDF;
   document.getElementById('btn-download-preview-pdf').disabled = false;
   } catch (error) {
@@ -3699,7 +3713,7 @@ async function markNotificationRead(value) {
   try {
     await requestAPI(`notificaciones/leer/${id}`, { method: 'PUT' });
     if (Number(currentUser?.id_usuario) === userId && notificationUserId === userId) {
-      notificationRequest += 1; // Una lectura iniciada antes del marcado no debe restaurar un aviso pendiente.
+      notificationRequest += 1; // Invalida las consultas anteriores para conservar el estado leído del aviso.
       notificationsList = notificationsList.map(n => Number(n.id_notificacion) === id ? { ...n, leido: true } : n);
     }
   } catch (error) {
@@ -3711,7 +3725,7 @@ async function markNotificationRead(value) {
 }
 
 // --------------------------------------------------------------------
-// 17. UTILERÍA GLOBO AVISO (TOAST NOTIFICATIONS) Y MODALES
+// 17. AVISOS TEMPORALES Y VENTANAS MODALES
 // --------------------------------------------------------------------
 function showToast(message, type = 'primary') {
   const container = document.getElementById('toast-container');
@@ -3730,7 +3744,7 @@ function showToast(message, type = 'primary') {
   container.appendChild(toast);
   if (window.lucide) lucide.createIcons();
 
-  // Slideout y Remover
+  // Anima la salida del aviso y retira su elemento de la página.
   setTimeout(() => {
     toast.style.animation = 'slideIn 0.3s reverse';
     setTimeout(() => toast.remove(), 300);

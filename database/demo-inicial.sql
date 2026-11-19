@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS estados_reserva (
     nombre VARCHAR(60) NOT NULL
 ) ENGINE=InnoDB;
 
--- E1: Zonas o Destinos Turísticos
+-- Zonas turísticas
 CREATE TABLE IF NOT EXISTS zonas (
     id_zona INT AUTO_INCREMENT PRIMARY KEY,
     nombre_zona VARCHAR(100) NOT NULL UNIQUE,
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS zonas (
     CONSTRAINT fk_zonas_municipio FOREIGN KEY (id_municipio) REFERENCES municipios(id_municipio) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
--- E2: Usuarios (Clientes/Turistas, Propietarios de Restaurantes, Administradores)
+-- Usuarios con perfil de cliente, propietario de restaurante o administrador
 CREATE TABLE IF NOT EXISTS usuarios (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(150) NOT NULL,
@@ -57,21 +57,21 @@ CREATE TABLE IF NOT EXISTS usuarios (
     fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
--- E4: Categorías de Menú (Entradas, Platos fuertes, Postres, Bebidas, etc.)
+-- Categorías del menú
 CREATE TABLE IF NOT EXISTS categorias (
     id_categoria INT AUTO_INCREMENT PRIMARY KEY,
     nombre_categoria VARCHAR(100) NOT NULL UNIQUE,
     descripcion TEXT
 ) ENGINE=InnoDB;
 
--- E5: Métodos de Pago
+-- Métodos de pago
 CREATE TABLE IF NOT EXISTS metodos_pago (
     id_metodo INT AUTO_INCREMENT PRIMARY KEY,
     nombre_metodo VARCHAR(50) NOT NULL UNIQUE,
     tipo_pago ENUM('online', 'presencial') NOT NULL DEFAULT 'online'
 ) ENGINE=InnoDB;
 
--- E6: Restaurantes
+-- Restaurantes
 CREATE TABLE IF NOT EXISTS restaurantes (
     id_restaurante INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(150) NOT NULL,
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS restaurantes (
     FOREIGN KEY (id_propietario) REFERENCES usuarios(id_usuario) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
--- E7: Mesas
+-- Mesas de los restaurantes
 CREATE TABLE IF NOT EXISTS mesas (
     id_mesa INT AUTO_INCREMENT PRIMARY KEY,
     numero_mesa VARCHAR(20) NOT NULL,
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS mesas (
     FOREIGN KEY (id_restaurante) REFERENCES restaurantes(id_restaurante) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- E8: Platos
+-- Platos del menú
 CREATE TABLE IF NOT EXISTS platos (
     id_plato INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(150) NOT NULL,
@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS platos (
     FOREIGN KEY (id_restaurante) REFERENCES restaurantes(id_restaurante) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- E9: Reservas
+-- Reservas de mesas
 CREATE TABLE IF NOT EXISTS reservas (
     id_reserva INT AUTO_INCREMENT PRIMARY KEY,
     fecha_reserva DATE NOT NULL,
@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS reserva_mesas (
     CONSTRAINT fk_reserva_mesas_mesa FOREIGN KEY (id_mesa) REFERENCES mesas(id_mesa) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
--- E10: Pedidos (De Comida / Delivery en zona turística)
+-- Pedidos de comida y domicilios
 CREATE TABLE IF NOT EXISTS pedidos (
     id_pedido INT AUTO_INCREMENT PRIMARY KEY,
     fecha_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -148,7 +148,7 @@ CREATE TABLE IF NOT EXISTS pedidos (
     CONSTRAINT fk_pedidos_estado FOREIGN KEY (id_estado_pedido) REFERENCES estados_pedido(id_estado_pedido) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
--- Detalle Pedidos
+-- Platos, cantidades y precios de cada pedido
 CREATE TABLE IF NOT EXISTS detalle_pedidos (
     id_pedido INT NOT NULL,
     id_plato INT NOT NULL,
@@ -159,7 +159,7 @@ CREATE TABLE IF NOT EXISTS detalle_pedidos (
     FOREIGN KEY (id_plato) REFERENCES platos(id_plato) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
--- E11: Pagos
+-- Pagos asociados a pedidos
 CREATE TABLE IF NOT EXISTS pagos (
     id_pago INT AUTO_INCREMENT PRIMARY KEY,
     monto DECIMAL(12, 2) NOT NULL CHECK (monto > 0),
@@ -173,7 +173,7 @@ CREATE TABLE IF NOT EXISTS pagos (
     FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido) ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
--- E12: Reseñas / Opiniones
+-- Reseñas de los restaurantes
 CREATE TABLE IF NOT EXISTS resenas (
     id_resena INT AUTO_INCREMENT PRIMARY KEY,
     calificacion INT NOT NULL CHECK (calificacion BETWEEN 1 AND 5),
@@ -186,7 +186,7 @@ CREATE TABLE IF NOT EXISTS resenas (
     FOREIGN KEY (id_restaurante) REFERENCES restaurantes(id_restaurante) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- Extra: Notificaciones
+-- Notificaciones de los usuarios
 CREATE TABLE IF NOT EXISTS notificaciones (
     id_notificacion INT AUTO_INCREMENT PRIMARY KEY,
     mensaje TEXT NOT NULL,

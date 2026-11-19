@@ -10,7 +10,7 @@ const { hashPassword } = require('../lib/passwords');
 const { generateDataset, TABLES } = require('../scripts/generar-datos');
 
 const data = generateDataset('2026-10-27');
-// Los DECIMAL de mysql2 pueden llegar como texto; la demo debe sumar números.
+// Convierte los DECIMAL recibidos como texto antes de calcular los importes de la demostración.
 data.pedidos.forEach(row => { row.total_pago = String(row.total_pago); });
 data.platos.forEach(row => { row.precio = String(row.precio); row.disponibilidad = String(Number(row.disponibilidad)); });
 data.resenas.forEach(row => { row.calificacion = String(row.calificacion); });
@@ -43,7 +43,7 @@ let database, server;
 
 before(async () => {
   // Motor SQL independiente en memoria para comprobar la lógica de las consultas.
-  // No verifica reglas/configuración específicas de MySQL ni abre la base del usuario.
+  // La verificación en memoria cubre las consultas; la configuración MySQL se comprueba en la integración.
   database = new DatabaseSync(':memory:');
   database.function('IF', (condition, yes, no) => condition ? yes : no);
   database.function('DATE_FORMAT', (value, format) => {

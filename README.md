@@ -32,7 +32,7 @@ En el equipo de Jaider, `.env` conecta a la copia recuperada de `gastronomia_tur
 - Pedidos calculados con precios del menú y pagos vinculados obligatoriamente a un pedido del mismo cliente. Se conservan los distintos medios de pago.
 - Vista previa y descarga de comprobantes/facturas comparten los datos consultados y el total registrado del pedido.
 - Edición de mesas y administración de platos desde pantalla, con disponibilidad del menú y conservación de platos usados en pedidos.
-- Reservas de varias mesas con aforo simultáneo, bloqueos por horario y protección al reducir capacidades.
+- Reservas de varias mesas con aforo simultáneo, bloqueos por horario y protección al reducir capacidades. Sorrento abre a las 08:30 y los otros cuatro establecimientos a las 11:00; todos cierran a las 22:30. Los turnos de dos horas admiten llegadas hasta las 20:30, con validación en la API y en la demostración. Ver [horarios de reserva](docs/Reservas_horarios.md).
 - Reportes limitados a los establecimientos del propietario y reportes generales para administrador.
 - Recordatorios privados en la campana durante las 24 horas previas. El servidor los revisa cada minuto mientras permanece abierto.
 

@@ -22,7 +22,7 @@ async function migrateExperiences(c, { apply = false, expectedDatabase } = {}) {
     if (!sql) throw new Error('Falta la definición de '+table);
     await c.query(sql[0]);
   }
-  // CREATE TABLE puede haber creado ya todas las columnas en una instalación nueva.
+  // Comprueba las columnas existentes antes de aplicar la migración de experiencias.
   [columns] = await c.query('SELECT TABLE_NAME,COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE()');
   for (const [col,definition] of Object.entries(additions)) if (!has('reservas_experiencias',col)) await c.query(`ALTER TABLE reservas_experiencias ADD COLUMN ${mysql.escapeId(col)} ${definition}`);
   if (needsPrice) {

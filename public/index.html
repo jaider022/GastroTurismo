@@ -4,19 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GastroTurismo - Sistema de Gestión Gastronómica</title>
-  <!-- Google Fonts -->
+  <!-- Tipografías de Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Stylesheet -->
+  <!-- Hoja de estilos -->
   <link rel="stylesheet" href="styles.css">
-  <!-- Lucide Icons -->
+  <!-- Iconos Lucide -->
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
   <!-- ==========================================
-       PANTALLA DE LOGIN / REGISTRO
+       PANTALLA DE ACCESO Y REGISTRO
        ========================================== -->
   <div id="login-container" class="login-wrapper" style="display: none;">
     <div class="login-card glass">
@@ -31,7 +31,7 @@
       <!-- Formularios -->
       <div class="form-container">
         <p id="login-reserva-context" class="login-reserva-context" hidden></p>
-        <!-- Form Login -->
+        <!-- Formulario de inicio de sesión -->
         <form id="form-login" class="auth-form active">
           <h2>Iniciar Sesión</h2>
           <div class="form-group">
@@ -60,7 +60,7 @@
           <p class="auth-toggle">¿No tienes cuenta? <a href="#" id="go-to-register">Regístrate como Cliente</a></p>
         </form>
 
-        <!-- Form Registro -->
+        <!-- Formulario de registro -->
         <form id="form-register" class="auth-form">
           <h2>Crear Cuenta</h2>
           <div class="form-group">
@@ -107,7 +107,7 @@
       </div>
       
       <div class="login-explore"><button id="btn-explorar-restaurantes" type="button" class="btn btn-secondary btn-block">Volver a explorar restaurantes</button></div>
-      <!-- Indicador de conexión rápida para demo -->
+      <!-- Indicador de conexión a la base de datos -->
       <div class="demo-badge-container">
         <span class="db-status-badge offline" id="login-db-status">
           <span class="status-dot"></span>
@@ -119,7 +119,7 @@
   </div>
 
   <!-- ==========================================
-       CONTENEDOR PRINCIPAL DE LA APLICACIÓN (DASHBOARD)
+       CONTENEDOR PRINCIPAL DE LA APLICACIÓN
        ========================================== -->
   <main id="public-container" class="public-layout">
     <header class="public-header">
@@ -164,7 +164,7 @@
   </main>
 
   <div id="app-container" class="app-layout" style="display: none;">
-    <!-- Sidebar de Navegación -->
+    <!-- Menú lateral de navegación -->
     <aside class="sidebar glass">
       <div class="sidebar-brand">
         <i data-lucide="chef-hat" class="logo-icon"></i>
@@ -223,9 +223,9 @@
       </div>
     </aside>
 
-    <!-- Main Content Area -->
+    <!-- Área principal de contenido -->
     <main class="main-content">
-      <!-- Top Navbar -->
+      <!-- Barra superior de navegación -->
       <header class="topbar glass">
         <div class="topbar-left">
           <h2 id="current-section-title">Dashboard</h2>
@@ -257,7 +257,7 @@
             </div>
           </div>
 
-          <!-- Estado Base de Datos -->
+          <!-- Estado de la conexión a la base de datos -->
           <span class="db-status-badge offline" id="main-db-status">
             <span class="status-dot"></span>
             <span id="main-db-text">Cargando estado...</span>
@@ -265,14 +265,14 @@
         </div>
       </header>
 
-      <!-- SECCIÓN: DASHBOARD (RESUMEN) -->
+      <!-- SECCIÓN: RESUMEN -->
       <section id="section-dashboard" class="content-section active">
         <div class="welcome-banner glass">
           <h1>¡Bienvenido, <span id="welcome-user-name">Usuario</span>!</h1>
           <p>Explora la increíble gastronomía turística del departamento del Quindío. Reserva mesas, califica platos o realiza pedidos para delivery directo a tu zona turística.</p>
         </div>
 
-        <!-- Tarjetas Estadísticas Rápidas -->
+        <!-- Indicadores del resumen -->
         <div class="dashboard-stats-grid">
           <div class="stat-card glass">
             <div class="stat-icon color-1"><i data-lucide="store"></i></div>
@@ -304,7 +304,7 @@
           </div>
         </div>
 
-        <!-- Fila de Gráficos e Información en Tiempo Real -->
+        <!-- Gráficas del resumen y actividad reciente -->
         <div class="dashboard-charts-grid">
           <div class="chart-container glass">
             <h3>Ingresos Totales por Restaurante (COP)</h3>
@@ -330,7 +330,7 @@
         </div>
         
         <div class="restaurantes-list-grid" id="restaurantes-container">
-          <!-- Inyectado dinámicamente -->
+          <!-- Contenido cargado desde JavaScript -->
         </div>
       </section>
 
@@ -340,7 +340,7 @@
           <div class="filter-box">
             <label for="filter-mesas-restaurante">Seleccionar Restaurante:</label>
             <select id="filter-mesas-restaurante">
-              <!-- Cargado dinámicamente -->
+              <!-- Opciones cargadas desde JavaScript -->
             </select>
           </div>
           <button class="btn btn-success" id="btn-add-mesa" style="display: none;">
@@ -349,7 +349,7 @@
         </div>
         
         <div class="mesas-visual-grid" id="mesas-container">
-          <!-- Inyectado dinámicamente -->
+          <!-- Contenido cargado desde JavaScript -->
         </div>
       </section>
 
@@ -426,7 +426,7 @@
               </tr>
             </thead>
             <tbody id="reservas-table-body">
-              <!-- Inyectado dinámicamente -->
+              <!-- Contenido cargado desde JavaScript -->
             </tbody>
           </table>
         </div>
@@ -522,7 +522,7 @@
             <div class="cart-payment-method form-group">
               <label for="cart-payment-select">Medio de Pago Online:</label>
               <select id="cart-payment-select" class="form-control">
-                <!-- Cargado dinámicamente -->
+                <!-- Opciones cargadas desde JavaScript -->
               </select>
             </div>
 
@@ -572,7 +572,7 @@
                 </tr>
               </thead>
               <tbody id="pedidos-table-body">
-                <!-- Inyectado dinámicamente -->
+                <!-- Contenido cargado desde JavaScript -->
               </tbody>
             </table>
           </div>
@@ -630,7 +630,7 @@
           <div class="resenas-wall">
             <h3>Opiniones de Turistas</h3>
             <div class="resenas-scroll" id="resenas-wall-container">
-              <!-- Inyectado dinámicamente -->
+              <!-- Contenido cargado desde JavaScript -->
             </div>
           </div>
         </div>
@@ -686,7 +686,7 @@
         </div>
       </section>
 
-      <!-- SECCIÓN: REPORTES (MÍNIMO 10) -->
+      <!-- SECCIÓN: REPORTES -->
       <section id="section-reportes" class="content-section">
         <div class="reportes-container">
           <!-- Selector de Reporte -->
@@ -743,7 +743,7 @@
               <pre><code id="sql-query-display">SELECT * FROM restaurantes;</code></pre>
             </div>
 
-            <!-- Canvas de gráfico si aplica -->
+            <!-- Área de la gráfica del reporte -->
             <div class="report-chart-container" id="report-chart-card" style="display: none;">
               <canvas id="chart-reporte-canvas"></canvas>
             </div>
@@ -752,10 +752,10 @@
             <div class="table-responsive">
               <table class="data-table" id="report-data-table">
                 <thead id="report-thead">
-                  <!-- Dinámico -->
+                  <!-- Contenido generado desde JavaScript -->
                 </thead>
                 <tbody id="report-tbody">
-                  <!-- Dinámico -->
+                  <!-- Contenido generado desde JavaScript -->
                 </tbody>
               </table>
             </div>
@@ -774,7 +774,7 @@
             <div class="form-group">
               <label for="doc-reserva-select">Selecciona la Reserva:</label>
               <select id="doc-reserva-select" class="form-control">
-                <!-- Dinámico -->
+                <!-- Contenido generado desde JavaScript -->
               </select>
             </div>
             <button class="btn btn-primary btn-block" id="btn-gen-comprobante">
@@ -790,7 +790,7 @@
             <div class="form-group">
               <label for="doc-pedido-select">Selecciona el Pedido:</label>
               <select id="doc-pedido-select" class="form-control">
-                <!-- Dinámico -->
+                <!-- Contenido generado desde JavaScript -->
               </select>
             </div>
             <button class="btn btn-primary btn-block" id="btn-gen-factura">
@@ -799,19 +799,19 @@
           </div>
         </div>
         
-        <!-- Vista Previa de Plantilla en la App -->
+        <!-- Vista previa del documento en la aplicación -->
         <div class="preview-doc-container glass" id="preview-doc-container" style="display: none;">
           <div class="preview-header">
             <h3>Vista Previa del Documento</h3>
             <button class="btn btn-success btn-sm" id="btn-download-preview-pdf" disabled>Descargar PDF</button>
           </div>
           <div class="preview-canvas" id="preview-canvas-content">
-            <!-- Representación HTML estética de la factura/comprobante -->
+            <!-- Vista previa HTML del comprobante o factura -->
           </div>
         </div>
       </section>
 
-      <!-- SECCIÓN: CONFIGURACIÓN DB -->
+      <!-- SECCIÓN: CONFIGURACIÓN DE LA BASE DE DATOS -->
       <section id="section-config" class="content-section">
         <div class="config-grid">
           <!-- Conexión a Base de Datos -->
@@ -872,10 +872,10 @@
   </div>
 
   <!-- ==========================================
-       MODALES DIÁLOGO (CRUD - REGISTRO / EDICIÓN)
+       FORMULARIOS MODALES DE REGISTRO Y EDICIÓN
        ========================================== -->
   
-  <!-- Modal Reserva -->
+  <!-- Formulario modal de reserva -->
   <div class="modal-backdrop" id="modal-reserva">
     <div class="modal-card glass">
       <div class="modal-header">
@@ -921,7 +921,7 @@
     </div>
   </div>
 
-  <!-- Modal Restaurante -->
+  <!-- Formulario modal de restaurante -->
   <div class="modal-backdrop" id="modal-restaurante">
     <div class="modal-card glass">
       <div class="modal-header">
@@ -966,7 +966,7 @@
     </div>
   </div>
 
-  <!-- Modal Mesa -->
+  <!-- Formulario modal de mesa -->
   <div class="modal-backdrop" id="modal-mesa">
     <div class="modal-card glass">
       <div class="modal-header">
@@ -1049,16 +1049,16 @@
     <p id="exp-cobro-detalle"></p><form id="exp-cobro-form"><div class="form-group"><label for="exp-metodo">Medio de pago presencial</label><select id="exp-metodo" class="form-control" required></select></div><p>Confirma únicamente después de recibir el pago en el restaurante. Se registra el total de esta reserva.</p><div class="modal-actions"><button type="button" class="btn btn-secondary" onclick="closeModal('modal-exp-cobro')">Volver</button><button id="exp-cobrar" class="btn btn-success" type="submit">Confirmar pago recibido</button></div></form>
   </div></div>
 
-  <!-- Notificaciones Toast -->
+  <!-- Contenedor de avisos temporales -->
   <div class="toast-container" id="toast-container"></div>
 
-  <!-- Scripts Externos -->
+  <!-- Bibliotecas externas -->
   <!-- Chart.js para gráficos -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- jsPDF para exportar archivos PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
-  <!-- Aplicación Principal JS -->
+  <!-- Código JavaScript de la aplicación -->
   <script src="app.js"></script>
   <script src="experiencias.js"></script>
 </body>

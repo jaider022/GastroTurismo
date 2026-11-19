@@ -327,16 +327,16 @@ test('el menú público incluye solo platos disponibles del restaurante elegido'
   assert.equal(view.writes.length, 0);
 });
 
-test('horas de reserva tienen intervalos de quince minutos y distinguen café de cocina cafetera', () => {
+test('solo Sorrento abre temprano y los otros restaurantes reservan desde las 11 hasta las 20:30', () => {
   const view = catalog();
   const cafe = view.context.reservationTimeOptions({ nombre: 'Café La Palma', especialidad: 'Desayunos y café' });
   const restaurant = view.context.reservationTimeOptions({ nombre: 'Fogón del Guadual', especialidad: 'Cocina tradicional cafetera' });
-  assert.equal(cafe.length, 57);
-  assert.equal(cafe[0].value, '08:00');
-  assert.equal(cafe.at(-1).value, '22:00');
-  assert.equal(restaurant.length, 47);
-  assert.equal(restaurant[0].value, '11:30');
-  assert.equal(restaurant.at(-1).value, '23:00');
+  assert.equal(cafe.length, 39);
+  assert.equal(cafe[0].value, '11:00');
+  assert.equal(cafe.at(-1).value, '20:30');
+  assert.equal(restaurant.length, 39);
+  assert.equal(restaurant[0].value, '11:00');
+  assert.equal(restaurant.at(-1).value, '20:30');
   for (const option of [...cafe, ...restaurant]) assert.match(option.value, /^\d{2}:(00|15|30|45)$/);
   assert.equal(cafe.find(option => option.value === '13:15').label, '1:15 p. m.');
   assert.equal(view.context.reservationTimeOptions(null).length, 0);
@@ -359,6 +359,59 @@ test('Sorrento respeta apertura 08:30 y fin de ocupación a las 22:30, conservan
   await view.node('public-menu-contact').children[0].click();
   assert.equal(view.node('sorrento-gallery').open, true);
   assert.equal(view.writes.length, 0);
+});
+
+test('cambiar de Sorrento a La Palma limpia la hora temprana y muestra solo el horario del restaurante', async () => {
+  const view = catalog({ restaurants: [
+    { id_restaurante: 80, nombre: 'Café Sorrento', capacidad_total: 30 },
+    { id_restaurante: 3, nombre: 'Café La Palma', capacidad_total: 40 }
+  ] });
+  view.authenticate();
+  await view.originalOpenReservation(80);
+  const values = () => view.node('mres-hora-slots').children.map(label => label.children[0].value);
+  assert.equal(values()[0], '08:30');
+  view.node('mres-hora').value = '08:30';
+  view.node('mres-restaurante').value = '3';
+  await view.node('mres-restaurante').onchange();
+  assert.equal(view.node('mres-hora').value, '');
+  assert.equal(values()[0], '11:00');
+  assert.equal(values().at(-1), '20:30');
+  assert.equal(values().includes('08:30'), false);
+  assert.match(view.node('mres-hora-help').textContent, /11:00 a\. m\..*10:30 p\. m\..*dos horas/);
+  assert.equal(view.writes.length, 0);
+});
+
+test('las horas ofrecidas en pantalla coinciden con la validación del servidor', () => {
+  const { reservationTimeError } = require('../lib/horarios-reservas');
+  const view = catalog();
+  for (const nombre of ['Café Sorrento', 'Café La Palma', 'Cocina del Mirador', 'Fogón del Guadual', 'Sabores del Camino']) {
+    const restaurant = { nombre };
+    const offered = new Set(view.context.reservationTimeOptions(restaurant).map(option => option.value));
+    for (let minute = 0; minute < 1440; minute += 15) {
+      const time = `${String(Math.floor(minute / 60)).padStart(2, '0')}:${String(minute % 60).padStart(2, '0')}`;
+      assert.equal(offered.has(time), reservationTimeError(restaurant, time) === '', `${nombre} ${time}`);
+      assert.equal(view.context.reservationTimeError(restaurant, time), reservationTimeError(restaurant, time));
+    }
+    for (const time of ['08:00', '11:01', '13:15:01', '20:45', '22:30', '24:00', 'incorrecta']) {
+      assert.equal(view.context.reservationTimeError(restaurant, time), reservationTimeError(restaurant, time));
+    }
+  }
+});
+
+test('la demostración rechaza reservas fuera de horario sin guardar filas', () => {
+  const view = catalog({ restaurants: [{ id_restaurante: 3, nombre: 'Café La Palma', capacidad_total: 4 }] });
+  view.authenticate();
+  vm.runInContext('globalThis.hoursStore = {setLS, getLS};', view.context);
+  view.context.hoursStore.setLS('gt_restaurantes', view.rests);
+  view.context.hoursStore.setLS('gt_mesas', [{ id_mesa: 1, id_restaurante: 3, capacidad: 4, estado: 'disponible' }]);
+  const post = time => view.context.simulateLocalStorageAPI('reservas', { method: 'POST', body: JSON.stringify({
+    id_mesas: [1], fecha_reserva: '2030-01-02', hora_reserva: time, cantidad_personas: 2
+  }) });
+  for (const time of ['08:00:00', '10:45:00', '22:30:00']) assert.throws(() => post(time), /cerrado/);
+  assert.throws(() => post('20:45:00'), /dos horas/);
+  assert.equal(view.context.hoursStore.getLS('gt_reservas').length, 0);
+  assert.equal(post('11:00:00').hora_reserva, '11:00:00');
+  assert.equal(view.context.hoursStore.getLS('gt_reservas').length, 1);
 });
 
 test('Reservar solicita acceso y mantiene el restaurante sin crear registros', async () => {

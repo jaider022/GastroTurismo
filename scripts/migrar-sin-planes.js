@@ -1,6 +1,6 @@
 'use strict';
 
-// Solo inspecciona por defecto. --aplicar requiere detener primero la aplicación.
+// La ejecución predeterminada inspecciona el esquema; --aplicar requiere detener la aplicación.
 const fs = require('node:fs');
 const path = require('node:path');
 const { createHash } = require('node:crypto');
@@ -53,7 +53,7 @@ async function migrate(connection, { apply = false, backupDir = path.join(__dirn
   const result = { pendiente: pending, pagos_de_planes_a_archivar: state.legacyPayments, aplicado: false };
   if (!apply || !pending) return result;
   if (!/^(?:int|integer)(?:\(\d+\))?(?: unsigned)?$/i.test(state.orderColumn.column_type)) throw new Error('El tipo de pagos.id_pedido requiere revisión manual.');
-  // Se guardan estructura y TODOS los datos de las tablas afectadas antes de alterar.
+  // Respalda la estructura y todos los datos de las tablas afectadas antes de modificarlas.
   const backup = { fecha: new Date().toISOString(), database: state.info.database_name, tables: {} };
   for (const table of ['restaurantes', 'pagos', 'planes_suscripcion', 'suscripciones']) {
     if (!state.columns.some(c => c.table_name === table)) continue;

@@ -50,7 +50,7 @@ async function incorporateSorrento(connection, { apply = false, expectedDatabase
     let [[owner]] = await connection.query('SELECT id_usuario,tipo_usuario FROM usuarios WHERE correo=?', [sorrento.cuenta]);
     if (owner && owner.tipo_usuario !== 'restaurante') throw new Error('La cuenta de gestión tiene un rol incompatible.');
     if (!owner) {
-      // Cuenta técnica, sin identidad personal inventada ni contraseña de acceso compartida.
+      // Cuenta técnica para la administración del restaurante.
       const [result] = await connection.query('INSERT INTO usuarios (nombre,correo,contrasena,telefono,tipo_usuario) VALUES (?,?,?,NULL,?)',
         ['Gestión Café Sorrento (por asignar)', sorrento.cuenta, hashPassword(randomBytes(48).toString('hex')), 'restaurante']);
       owner = { id_usuario: result.insertId };

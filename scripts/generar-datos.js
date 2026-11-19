@@ -69,13 +69,13 @@ function generateDataset(cutoff = todayBogota()) {
     });
     data.accesos_sistema.push({ id_acceso: data.accesos_sistema.length + 1, id_usuario: 1, fecha_ingreso: `${fecha} 08:00:00` });
   }
-  // Reservas futuras para poder ensayar confirmación y registro de asistencia.
+  // Incluye reservas futuras para comprobar la confirmación y el registro de asistencia.
   for (let i = 1; i <= 12; i++) {
     const mesa = data.mesas[(i * 3) % data.mesas.length];
     data.reservas.push({ id_reserva: data.reservas.length + 1, fecha_reserva: dateText(addDays(end, i)), hora_reserva: '13:00:00', cantidad_personas: Math.min(4, mesa.capacidad), estado_reserva: i % 3 === 0 ? 'pendiente' : 'confirmada', id_usuario: 6 + i, id_mesa: mesa.id_mesa });
   }
   addExperienceExamples(data, cutoff);
-  // Se incorpora después del historial ficticio: no inventa ventas, clientes o visitas del café real.
+  // Incorpora la oferta de Sorrento sin generar un historial de ventas, clientes o visitas.
   addSorrentoDataset(data, DEMO_PASSWORD);
   addSorrentoMenuDataset(data);
   normalizeDataset(data);
